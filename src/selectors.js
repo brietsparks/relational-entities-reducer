@@ -1,3 +1,5 @@
+const { makeManyFk } = require('./util');
+
 const getEntitiesSubstate = state => state.entities;
 const getKeysSubstate = state => state.keys;
 
@@ -17,14 +19,15 @@ const getEntity = (state, { entityType, entityKey }) => {
   return entities[entityKey];
 };
 
-const getLinkedEntities = (state, { entityType, entityKey, linkedEntityType }) => {
+const getLinkedEntityKeys = (state, { entityType, entityKey, linkedEntityType }) => {
   const entity = getEntity(state, { entityType, entityKey });
 
-  if (!entity || !entity[linkedEntityType]) {
+  const manyFk = makeManyFk(linkedEntityType);
+  if (!entity || !entity[manyFk]) {
     return undefined;
   }
 
-  return entity[linkedEntityType];
+  return entity[manyFk];
 };
 
 module.exports = {
@@ -32,5 +35,5 @@ module.exports = {
   getKeysSubstate,
   getEntities,
   getEntity,
-  getLinkedEntities,
+  getLinkedEntityKeys,
 };

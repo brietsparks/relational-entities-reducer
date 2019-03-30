@@ -41,32 +41,3 @@ describe('createEntityReducer', () => {
     });
   });
 });
-
-const facts = {
-  entities: {
-    skills: {
-      's1': {
-        id: 's1',
-        projectKeys: ['p1', 'p2']
-      },
-      's2': {
-        id: 's2',
-        projectKeys: ['p1']
-      }
-    },
-    projects: {
-      'p1': {
-        id: 'p1',
-        skillKeys: ['s2', 's1']
-      },
-      'p2': {
-        id: 'p2',
-        skillKeys: ['s1']
-      }
-    }
-  },
-  keys: {
-    skillKeys: ['s1', 's2'],
-    projectKeys: ['p2', 'p1']
-  }
-};

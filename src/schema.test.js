@@ -1,4 +1,5 @@
 const { validateSchemasObject } = require('./schema');
+const { schemas } = require('./mocks');
 
 describe('parseSchema', () => {
   describe('validateSchemas', () => {
@@ -71,25 +72,6 @@ describe('parseSchema', () => {
     });
 
     test('valid', () => {
-      const schemas = {
-        skill: {
-          type: 'skill',
-          plural: 'skills',
-          many: ['project']
-        },
-        project: {
-          type: 'project',
-          plural: 'projects',
-          many: ['skill'],
-          one: ['job']
-        },
-        job: {
-          type: 'job',
-          plural: 'jobs',
-          many: ['project']
-        }
-      };
-
       validateSchemasObject(schemas);
     });
   });

@@ -1,25 +1,7 @@
 const { createEntityActions } = require('./actions');
+const { schemas } = require('./mocks');
 
 describe('actions', () => {
-  const schemas = {
-    skill: {
-      type: 'skill',
-      plural: 'skills',
-      many: ['projects']
-    },
-    project: {
-      type: 'project',
-      plural: 'projects',
-      many: ['skill'],
-      one: ['job']
-    },
-    job: {
-      type: 'job',
-      plural: 'jobs',
-      many: ['project']
-    }
-  };
-
   const {
     ADD,
     EDIT,

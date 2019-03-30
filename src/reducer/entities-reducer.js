@@ -1,37 +1,57 @@
 const { createReducer } = require('../util');
-const { createEntityActions } = require('../actions');
-const { defaultNamespace } = require('../util');
-const { createEntityReducer } = require('./entity-reducer');
 
-const createEntitiesReducer = (schemas = [], namespace = defaultNamespace) => {
-  const actions = createEntityActions(schemas, namespace);
-
-  const reducers = schemas.reduce((reducers, schema) => {
-    reducers[schema.type] = createEntityReducer(schema, actions);
-    return reducers;
-  }, {});
-
-  const entitiesReducer = (state = {}, action) => {
-    const entityType = action.entityType;
-
-    if (action.type === actions.REMOVE) {
-
-    }
-  };
-};
-
-const createKeysReducer = (schema, namespace = defaultNamespace) => {
-  const { ADD } = createEntityActions(schema, namespace);
+const createEntitiesOfTypeReducer = (schema, actions) => {
+  const { ADD } = actions;
 
   return createReducer({}, {
-    [ADD]: (state, { entityType, entityKey, index }) => {
+    [ADD]: (state, { entityType, entityKey, entity }) => {
       if (entityType !== schema.type) {
         return state;
       }
 
-      return index
-        ? [...state].splice(index, 0, entityKey)
-        : [...state, entityKey];
+      return {
+        ...state,
+        [entityKey]: entity
+      };
     }
   });
 };
+
+const createEntitiesReducer = (schemas, actions) => {
+  const reducers = Object.keys(schemas).reduce((reducers, schemaKey) => {
+    const schema = schemas[schemaKey];
+    reducers[schema.plural] = createEntitiesOfTypeReducer(schema, actions);
+    return reducers;
+  }, {});
+
+  return (state = {}, action) => {
+    // equivalent of combineReducers
+    Object.keys(reducers).reduce((reducedState, stateKey) => {
+      const reducer = reducers[stateKey];
+      reducedState[stateKey] = reducer(state[stateKey], action);
+      return reducedState;
+    }, {})
+  };
+};
+
+
+module.exports = {
+  createEntitiesReducer,
+};
+
+
+// const schema = schemas[entityType];
+//
+// schema.many.forEach(relEntityType => {
+//   const keysKey = `${relEntityType}Keys`;
+//   if (!Array.isArray(entity[keysKey])) {
+//     entity[keysKey] = [];
+//   }
+// });
+//
+// schema.one.forEach(relEntityType => {
+//   const keyKey = `${relEntityType}Key`;
+//   if (!isStringOrNumber(keyKey)) {
+//     entity[keyKey] = null;
+//   }
+// });
