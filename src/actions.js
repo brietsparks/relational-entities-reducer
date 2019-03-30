@@ -9,10 +9,23 @@ const createEntityActions = (schemas, namespace = defaultNamespace) => {
   const REORDER_ENTITY = namespace('REORDER_ENTITY');
   const REORDER_LINK = namespace('REORDER_LINK');
 
-  const add = (entityType, entityKey, entity = {}, linkedEntity, index) => ({
-    type: ADD,
-    entityType, entityKey, entity, linkedEntity, index
-  });
+  const add = (
+    entityType,
+    entityKey,
+    entity = {},
+    index
+  ) => {
+    if (!schemas.hasOwnProperty(entityType)) {
+      throw new Error(`invalid entity type "${entityType}"`);
+    }
+
+    return {
+      type: ADD,
+      entityType, entityKey, entity, index
+    }
+  };
+
+  const addMany = () => {};
 
   const remove = (entityType, entityKey) => {
 
@@ -60,3 +73,7 @@ const createEntityActions = (schemas, namespace = defaultNamespace) => {
 module.exports = {
   createEntityActions
 };
+
+function isStringOrNumber (x) {
+  return typeof x === 'string' || typeof x === 'number';
+}

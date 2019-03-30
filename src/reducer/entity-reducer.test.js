@@ -2,15 +2,24 @@ const { createEntityReducer } = require('./entity-reducer');
 const { createEntityActions } = require('../actions');
 
 describe('createEntityReducer', () => {
-  const schema = { type: 'skill' };
+  const schemas = {
+    skill: {
+      type: 'skill',
+      plural: 'skills',
+    },
+    project: {
+      type: 'project',
+      plural: 'projects'
+    }
+  };
 
-  const actions = createEntityActions(schema);
-  const reducer = createEntityReducer(schema, actions);
+  const actions = createEntityActions(schemas);
+  const reducer = createEntityReducer(schemas.skill, actions);
 
   describe('add', () => {
     test('skip other types', () => {
       const state = {};
-      const action = actions.add('project', 'p1', {});
+      const action = actions.add('project', 'p1');
 
       const actual = reducer(state, action);
 

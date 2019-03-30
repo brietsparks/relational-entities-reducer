@@ -9,6 +9,22 @@ const createEntityReducer = (schema, actions) => {
         return state;
       }
 
+      // const schema = schemas[entityType];
+      //
+      // schema.many.forEach(relEntityType => {
+      //   const keysKey = `${relEntityType}Keys`;
+      //   if (!Array.isArray(entity[keysKey])) {
+      //     entity[keysKey] = [];
+      //   }
+      // });
+      //
+      // schema.one.forEach(relEntityType => {
+      //   const keyKey = `${relEntityType}Key`;
+      //   if (!isStringOrNumber(keyKey)) {
+      //     entity[keyKey] = null;
+      //   }
+      // });
+
       return {
         ...state,
         [entityKey]: entity
