@@ -10,12 +10,12 @@ const createReducer = (initialState, handlers) => {
 
 const defaultNamespace = actionType => `entities.${actionType}`;
 
-const makeManyFk = entityType => `${entityType}Keys`;
-const makeOneFk = entityType => `${entityType}Key`;
+const makeKeysKey = entityType => `${entityType}Keys`;
+const makeKeyKey = entityType => `${entityType}Key`;
 
 module.exports = {
   createReducer,
   defaultNamespace,
-  makeManyFk,
-  makeOneFk
+  makeKeysKey,
+  makeKeyKey
 };

@@ -23,9 +23,23 @@ const schemas = {
   job: jobSchema
 };
 
+const emptyState = {
+  entities: {
+    skills: {},
+    projects: {},
+    jobs: {}
+  },
+  keys: {
+    skillKeys: [],
+    projectKeys: [],
+    jobKeys: []
+  }
+};
+
 module.exports = {
   skillSchema,
   projectSchema,
   jobSchema,
-  schemas
+  schemas,
+  emptyState
 };

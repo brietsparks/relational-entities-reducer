@@ -18,19 +18,25 @@ const createEntitiesOfTypeReducer = (schema, actions) => {
 };
 
 const createEntitiesReducer = (schemas, actions) => {
-  const reducers = Object.keys(schemas).reduce((reducers, schemaKey) => {
-    const schema = schemas[schemaKey];
+  const reducers = Object.keys(schemas).reduce((reducers, entityType) => {
+    const schema = schemas[entityType];
     reducers[schema.plural] = createEntitiesOfTypeReducer(schema, actions);
     return reducers;
   }, {});
 
-  return (state = {}, action) => {
+  const defaultState = Object.keys(schemas).reduce((defaultState, entityType) => {
+    const schema = schemas[entityType];
+    defaultState[schema.plural] = {};
+    return defaultState;
+  }, {});
+
+  return (state = defaultState, action) => {
     // equivalent of combineReducers
-    Object.keys(reducers).reduce((reducedState, stateKey) => {
+    return Object.keys(reducers).reduce((reducedState, stateKey) => {
       const reducer = reducers[stateKey];
       reducedState[stateKey] = reducer(state[stateKey], action);
       return reducedState;
-    }, {})
+    }, {});
   };
 };
 
