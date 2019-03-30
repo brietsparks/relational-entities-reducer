@@ -1,12 +1,34 @@
 const validateSchemasObject = (schemas = {}) => {
-  Object.keys(schemas).forEach(entityType => {
-    const schema = schemas[entityType];
+  Object.keys(schemas).forEach(type => {
+    const schema = schemas[type];
 
-    if (schema.type !== entityType) {
-      throw new Error(`schemas key "${entityType}" does not equal its type "${schema.type}"`);
+    if (schema.type !== type) {
+      throw new Error(`schemas key "${type}" does not equal its type "${schema.type}"`);
     }
 
-    
+    if (schema.many) {
+      if (!Array.isArray(schema.many)) {
+        throw new Error(`${type} schema .many must be an array`);
+      }
+
+      schema.many.forEach(relType => {
+        if (!schemas.hasOwnProperty(relType)) {
+          throw new Error(`${type} .many relation "${relType}" does not have a schema`);
+        }
+      })
+    }
+
+    if (schema.one) {
+      if (!Array.isArray(schema.one)) {
+        throw new Error(`${type} schema .one must be an array`);
+      }
+
+      schema.one.forEach(relType => {
+        if (!schemas.hasOwnProperty(relType)) {
+          throw new Error(`${type} .one relation "${relType}" does not have a schema`);
+        }
+      })
+    }
   });
 };
 
