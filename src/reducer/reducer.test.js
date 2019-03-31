@@ -19,10 +19,10 @@ describe('createFullReducer', () => {
           projects: {},
           jobs: {}
         },
-        keys: {
-          skillKeys: ['s1'],
-          projectKeys: [],
-          jobKeys: []
+        ids: {
+          skillIds: ['s1'],
+          projectIds: [],
+          jobIds: []
         }
       };
 
@@ -37,10 +37,10 @@ describe('createFullReducer', () => {
           projects: {},
           jobs: {}
         },
-        keys: {
-          skillKeys: ['s1', 's2'],
-          projectKeys: [],
-          jobKeys: []
+        ids: {
+          skillIds: ['s1', 's2'],
+          projectIds: [],
+          jobIds: []
         }
       };
 

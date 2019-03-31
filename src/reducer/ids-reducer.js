@@ -1,26 +1,26 @@
-const { createReducer, makeKeysKey } = require('../util');
+const { createReducer, makeIdsKey } = require('../util');
 
-const createKeysOfTypeReducer = (schema, actions) => {
+const createIdsOfTypeReducer = (schema, actions) => {
   const { ADD } = actions;
 
   return createReducer({}, {
-    [ADD]: (state, { entityType, entityKey, index }) => {
+    [ADD]: (state, { entityType, entityId, index }) => {
       if (entityType !== schema.type) {
         return state;
       }
 
       return index
-        ? [...state].splice(index, 0, entityKey)
-        : [...state, entityKey];
+        ? [...state].splice(index, 0, entityId)
+        : [...state, entityId];
     }
   });
 };
 
-const createKeysReducer = (schemas, actions) => {
+const createIdsReducer = (schemas, actions) => {
   const reducers = Object.keys(schemas).reduce((reducers, entityType) => {
     const schema = schemas[entityType];
-    const keysKey = makeKeysKey(entityType);
-    reducers[keysKey] = createKeysOfTypeReducer(schema, actions);
+    const idsKey = makeIdsKey(entityType);
+    reducers[idsKey] = createIdsOfTypeReducer(schema, actions);
     return reducers;
   }, {});
 
@@ -35,5 +35,5 @@ const createKeysReducer = (schemas, actions) => {
 };
 
 module.exports = {
-  createKeysReducer,
+  createIdsReducer,
 };

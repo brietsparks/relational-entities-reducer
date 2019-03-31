@@ -4,14 +4,14 @@ const createEntitiesOfTypeReducer = (schema, actions) => {
   const { ADD } = actions;
 
   return createReducer({}, {
-    [ADD]: (state, { entityType, entityKey, entity }) => {
+    [ADD]: (state, { entityType, entityId, entity }) => {
       if (entityType !== schema.type) {
         return state;
       }
 
       return {
         ...state,
-        [entityKey]: entity
+        [entityId]: entity
       };
     }
   });
@@ -49,15 +49,15 @@ module.exports = {
 // const schema = schemas[entityType];
 //
 // schema.many.forEach(relEntityType => {
-//   const keysKey = `${relEntityType}Keys`;
-//   if (!Array.isArray(entity[keysKey])) {
-//     entity[keysKey] = [];
+//   const idsKey = `${relEntityType}Keys`;
+//   if (!Array.isArray(entity[idsKey])) {
+//     entity[idsKey] = [];
 //   }
 // });
 //
 // schema.one.forEach(relEntityType => {
-//   const keyKey = `${relEntityType}Key`;
-//   if (!isStringOrNumber(keyKey)) {
-//     entity[keyKey] = null;
+//   const idKey = `${relEntityType}Key`;
+//   if (!isStringOrNumber(idKey)) {
+//     entity[idKey] = null;
 //   }
 // });

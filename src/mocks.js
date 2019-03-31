@@ -29,10 +29,10 @@ const emptyState = {
     projects: {},
     jobs: {}
   },
-  keys: {
-    skillKeys: [],
-    projectKeys: [],
-    jobKeys: []
+  ids: {
+    skillIds: [],
+    projectIds: [],
+    jobIds: []
   }
 };
 

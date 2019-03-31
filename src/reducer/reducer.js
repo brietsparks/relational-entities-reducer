@@ -1,12 +1,12 @@
 const { createEntitiesReducer } = require('./entities-reducer');
-const { createKeysReducer } = require('./keys-reducer');
-const { getLinkedEntityKeys } = require('../selectors');
+const { createIdsReducer } = require('./ids-reducer');
+const { getLinkedEntityIds } = require('../selectors');
 
 const createFullReducer = (schemas, actions) => {
   // const { REMOVE } = actions;
 
   const entitiesReducer = createEntitiesReducer(schemas, actions);
-  const keysReducer = createKeysReducer(schemas, actions);
+  const idsReducer = createIdsReducer(schemas, actions);
 
   return (state = {}, action) => {
     //   if (type === actions.REMOVE) {
@@ -15,7 +15,7 @@ const createFullReducer = (schemas, actions) => {
 
     return {
       entities: entitiesReducer(state.entities, action),
-      keys: keysReducer(state.keys, action)
+      ids: idsReducer(state.ids, action)
     }
   };
 };

@@ -1,4 +1,4 @@
-const { makeKeysKey } = require('./util');
+const { makeIdsKey } = require('./util');
 
 const getEntitiesSubstate = state => state.entities;
 const getKeysSubstate = state => state.keys;
@@ -13,16 +13,16 @@ const getEntities = (state, { entityType }) => {
   return entitiesSubstate[entityType];
 };
 
-const getEntity = (state, { entityType, entityKey }) => {
+const getEntity = (state, { entityType, entityId }) => {
   const entities = getEntities(state, { entityType });
 
-  return entities[entityKey];
+  return entities[entityId];
 };
 
-const getLinkedEntityKeys = (state, { entityType, entityKey, linkedEntityType }) => {
-  const entity = getEntity(state, { entityType, entityKey });
+const getLinkedEntityIds = (state, { entityType, entityId, linkedEntityType }) => {
+  const entity = getEntity(state, { entityType, entityId });
 
-  const manyFk = makeKeysKey(linkedEntityType);
+  const manyFk = makeIdsKey(linkedEntityType);
   if (!entity || !entity[manyFk]) {
     return undefined;
   }
@@ -35,5 +35,5 @@ module.exports = {
   getKeysSubstate,
   getEntities,
   getEntity,
-  getLinkedEntityKeys,
+  getLinkedEntityIds,
 };

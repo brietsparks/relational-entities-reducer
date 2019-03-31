@@ -9,33 +9,28 @@ const createEntityActions = (schemas, namespace = defaultNamespace) => {
   const REORDER_ENTITY = namespace('REORDER_ENTITY');
   const REORDER_LINK = namespace('REORDER_LINK');
 
-  const add = (
-    entityType,
-    entityKey,
-    entity = {},
-    index
-  ) => {
+  const add = (entityType, entityId, entity = {}, index) => {
     if (!schemas.hasOwnProperty(entityType)) {
       throw new Error(`invalid entity type "${entityType}"`);
     }
 
     return {
       type: ADD,
-      entityType, entityKey, entity, index
+      entityType, entityId, entity, index
     }
   };
 
   const addMany = () => {};
 
-  const remove = (entityType, entityKey) => {
+  const remove = (entityType, entityId) => {
 
   };
 
-  const link = (entityType1, entityKey1, entityType2, entityKey2) => {
+  const link = (entityType1, entityId1, entityType2, entityId2) => {
 
   };
 
-  const unlink = (entityKey1, entityKey2) => {
+  const unlink = (entityId1, entityId2) => {
 
   };
 
@@ -45,9 +40,9 @@ const createEntityActions = (schemas, namespace = defaultNamespace) => {
 
   const reorderLink = (
     entityType,
-    sourceEntityKey,
+    sourceEntityId,
     sourceIndex,
-    destinationEntityKey,
+    destinationEntityId,
     destinationIndex
   ) => {
 

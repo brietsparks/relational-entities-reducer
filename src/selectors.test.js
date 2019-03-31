@@ -1,4 +1,4 @@
-const { getEntities, getEntity, getLinkedEntityKeys } = require('./selectors');
+const { getEntities, getEntity, getLinkedEntityIds } = require('./selectors');
 
 describe('selectors', () => {
   describe('getEntities', () => {
@@ -33,13 +33,13 @@ describe('selectors', () => {
       }
     };
 
-    const actual = getEntity(state, { entityType: 'foo', entityKey: 'a' });
+    const actual = getEntity(state, { entityType: 'foo', entityId: 'a' });
     const expected = { id: 'a' };
 
     expect(actual).toEqual(expected);
   });
 
-  describe('getLinkedEntityKeys', () => {
+  describe('getLinkedEntityIds', () => {
     test('if entity not found', () => {
       const state = {
         entities: {
@@ -47,9 +47,9 @@ describe('selectors', () => {
         }
       };
 
-      const actual = getLinkedEntityKeys(state, {
+      const actual = getLinkedEntityIds(state, {
         entityType: 'foo',
-        entityKey: 'a',
+        entityId: 'a',
         linkedEntityType: 'bar'
       });
 
@@ -65,9 +65,9 @@ describe('selectors', () => {
         }
       };
 
-      const actual = getLinkedEntityKeys(state, {
+      const actual = getLinkedEntityIds(state, {
         entityType: 'foo',
-        entityKey: 'a',
+        entityId: 'a',
         linkedEntityType: 'bar'
       });
 
@@ -79,15 +79,15 @@ describe('selectors', () => {
           foo: {
             a: {
               id: 'a',
-              barKeys: ['b']
+              barIds: ['b']
             }
           },
         }
       };
 
-      const actual = getLinkedEntityKeys(state, {
+      const actual = getLinkedEntityIds(state, {
         entityType: 'foo',
-        entityKey: 'a',
+        entityId: 'a',
         linkedEntityType: 'bar'
       });
 

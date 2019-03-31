@@ -32,7 +32,7 @@ describe('actions', () => {
         const expected = {
           type: ADD,
           entityType: 'project',
-          entityKey: 'p1',
+          entityId: 'p1',
           entity: {}
         };
 
