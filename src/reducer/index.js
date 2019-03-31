@@ -1,6 +1,6 @@
-const { createEntitiesReducer } = require('./entities-reducer');
-const { createIdsReducer } = require('./ids-reducer');
-const { preReduce } = require('./pre-reduce');
+const { createEntitiesReducer } = require('./entities');
+const { createIdsReducer } = require('./ids');
+const { preReduce } = require('./functions');
 
 const createFullReducer = (schemas, actions) => {
   const entitiesReducer = createEntitiesReducer(schemas, actions);

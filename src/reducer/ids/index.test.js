@@ -1,6 +1,6 @@
-const { createIdsReducer } = require('./ids-reducer');
-const { createEntityActions } = require('../actions');
-const { schemas, emptyState } = require('../mocks');
+const { createIdsReducer } = require('./index');
+const { createEntityActions } = require('../../actions');
+const { schemas, emptyState } = require('../../mocks');
 
 describe('createIdsReducer', () => {
   const actions = createEntityActions(schemas);

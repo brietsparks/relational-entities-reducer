@@ -1,4 +1,4 @@
-const { getLinks, removeLinkedIds } = require('./util');
+const { getLinks, removeLinkedIds } = require('./functions');
 const { createReducer } = require('../util');
 
 const createEntitiesOfTypeReducer = (schema, actions) => {

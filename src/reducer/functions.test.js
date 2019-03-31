@@ -1,0 +1,105 @@
+const { getLinks, preReduce } = require('./functions');
+const { schemas } = require('../mocks');
+const { createEntityActions } = require('../actions');
+
+
+describe('reducers/root/functions', () => {
+  describe('getLinks', () => {
+    const schema = {
+      type: 'a',
+      many: ['b', 'c', 'd'],
+      one: ['f', 'g', 'h']
+    };
+
+    test('entity with no links', () => {
+      const entity = {};
+      const actual = getLinks(entity, schema);
+      expect(actual).toEqual({});
+    });
+
+    test('entity with links', () => {
+      const entity = {
+        bIds: ['b1', 'b2'],
+        cIds: ['c1', 'c2'],
+        fId: 'f1',
+        gId: 'g1'
+      };
+
+      const actual = getLinks(entity, schema);
+
+      const expected = {
+        b: {
+          key: 'bIds',
+          ids: ['b1', 'b2']
+        },
+        c: {
+          key: 'cIds',
+          ids: ['c1', 'c2']
+        },
+        f: {
+          key: 'fId',
+          ids: ['f1']
+        },
+        g: {
+          key: 'gId',
+          ids: ['g1']
+        },
+      };
+
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe('pre-reduce', () => {
+    const actions = createEntityActions(schemas);
+    const { REMOVE, remove } = actions;
+
+    test('on remove', () => {
+      const state = {
+        entities: {
+          skill: {
+            's1': { projectIds: ['p1'] },
+            's2': { projectIds: ['p1'] }
+          },
+          project: {
+            'p1': {
+              skillIds: ['s1', 's2'],
+              jobId: 'j1'
+            },
+          },
+          job: {
+            'j1': {
+              projectIds: ['p1']
+            }
+          }
+        },
+        ids: {
+          skill: ['s1', 's2'],
+          project: ['p1'],
+          job: ['j1']
+        }
+      };
+
+      const action = remove('project', 'p1');
+      const actual = preReduce(schemas, actions, state, action);
+
+      const expected = {
+        type: REMOVE,
+        entityType: 'project',
+        entityId: 'p1',
+        links: {
+          skill: {
+            key: 'skillIds',
+            ids: ['s1', 's2']
+          },
+          job: {
+            key: 'jobId',
+            ids: ['j1']
+          }
+        }
+      };
+
+      expect(actual).toEqual(expected);
+    });
+  });
+});
