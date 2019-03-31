@@ -28,22 +28,10 @@ describe('reducer/functions', () => {
       const actual = getLinks(entity, schema);
 
       const expected = {
-        b: {
-          key: 'bIds',
-          ids: ['b1', 'b2']
-        },
-        c: {
-          key: 'cIds',
-          ids: ['c1', 'c2']
-        },
-        f: {
-          key: 'fId',
-          ids: ['f1']
-        },
-        g: {
-          key: 'gId',
-          ids: ['g1']
-        },
+        b: ['b1', 'b2'],
+        c: ['c1', 'c2'],
+        f: 'f1',
+        g: 'g1',
       };
 
       expect(actual).toEqual(expected);
@@ -88,14 +76,8 @@ describe('reducer/functions', () => {
         entityType: 'project',
         entityId: 'p1',
         links: {
-          skill: {
-            key: 'skillIds',
-            ids: ['s1', 's2']
-          },
-          job: {
-            key: 'jobId',
-            ids: ['j1']
-          }
+          skill: ['s1', 's2'],
+          job: 'j1'
         }
       };
 

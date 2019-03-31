@@ -8,10 +8,7 @@ const getLinks = (entity, schema) => {
     schema.many.reduce((links, relEntity) => {
       const idsKey = makeIdsKey(relEntity);
       if (Array.isArray(entity[idsKey])) {
-        links[relEntity] = {
-          key: idsKey,
-          ids: entity[idsKey]
-        };
+        links[relEntity] = entity[idsKey];
       }
       return links;
     }, links)
@@ -21,10 +18,7 @@ const getLinks = (entity, schema) => {
     schema.one.reduce((links, relEntity) => {
       const idKey = makeIdKey(relEntity);
       if (entity[idKey]) {
-        links[relEntity] = {
-          key: idKey,
-          ids: [entity[idKey]]
-        };
+        links[relEntity] = entity[idKey];
       }
       return links;
     }, links)
