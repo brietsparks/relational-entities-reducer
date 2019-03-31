@@ -1,3 +1,5 @@
+const { makeIdKey, makeIdsKey } = require('./util');
+
 const validateSchemasObject = (schemas = {}) => {
   Object.keys(schemas).forEach(type => {
     const schema = schemas[type];
@@ -32,6 +34,22 @@ const validateSchemasObject = (schemas = {}) => {
   });
 };
 
+// this mutates
+const transformSchemasObject = (schemas) => {
+  Object.keys(schemas).forEach(type => {
+    const schema = schemas[type];
+
+    schema.many = schema.many || [];
+    schema.one = schema.one || [];
+
+    schema.idsKeys = schema.many.map(relEntityType => makeIdsKey(relEntityType));
+    schema.idKeys = schema.one.map(relEntityType => makeIdKey(relEntityType));
+  });
+
+  return schemas;
+};
+
 module.exports = {
-  validateSchemasObject
+  validateSchemasObject,
+  transformSchemasObject
 };

@@ -1,7 +1,7 @@
 const { createReducer } = require('../util');
 
 const createIdsOfTypeReducer = (schema, actions) => {
-  const { ADD } = actions;
+  const { ADD, REMOVE } = actions;
 
   return createReducer([], {
     [ADD]: (state, { entityType, entityId, index, entityExists }) => {
@@ -12,6 +12,13 @@ const createIdsOfTypeReducer = (schema, actions) => {
       return index
         ? [...state].splice(index, 0, entityId)
         : [...state, entityId];
+    },
+    [REMOVE]: (state, { entityType, entityId: removableId }) => {
+      if (entityType !== schema.type) {
+        return state;
+      }
+
+      return state.filter(entityId => entityId !== removableId);
     }
   });
 };

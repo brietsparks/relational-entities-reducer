@@ -1,24 +1,22 @@
-const skillSchema = {
-  type: 'skill',
-  many: ['project']
-};
-
-const projectSchema = {
-  type: 'project',
-  many: ['skill'],
-  one: ['job']
-};
-
-const jobSchema = {
-  type: 'job',
-  many: ['project']
-};
-
 const schemas = {
-  skill: skillSchema,
-  project: projectSchema,
-  job: jobSchema
+  skill: {
+    type: 'skill',
+    many: ['project']
+  },
+  project: {
+    type: 'project',
+    many: ['skill'],
+    one: ['job']
+  },
+  job: {
+    type: 'job',
+    many: ['project']
+  }
 };
+
+const skillSchema = schemas.skill;
+const projectSchema = schemas.project;
+const jobSchema = schemas.job;
 
 const emptyState = {
   entities: {

@@ -1,4 +1,4 @@
-const { validateSchemasObject } = require('./schema');
+const { validateSchemasObject, transformSchemasObject } = require('./schema');
 const { schemas } = require('./mocks');
 
 describe('parseSchema', () => {
@@ -74,5 +74,34 @@ describe('parseSchema', () => {
     test('valid', () => {
       validateSchemasObject(schemas);
     });
+  });
+
+  test('transformSchemasObject', () => {
+    const actual = transformSchemasObject(schemas);
+    const expected = {
+      skill: {
+        type: 'skill',
+        many: ['project'],
+        one: [],
+        idsKeys: ['projectIds'],
+        idKeys: []
+      },
+      project: {
+        type: 'project',
+        many: ['skill'],
+        one: ['job'],
+        idsKeys: ['skillIds'],
+        idKeys: ['jobId']
+      },
+      job: {
+        type: 'job',
+        many: ['project'],
+        one: [],
+        idsKeys: ['projectIds'],
+        idKeys: []
+      }
+    };
+
+    expect(actual).toEqual(expected);
   });
 });

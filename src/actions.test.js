@@ -40,4 +40,23 @@ describe('actions', () => {
       });
     });
   });
+
+  describe('remove', () => {
+    test('throws if entity type dne', () => {
+      const actual = () => remove('chicken', 'c1');
+      const error = new Error('invalid entity type "chicken"');
+
+      expect(actual).toThrow(error);
+    });
+
+    test('happy', () => {
+      const actual = remove('project', 'p1');
+      const expected = {
+        type: REMOVE,
+        entityType: 'project',
+        entityId: 'p1'
+      };
+      expect(actual).toEqual(expected);
+    });
+  });
 });
