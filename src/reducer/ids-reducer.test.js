@@ -3,12 +3,16 @@ const { createEntityActions } = require('../actions');
 const { schemas, emptyState } = require('../mocks');
 
 describe('createIdsReducer', () => {
+  const actions = createEntityActions(schemas);
+  const idsReducer = createIdsReducer(schemas, actions);
+
+  test('default state', () => {
+    const actual = idsReducer(undefined, { type: '' });
+    expect(actual).toEqual(emptyState.ids);
+  });
+
   test('passthrough', () => {
-    const actions = createEntityActions(schemas);
-    const keyReducer = createIdsReducer(schemas, actions);
-
-    const actual = keyReducer(emptyState.ids, { type: '' });
-
+    const actual = idsReducer(emptyState.ids, { type: '' });
     expect(actual).toEqual(emptyState.ids);
   });
 });

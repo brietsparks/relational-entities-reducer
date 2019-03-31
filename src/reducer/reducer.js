@@ -1,17 +1,28 @@
 const { createEntitiesReducer } = require('./entities-reducer');
 const { createIdsReducer } = require('./ids-reducer');
-const { getLinkedEntityIds } = require('../selectors');
+const {
+  getEntity,
+  getLinkedEntityIds
+} = require('../selectors');
 
 const createFullReducer = (schemas, actions) => {
-  // const { REMOVE } = actions;
+  const { ADD } = actions;
 
   const entitiesReducer = createEntitiesReducer(schemas, actions);
   const idsReducer = createIdsReducer(schemas, actions);
 
   return (state = {}, action) => {
-    //   if (type === actions.REMOVE) {
-    //
-    //   }
+      if (action.type === ADD) {
+        console.log(state);
+        const entity = getEntity(state, {
+          entityType: action.entityType,
+          entityId: action.entityId
+        });
+
+        if (entity) {
+          action.entityExists = true;
+        }
+      }
 
     return {
       entities: entitiesReducer(state.entities, action),

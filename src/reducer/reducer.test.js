@@ -15,14 +15,14 @@ describe('createFullReducer', () => {
     test('add entity', () => {
       const state = {
         entities: {
-          skills: { 's1': {} },
-          projects: {},
-          jobs: {}
+          skill: { 's1': {} },
+          project: {},
+          job: {}
         },
         ids: {
-          skillIds: ['s1'],
-          projectIds: [],
-          jobIds: []
+          skill: ['s1'],
+          project: [],
+          job: []
         }
       };
 
@@ -30,21 +30,41 @@ describe('createFullReducer', () => {
       const actual = reducer(state, action);
       const expected = {
         entities: {
-          skills: {
+          skill: {
             's1': {},
             's2': { name: 'Java' }
           },
-          projects: {},
-          jobs: {}
+          project: {},
+          job: {}
         },
         ids: {
-          skillIds: ['s1', 's2'],
-          projectIds: [],
-          jobIds: []
+          skill: ['s1', 's2'],
+          project: [],
+          job: []
         }
       };
 
       expect(actual).toEqual(expected);
+    });
+
+    test('no-op when trying to add an already existing entity', () => {
+      const state = {
+        entities: {
+          skill: { 's1': {} },
+          project: {},
+          job: {}
+        },
+        ids: {
+          skill: ['s1'],
+          project: [],
+          job: []
+        }
+      };
+
+      const action = actions.add('skill', 's1', { name: 'Java' });
+      const actual = reducer(state, action);
+
+      expect(actual).toEqual(state);
     });
   });
 

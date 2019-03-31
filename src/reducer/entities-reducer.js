@@ -4,8 +4,8 @@ const createEntitiesOfTypeReducer = (schema, actions) => {
   const { ADD } = actions;
 
   return createReducer({}, {
-    [ADD]: (state, { entityType, entityId, entity }) => {
-      if (entityType !== schema.type) {
+    [ADD]: (state, { entityType, entityId, entity, entityExists }) => {
+      if (entityType !== schema.type || entityExists) {
         return state;
       }
 
@@ -20,13 +20,12 @@ const createEntitiesOfTypeReducer = (schema, actions) => {
 const createEntitiesReducer = (schemas, actions) => {
   const reducers = Object.keys(schemas).reduce((reducers, entityType) => {
     const schema = schemas[entityType];
-    reducers[schema.plural] = createEntitiesOfTypeReducer(schema, actions);
+    reducers[entityType] = createEntitiesOfTypeReducer(schema, actions);
     return reducers;
   }, {});
 
   const defaultState = Object.keys(schemas).reduce((defaultState, entityType) => {
-    const schema = schemas[entityType];
-    defaultState[schema.plural] = {};
+    defaultState[entityType] = {};
     return defaultState;
   }, {});
 

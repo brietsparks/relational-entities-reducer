@@ -1,19 +1,16 @@
 const skillSchema = {
   type: 'skill',
-  plural: 'skills',
   many: ['project']
 };
 
 const projectSchema = {
   type: 'project',
-  plural: 'projects',
   many: ['skill'],
   one: ['job']
 };
 
 const jobSchema = {
   type: 'job',
-  plural: 'jobs',
   many: ['project']
 };
 
@@ -25,14 +22,14 @@ const schemas = {
 
 const emptyState = {
   entities: {
-    skills: {},
-    projects: {},
-    jobs: {}
+    skill: {},
+    project: {},
+    job: {}
   },
   ids: {
-    skillIds: [],
-    projectIds: [],
-    jobIds: []
+    skill: [],
+    project: [],
+    job: []
   }
 };
 

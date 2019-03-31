@@ -1,11 +1,11 @@
-const { createReducer, makeIdsKey } = require('../util');
+const { createReducer } = require('../util');
 
 const createIdsOfTypeReducer = (schema, actions) => {
   const { ADD } = actions;
 
-  return createReducer({}, {
-    [ADD]: (state, { entityType, entityId, index }) => {
-      if (entityType !== schema.type) {
+  return createReducer([], {
+    [ADD]: (state, { entityType, entityId, index, entityExists }) => {
+      if (entityType !== schema.type || entityExists) {
         return state;
       }
 
@@ -19,8 +19,7 @@ const createIdsOfTypeReducer = (schema, actions) => {
 const createIdsReducer = (schemas, actions) => {
   const reducers = Object.keys(schemas).reduce((reducers, entityType) => {
     const schema = schemas[entityType];
-    const idsKey = makeIdsKey(entityType);
-    reducers[idsKey] = createIdsOfTypeReducer(schema, actions);
+    reducers[entityType] = createIdsOfTypeReducer(schema, actions);
     return reducers;
   }, {});
 
