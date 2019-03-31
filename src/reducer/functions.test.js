@@ -3,7 +3,7 @@ const { schemas } = require('../mocks');
 const { createEntityActions } = require('../actions');
 
 
-describe('reducers/root/functions', () => {
+describe('reducer/functions', () => {
   describe('getLinks', () => {
     const schema = {
       type: 'a',

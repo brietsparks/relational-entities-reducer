@@ -1,10 +1,10 @@
-const { createFullReducer } = require('./index');
+const { createRootReducer } = require('./index');
 const { createEntityActions } = require('../actions');
 const { schemas, emptyState } = require('../mocks');
 
-describe('createFullReducer', () => {
+describe('reducer/index', () => {
   const actions = createEntityActions(schemas);
-  const reducer = createFullReducer(schemas, actions);
+  const reducer = createRootReducer(schemas, actions);
 
   test('passthrough', () => {
     const actual = reducer(emptyState, { type: '' });

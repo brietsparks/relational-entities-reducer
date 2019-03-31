@@ -2,7 +2,7 @@ const { createEntitiesReducer } = require('./entities');
 const { createIdsReducer } = require('./ids');
 const { preReduce } = require('./functions');
 
-const createFullReducer = (schemas, actions) => {
+const createRootReducer = (schemas, actions) => {
   const entitiesReducer = createEntitiesReducer(schemas, actions);
   const idsReducer = createIdsReducer(schemas, actions);
 
@@ -16,4 +16,4 @@ const createFullReducer = (schemas, actions) => {
   };
 };
 
-module.exports = { createFullReducer };
+module.exports = { createRootReducer };

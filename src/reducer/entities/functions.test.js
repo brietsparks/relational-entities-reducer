@@ -1,4 +1,4 @@
-describe('', () => {
+describe('reducer/entities/functions', () => {
   test('', () => {
 
   });

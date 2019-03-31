@@ -2,7 +2,7 @@ const { createEntitiesReducer } = require('./index');
 const { createEntityActions } = require('../../actions');
 const { schemas, emptyState } = require('../../mocks');
 
-describe('createEntitiesReducer', () => {
+describe('reducer/entities/index', () => {
   const actions = createEntityActions(schemas);
   const entitiesReducer = createEntitiesReducer(schemas, actions);
 
