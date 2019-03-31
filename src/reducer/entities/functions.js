@@ -9,8 +9,8 @@ const removeLinkedIds = (
 ) => {
   const linkedEntityType = linkedSchema.type;
 
-  const linked = links[linkedEntityType];
-  if (!linked) {
+  const linkedEntityIds = links[linkedEntityType];
+  if (!linkedEntityIds) {
     return state;
   }
 
@@ -18,9 +18,9 @@ const removeLinkedIds = (
 
   let key;
   if (linkedSchema.many.includes(removableEntityType)) {
-    key = makeIdsKey(removableEntityType)
+    key = makeIdsKey(removableEntityType);
 
-    linked.forEach(linkedEntityId => {
+    linkedEntityIds.forEach(linkedEntityId => {
       const newEntity = { ...newState[linkedEntityId] };
 
       if (!newEntity[key]) {
@@ -33,14 +33,18 @@ const removeLinkedIds = (
   } else if (linkedSchema.one.includes(removableEntityType)) {
     key = makeIdKey(removableEntityType);
 
-    const newEntity = { ...newState[linked] };
+    linkedEntityIds.forEach(linkedEntityId => {
+      const newEntity = { ...newState[linkedEntityId] };
 
-    if (!newEntity[key]) {
-      return;
-    }
+      if (!newEntity[key]) {
+        return;
+      }
 
-    newEntity[key] = null;
-    newState[linked] = newEntity;
+      if (newEntity[key]) {
+        newEntity[key] = null;
+        newState[linkedEntityId] = newEntity;
+      }
+    });
   } else {
     return state;
   }

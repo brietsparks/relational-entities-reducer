@@ -59,7 +59,7 @@ describe('reducer/entities/functions', () => {
 
       // a lookup containing the project id linked to job "j1"
       const links = {
-        project: 'p1'
+        project: ['p1']
       };
 
       // unlink job "j1" from that project

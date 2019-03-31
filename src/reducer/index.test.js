@@ -110,44 +110,97 @@ describe('reducer/index', () => {
       expect(actual).toEqual(expected);
     });
 
-    test('remove entity that has links', () => {
-      const state = {
-        entities: {
-          skill: {
-            's1': { projectIds: ['p1', 'p2'] }
+    describe('remove entity that has link', () => {
+      test('via .many', () => {
+        const state = {
+          entities: {
+            skill: {
+              's0': { projectIds: ['p1'] },
+              's1': { projectIds: ['p1', 'p2'] },
+              's2': { projectIds: ['p1'] }
+            },
+            project: {
+              'p1': { skillIds: ['s0', 's1', 's2'] },
+              'p2': { skillIds: ['s1'] }
+            },
+            job: {}
           },
-          project: {
-            'p1': { skillIds: ['s1'] },
-            'p2': { skillIds: ['s1'] }
-          },
-          job: {}
-        },
-        ids: {
-          skill: ['s1'],
-          project: ['p1', 'p2'],
-          job: []
-        }
-      };
+          ids: {
+            skill: ['s0', 's1', 's2'],
+            project: ['p1', 'p2'],
+            job: []
+          }
+        };
 
-      const action = actions.remove('skill', 's1');
-      const actual = reducer(state, action);
-      const expected = {
-        entities: {
-          skill: {},
-          project: {
-            'p1': { skillIds: [] },
-            'p2': { skillIds: [] }
+        const action = actions.remove('skill', 's1');
+        const actual = reducer(state, action);
+        const expected = {
+          entities: {
+            skill: {
+              's0': { projectIds: ['p1'] },
+              's2': { projectIds: ['p1'] }
+            },
+            project: {
+              'p1': { skillIds: ['s0', 's2'] },
+              'p2': { skillIds: [] }
+            },
+            job: {}
           },
-          job: {}
-        },
-        ids: {
-          skill: [],
-          project: ['p1', 'p2'],
-          job: []
-        }
-      };
+          ids: {
+            skill: ['s0', 's2'],
+            project: ['p1', 'p2'],
+            job: []
+          }
+        };
 
-      // expect(actual).toEqual(expected);
+        expect(actual.entities).toEqual(expected.entities);
+      });
+
+      test('via .one', () => {
+        const state = {
+          entities: {
+            skill: {},
+            project: {
+              'p1': { jobId: 'j1' },
+              'p2': { jobId: 'j1' },
+              'p3': { jobId: 'j2' },
+            },
+            job: {
+              'j1': { projectIds: ['p1', 'p2'] },
+              'j2': { projectIds: ['p3'] }
+            }
+          },
+          ids: {
+            skill: [],
+            project: ['p1', 'p2', 'p3'],
+            job: ['j1', 'j2']
+          }
+        };
+
+        const action = actions.remove('job', 'j1');
+        const actual = reducer(state, action);
+
+        const expected = {
+          entities: {
+            skill: {},
+            project: {
+              'p1': { jobId: null },
+              'p2': { jobId: null },
+              'p3': { jobId: 'j2' },
+            },
+            job: {
+              'j2': { projectIds: ['p3'] }
+            }
+          },
+          ids: {
+            skill: [],
+            project: ['p1', 'p2', 'p3'],
+            job: ['j2']
+          }
+        };
+
+        expect(actual).toEqual(expected);
+      });
     });
   });
 

@@ -17,19 +17,14 @@ const createEntitiesOfTypeReducer = (schema, actions) => {
     },
     [REMOVE]: (state, { entityType, entityId, links }) => {
       if (entityType !== schema.type) {
-        // todo:
         // if this reducer handles a different entity type than
-        // the entity being removed, then any of these entities
-        // that are linked to the entity-to-be-removed should
-        // have the removeable entityId removed
+        // the entity-to-remove, then all of these entities
+        // should be unlinked from the entity-to-remove
+        return removeLinkedIds(state, links, schema, entityType, entityId);
 
-        // const newState = removeLinkedIds(state, entityId, links, schema);
-
-        return state;
       } else {
         // if this reducer handles the type of entity that is
         // to be removed, then remove the entity
-
         const newState = { ...state };
         delete newState[entityId];
 

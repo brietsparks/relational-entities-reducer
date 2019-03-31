@@ -42,8 +42,8 @@ const transformSchemasObject = (schemas) => {
     schema.many = schema.many || [];
     schema.one = schema.one || [];
 
-    schema.idsKeys = schema.many.map(relEntityType => makeIdsKey(relEntityType));
-    schema.idKeys = schema.one.map(relEntityType => makeIdKey(relEntityType));
+    // schema.idsKeys = schema.many.map(relEntityType => makeIdsKey(relEntityType));
+    // schema.idKeys = schema.one.map(relEntityType => makeIdKey(relEntityType));
   });
 
   return schemas;

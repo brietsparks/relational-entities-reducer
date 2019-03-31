@@ -83,22 +83,22 @@ describe('parseSchema', () => {
         type: 'skill',
         many: ['project'],
         one: [],
-        idsKeys: ['projectIds'],
-        idKeys: []
+        // idsKeys: ['projectIds'],
+        // idKeys: []
       },
       project: {
         type: 'project',
         many: ['skill'],
         one: ['job'],
-        idsKeys: ['skillIds'],
-        idKeys: ['jobId']
+        // idsKeys: ['skillIds'],
+        // idKeys: ['jobId']
       },
       job: {
         type: 'job',
         many: ['project'],
         one: [],
-        idsKeys: ['projectIds'],
-        idKeys: []
+        // idsKeys: ['projectIds'],
+        // idKeys: []
       }
     };
 

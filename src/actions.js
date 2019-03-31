@@ -18,6 +18,12 @@ const createEntityActions = (schemas, namespace = defaultNamespace) => {
     }
   };
 
+  const cleanEntity = (entity, entityType, schemas) => {
+    const schema = schemas[entityType];
+
+
+  };
+
   const add = (entityType, entityId, entity = {}, index) => {
     validateEntityType(entityType);
 
@@ -38,13 +44,25 @@ const createEntityActions = (schemas, namespace = defaultNamespace) => {
     };
   };
 
+  const edit = (entityType, entityId, entity) => {
+    validateEntityType(entityType);
+
+
+  };
+
+  const removeMany = () => {}
+
   const link = (entityType1, entityId1, entityType2, entityId2) => {
 
   };
 
+  const linkMany = () => {};
+
   const unlink = (entityId1, entityId2) => {
 
   };
+
+  const unlinkMany = () => {};
 
   const reorderEntity = (entityType, sourceIndex, destinationIndex) => {
 
