@@ -1,7 +1,17 @@
 const { makeIdsKey } = require('./util');
 
 const getEntitiesSubstate = state => state.entities;
-const getKeysSubstate = state => state.keys;
+const getIdsSubstate = state => state.ids;
+
+const getIds = (state, { entityType }) => {
+  const idsSubstate = getIdsSubstate(state);
+
+  if (!idsSubstate.hasOwnProperty(entityType)) {
+    throw new Error(`entity type "${entityType}" not found`);
+  }
+
+  return idsSubstate[entityType];
+};
 
 const getEntities = (state, { entityType }) => {
   const entitiesSubstate = getEntitiesSubstate(state);
@@ -32,7 +42,8 @@ const getLinkedEntityIds = (state, { entityType, entityId, linkedEntityType }) =
 
 module.exports = {
   getEntitiesSubstate,
-  getKeysSubstate,
+  getIdsSubstate,
+  getIds,
   getEntities,
   getEntity,
   getLinkedEntityIds,
