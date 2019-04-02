@@ -18,6 +18,18 @@ const createEntityActions = (schemas, namespace = defaultNamespace) => {
     }
   };
 
+  const doesRelationExists = (entityType1, entityType2) => {
+    return (
+      (
+        schemas[entityType1].many.includes(entityType2) ||
+        schemas[entityType1].one.includes(entityType2)
+      ) && (
+        schemas[entityType2].many.includes(entityType1) ||
+        schemas[entityType2].one.includes(entityType1)
+      )
+    );
+  };
+
   const add = (entityType, entityId, entity = {}, index) => {
     validateEntityType(entityType);
 
@@ -63,13 +75,23 @@ const createEntityActions = (schemas, namespace = defaultNamespace) => {
     }
   };
 
-  const removeMany = () => {}
+  const removeMany = () => {};
 
-  const link = (subjectEntityType, subjectEntityId, targetEntities = []) => {
+  const link = (subjectEntityType, subjectEntityId, targetEntityType, targetEntityId) => {
+    validateEntityType(subjectEntityType);
+    validateEntityType(targetEntityType);
 
+    if (!doesRelationExists(subjectEntityType, targetEntityType)) {
+      throw new Error(`cannot link a ${subjectEntityType} with a ${targetEntityType} because the entity schema contains no relation between the two types`);
+    }
+
+    return {
+      type: LINK,
+      subjectEntityType, subjectEntityId, targetEntityType, targetEntityId
+    }
   };
 
-  const linkMany = () => {};
+  const linkMany = (linkDefs = []) => {};
 
   const unlink = (subjectEntityType, subjectEntityId, targetEntities = []) => {
 
@@ -113,7 +135,3 @@ const createEntityActions = (schemas, namespace = defaultNamespace) => {
 module.exports = {
   createEntityActions
 };
-
-function isStringOrNumber (x) {
-  return typeof x === 'string' || typeof x === 'number';
-}

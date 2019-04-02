@@ -28,7 +28,7 @@ const getLinks = (entity, schema) => {
 };
 
 const preReduce = (schemas, actions, state, action) => {
-  const { ADD, REMOVE } = actions;
+  const { ADD, REMOVE, LINK } = actions;
 
   if (action.type === ADD) {
     const entity = getEntity(state, {
@@ -46,6 +46,10 @@ const preReduce = (schemas, actions, state, action) => {
     const entity = getEntity(state, { entityType, entityId });
     const schema = schemas[entityType];
     action.links = getLinks(entity, schema);
+  }
+
+  if (action.type === LINK) {
+
   }
 
   return action;

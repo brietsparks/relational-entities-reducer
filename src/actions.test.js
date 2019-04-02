@@ -97,4 +97,33 @@ describe('actions', () => {
       expect(actual).toEqual(expected);
     });
   });
+
+  describe('link', () => {
+    it('throws if subject entity type dne', () => {
+      const actual = () => link('chicken', 'c1', 'skill', 's1');
+      const error = new Error('invalid entity type "chicken"');
+
+      expect(actual).toThrow(error);
+    });
+
+    it('throws if target entity type dne', () => {
+      const actual = () => link('skill', 's1', 'chicken', 'c1');
+      const error = new Error('invalid entity type "chicken"');
+
+      expect(actual).toThrow(error);
+    });
+
+    test('happy', () => {
+      const actual = link('skill', 's1', 'project', 'p1');
+      const expected = {
+        type: LINK,
+        subjectEntityType: 'skill',
+        subjectEntityId: 's1',
+        targetEntityType: 'project',
+        targetEntityId: 'p1'
+      };
+
+      expect(actual).toEqual(expected);
+    });
+  });
 });
