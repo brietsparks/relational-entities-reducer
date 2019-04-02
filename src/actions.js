@@ -77,23 +77,23 @@ const createEntityActions = (schemas, namespace = defaultNamespace) => {
 
   const removeMany = () => {};
 
-  const link = (subjectEntityType, subjectEntityId, targetEntityType, targetEntityId) => {
-    validateEntityType(subjectEntityType);
-    validateEntityType(targetEntityType);
+  const link = (entityType1, entityId1, entityType2, entityId2) => {
+    validateEntityType(entityType1);
+    validateEntityType(entityType2);
 
-    if (!doesRelationExists(subjectEntityType, targetEntityType)) {
-      throw new Error(`cannot link a ${subjectEntityType} with a ${targetEntityType} because the entity schema contains no relation between the two`);
+    if (!doesRelationExists(entityType1, entityType2)) {
+      throw new Error(`cannot link a ${entityType1} with a ${entityType2} because the entity schema contains no relation between the two`);
     }
 
     return {
       type: LINK,
-      subjectEntityType, subjectEntityId, targetEntityType, targetEntityId
-    }
+      entityType1, entityId1, entityType2, entityId2
+    };
   };
 
   const linkMany = (linkDefs = []) => {};
 
-  const unlink = (subjectEntityType, subjectEntityId, targetEntities = []) => {
+  const unlink = (entityType1, entityId1, targetEntities = []) => {
 
   };
 

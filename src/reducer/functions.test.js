@@ -40,7 +40,63 @@ describe('reducer/functions', () => {
 
   describe('pre-reduce', () => {
     const actions = createEntityActions(schemas);
-    const { REMOVE, remove } = actions;
+    const {
+      ADD, add,
+      REMOVE, remove,
+      LINK, link
+    } = actions;
+
+    describe('on add', () => {
+      test('appends .entityExists to the action when the entity already exists', () => {
+        const state = {
+          skill: {
+            entities: { 's1': {} },
+            ids: ['s1']
+          },
+          project: {
+            entities: {},
+            ids: []
+          },
+          job: {
+            entities: {},
+            ids: []
+          },
+        };
+
+        const action = add('skill', 's1');
+        const actual = preReduce(schemas, actions, state, action);
+        const expected = {
+          type: ADD,
+          entityType: 'skill',
+          entityId: 's1',
+          entity: {},
+          entityExists: true
+        };
+
+        expect(actual).toEqual(expected);
+      });
+
+      test('no-op when entity does not exist', () => {
+        const state = {
+          skill: {
+            entities: {},
+            ids: []
+          },
+          project: {
+            entities: {},
+            ids: []
+          },
+          job: {
+            entities: {},
+            ids: []
+          },
+        };
+
+        const action = add('skill', 's1');
+        const actual = preReduce(schemas, actions, state, action);
+        expect(actual).toEqual(action);
+      });
+    });
 
     test('on remove', () => {
       const state = {
@@ -84,6 +140,73 @@ describe('reducer/functions', () => {
       };
 
       expect(actual).toEqual(expected);
+    });
+
+    describe('on link', () => {
+      test('appends .entityDoesNotExist when one of the entities does not exist', () => {
+        const state = {
+          skill: {
+            entities: { 's1': {} },
+            ids: ['s1']
+          },
+          project: {
+            entities: {},
+            ids: []
+          },
+          job: {
+            entities: {},
+            ids: []
+          },
+        };
+
+        let action, actual, expected;
+        action = link('project', 'p1', 'skill', 's1');
+        actual = preReduce(schemas, actions, state, action);
+        expected = {
+          type: LINK,
+          entityType1: 'project',
+          entityId1: 'p1',
+          entityType2: 'skill',
+          entityId2: 's1',
+          entityDoesNotExist: true
+        };
+
+        expect(actual).toEqual(expected);
+
+        action = link('skill', 's1', 'project', 'p1');
+        actual = preReduce(schemas, actions, state, action);
+        expected = {
+          type: LINK,
+          entityType1: 'skill',
+          entityId1: 's1',
+          entityType2: 'project',
+          entityId2: 'p1',
+          entityDoesNotExist: true
+        };
+
+        expect(actual).toEqual(expected);
+      });
+
+      test('no-op when both entities exist', () => {
+        const state = {
+          skill: {
+            entities: { 's1': {} },
+            ids: ['s1']
+          },
+          project: {
+            entities: { 'p1': {} },
+            ids: ['p1']
+          },
+          job: {
+            entities: {},
+            ids: []
+          },
+        };
+
+        const action = link('skill', 's1', 'project', 'p1');
+        const actual = preReduce(schemas, actions, state, action);
+        expect(actual).toEqual(action);
+      });
     });
   });
 });

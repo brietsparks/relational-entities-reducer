@@ -52,4 +52,8 @@ const removeLinkedIds = (
   return newState;
 };
 
+const linkEntities = (state, entityId, linkableEntityType, linkableEntityId) => {
+
+};
+
 module.exports = { removeLinkedIds };

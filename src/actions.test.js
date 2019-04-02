@@ -124,10 +124,10 @@ describe('actions', () => {
       const actual = link('skill', 's1', 'project', 'p1');
       const expected = {
         type: LINK,
-        subjectEntityType: 'skill',
-        subjectEntityId: 's1',
-        targetEntityType: 'project',
-        targetEntityId: 'p1'
+        entityType1: 'skill',
+        entityId1: 's1',
+        entityType2: 'project',
+        entityId2: 'p1'
       };
 
       expect(actual).toEqual(expected);
