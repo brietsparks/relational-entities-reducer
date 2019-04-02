@@ -1,6 +1,4 @@
-const { makeIdKey, makeIdsKey } = require('./util');
-
-const validateSchemasObject = (schemas = {}) => {
+const validateSchemaDefs = (schemas = {}) => {
   Object.keys(schemas).forEach(type => {
     const schema = schemas[type];
 
@@ -43,7 +41,7 @@ const validateSchemasObject = (schemas = {}) => {
 };
 
 // this mutates
-const transformSchemasObject = (schemas) => {
+const transformSchemaDefs = (schemas) => {
   Object.keys(schemas).forEach(type => {
     const schema = schemas[type];
 
@@ -58,6 +56,6 @@ const transformSchemasObject = (schemas) => {
 };
 
 module.exports = {
-  validateSchemasObject,
-  transformSchemasObject
+  validateSchemaDefs,
+  transformSchemaDefs
 };

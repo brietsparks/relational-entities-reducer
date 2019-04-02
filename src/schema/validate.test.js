@@ -1,16 +1,16 @@
-const { validateSchemasObject, transformSchemasObject } = require('./schema');
-const { schemas } = require('./mocks');
+const { validateSchemaDefs, transformSchemaDefs } = require('./validate');
+const { schemas } = require('../mocks');
 
 describe('parseSchema', () => {
   describe('validateSchemas', () => {
     test('schema key must equal .type', () => {
       let actual, error;
 
-      actual = () => validateSchemasObject({ foo: {} });
+      actual = () => validateSchemaDefs({ foo: {} });
       error = new Error('schemas key "foo" does not equal its type "undefined"');
       expect(actual).toThrow(error);
 
-      actual = () => validateSchemasObject({ foo: { type: 'bar' } });
+      actual = () => validateSchemaDefs({ foo: { type: 'bar' } });
       error = new Error('schemas key "foo" does not equal its type "bar"');
       expect(actual).toThrow(error);
     });
@@ -24,7 +24,7 @@ describe('parseSchema', () => {
         }
       };
 
-      const actual = () => validateSchemasObject(schemas);
+      const actual = () => validateSchemaDefs(schemas);
       const error = new Error('foo schema .many must be an array');
 
       expect(actual).toThrow(error);
@@ -39,7 +39,7 @@ describe('parseSchema', () => {
         }
       };
 
-      const actual = () => validateSchemasObject(schemas);
+      const actual = () => validateSchemaDefs(schemas);
       const error = new Error('foo .many relation "bar" does not have a schema');
 
       expect(actual).toThrow(error);
@@ -54,7 +54,7 @@ describe('parseSchema', () => {
         }
       };
 
-      const actual = () => validateSchemasObject(schemas);
+      const actual = () => validateSchemaDefs(schemas);
       const error = new Error('foo schema .one must be an array');
 
       expect(actual).toThrow(error);
@@ -69,7 +69,7 @@ describe('parseSchema', () => {
         }
       };
 
-      const actual = () => validateSchemasObject(schemas);
+      const actual = () => validateSchemaDefs(schemas);
       const error = new Error('foo .one relation "bar" does not have a schema');
 
       expect(actual).toThrow(error);
@@ -89,19 +89,19 @@ describe('parseSchema', () => {
         }
       };
 
-      const actual = () => validateSchemasObject(schemas);
+      const actual = () => validateSchemaDefs(schemas);
       const error = new Error('foo relation to "bar" cannot be both a one and many relation');
 
       expect(actual).toThrow(error);
     });
 
     test('valid', () => {
-      validateSchemasObject(schemas);
+      validateSchemaDefs(schemas);
     });
   });
 
-  test('transformSchemasObject', () => {
-    const actual = transformSchemasObject(schemas);
+  test('transformSchemaDefs', () => {
+    const actual = transformSchemaDefs(schemas);
     const expected = {
       skill: {
         type: 'skill',

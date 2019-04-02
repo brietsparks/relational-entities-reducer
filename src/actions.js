@@ -1,8 +1,8 @@
 const { defaultNamespace, makeIdKey, makeIdsKey } = require('./util');
-const { validateSchemasObject } = require('./schema');
+const { validateSchemaDefs } = require('./schema/validate');
 
 const createEntityActions = (schemas, namespace = defaultNamespace) => {
-  validateSchemasObject(schemas);
+  validateSchemaDefs(schemas);
 
   const ADD = namespace('ADD');
   const REMOVE = namespace('REMOVE');
