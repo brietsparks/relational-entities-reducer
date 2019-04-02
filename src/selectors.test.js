@@ -1,101 +1,128 @@
-const { getEntities, getEntity, getLinkedEntityIds } = require('./selectors');
+const {
+  getEntityState,
+  getEntities,
+  getIds,
+  getEntity
+} = require('./selectors');
 
 describe('selectors', () => {
-  describe('getEntities', () => {
-    test('throws if entityType dne', () => {
-      const state = {
-        entities: { foo: {} }
-      };
-
-      const actual = () => getEntities(state, { entityType: 'bar' });
-      const error = new Error('entity type "bar" not found');
-      expect(actual).toThrow(error);
-    });
-
-    test('happy', () => {
-      const state = {
-        entities: { foo: { a: {} } }
-      };
-
-      const actual = getEntities(state, { entityType: 'foo' });
-      const expected = { a: {} };
-
-      expect(actual).toEqual(expected);
-    });
-  });
-
-  test('getEntity', () => {
+  test('getEntityState', () => {
     const state = {
-      entities: {
-        foo: {
-          a: { id: 'a' }
-        }
+      skill: {
+        entities: {},
+        ids: []
       }
     };
 
-    const actual = getEntity(state, { entityType: 'foo', entityId: 'a' });
-    const expected = { id: 'a' };
+    const actual = getEntityState(state, { entityType: 'skill' });
+    const expected = {
+      entities: {},
+      ids: []
+    };
 
     expect(actual).toEqual(expected);
   });
 
-  describe('getLinkedEntityIds', () => {
-    test('if entity not found', () => {
+  describe('getEntities', () => {
+    it('throws on non-existent entity state', () => {
       const state = {
-        entities: {
-          foo: {}
+        skill: {
+          entities: {},
+          ids: []
         }
       };
 
-      const actual = getLinkedEntityIds(state, {
-        entityType: 'foo',
-        entityId: 'a',
-        linkedEntityType: 'bar'
-      });
+      const actual = () => getEntities(state, { entityType: 'chicken' });
+      const error = new Error('no state found for entity type "chicken"');
 
-      expect(actual).toEqual(undefined);
+      expect(actual).toThrow(error);
     });
 
-    test('if relation not found', () => {
+    it('returns an existing entity state', () => {
       const state = {
-        entities: {
-          foo: {
-            a: { id: 'a' }
-          }
+        skill: {
+          entities: { 's1': {} },
+          ids: ['s1']
         }
       };
 
-      const actual = getLinkedEntityIds(state, {
-        entityType: 'foo',
-        entityId: 'a',
-        linkedEntityType: 'bar'
-      });
-
-      expect(actual).toEqual(undefined)
-    });
-    test('happy', () => {
-      const state = {
-        entities: {
-          foo: {
-            a: {
-              id: 'a',
-              barIds: ['b']
-            }
-          },
-        }
-      };
-
-      const actual = getLinkedEntityIds(state, {
-        entityType: 'foo',
-        entityId: 'a',
-        linkedEntityType: 'bar'
-      });
-
-      const expected = ['b'];
+      const actual = getEntities(state, { entityType: 'skill' });
+      const expected = { 's1': {} };
 
       expect(actual).toEqual(expected);
     });
   });
 
+  describe('getIds', () => {
+    it('throws on non-existent entity state', () => {
+      const state = {
+        skill: {
+          entities: {},
+          ids: []
+        }
+      };
 
+      const actual = () => getIds(state, { entityType: 'chicken' });
+      const error = new Error('no state found for entity type "chicken"');
+
+      expect(actual).toThrow(error);
+    });
+
+    it('returns an existing entity state', () => {
+      const state = {
+        skill: {
+          entities: { 's1': {} },
+          ids: ['s1']
+        }
+      };
+
+      const actual = getIds(state, { entityType: 'skill' });
+      const expected = ['s1'];
+
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe('getEntity', () => {
+    it('throws on non-existent entity state', () => {
+      const state = {
+        skill: {
+          entities: {},
+          ids: []
+        }
+      };
+
+      const actual = () => getEntity(state, { entityType: 'chicken', entityId: '' });
+      const error = new Error('no state found for entity type "chicken"');
+
+      expect(actual).toThrow(error);
+    });
+
+    it('returns an entity', () => {
+      const state = {
+        skill: {
+          entities: { 's1': { name: 'skill 1' } },
+          ids: ['s1']
+        }
+      };
+
+      const actual = getEntity(state, { entityType: 'skill', entityId: 's1' });
+      const expected = { name: 'skill 1' };
+
+      expect(actual).toEqual(expected);
+    });
+
+    it('returns undefined when not found', () => {
+      const state = {
+        skill: {
+          entities: { 's1': { name: 'skill 1' } },
+          ids: ['s1']
+        }
+      };
+
+      const actual = getEntity(state, { entityType: 'skill', entityId: 's100' });
+
+      expect(actual).toEqual(undefined);
+    });
+  });
 });

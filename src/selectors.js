@@ -1,26 +1,25 @@
-const { makeIdsKey } = require('./util');
-
-const getEntitiesSubstate = state => state.entities;
-const getIdsSubstate = state => state.ids;
-
-const getIds = (state, { entityType }) => {
-  const idsSubstate = getIdsSubstate(state);
-
-  if (!idsSubstate.hasOwnProperty(entityType)) {
-    throw new Error(`entity type "${entityType}" not found`);
-  }
-
-  return idsSubstate[entityType];
+const getEntityState = (state, { entityType }) => {
+  return state[entityType];
 };
 
 const getEntities = (state, { entityType }) => {
-  const entitiesSubstate = getEntitiesSubstate(state);
+  const entityState = getEntityState(state, { entityType });
 
-  if (!entitiesSubstate.hasOwnProperty(entityType)) {
-    throw new Error(`entity type "${entityType}" not found`);
+  if (!entityState) {
+    throw new Error(`no state found for entity type "${entityType}"`);
   }
 
-  return entitiesSubstate[entityType];
+  return entityState.entities;
+};
+
+const getIds = (state, { entityType }) => {
+  const entityState = getEntityState(state, { entityType });
+
+  if (!entityState) {
+    throw new Error(`no state found for entity type "${entityType}"`);
+  }
+
+  return entityState.ids;
 };
 
 const getEntity = (state, { entityType, entityId }) => {
@@ -29,22 +28,9 @@ const getEntity = (state, { entityType, entityId }) => {
   return entities[entityId];
 };
 
-const getLinkedEntityIds = (state, { entityType, entityId, linkedEntityType }) => {
-  const entity = getEntity(state, { entityType, entityId });
-
-  const manyFk = makeIdsKey(linkedEntityType);
-  if (!entity || !entity[manyFk]) {
-    return undefined;
-  }
-
-  return entity[manyFk];
-};
-
 module.exports = {
-  getEntitiesSubstate,
-  getIdsSubstate,
-  getIds,
+  getEntityState,
   getEntities,
+  getIds,
   getEntity,
-  getLinkedEntityIds,
 };

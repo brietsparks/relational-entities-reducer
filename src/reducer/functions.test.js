@@ -44,28 +44,30 @@ describe('reducer/functions', () => {
 
     test('on remove', () => {
       const state = {
-        entities: {
-          skill: {
+        skill: {
+          entities: {
             's1': { projectIds: ['p1'] },
             's2': { projectIds: ['p1'] }
           },
-          project: {
+          ids: ['s1', 's2']
+        },
+        project: {
+          entities: {
             'p1': {
               skillIds: ['s1', 's2'],
               jobId: 'j1'
             },
           },
-          job: {
+          ids: ['p1']
+        },
+        job: {
+          entities: {
             'j1': {
               projectIds: ['p1']
-            }
-          }
+            },
+          },
+          ids: ['j1']
         },
-        ids: {
-          skill: ['s1', 's2'],
-          project: ['p1'],
-          job: ['j1']
-        }
       };
 
       const action = remove('project', 'p1');

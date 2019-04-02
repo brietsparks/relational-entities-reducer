@@ -1,18 +1,20 @@
 const { createIdsReducer } = require('./index');
 const { createEntityActions } = require('../../actions');
-const { schemas, emptyState } = require('../../mocks');
+const { schemas } = require('../../mocks');
 
 describe('reducer/ids/index', () => {
-  const actions = createEntityActions(schemas);
-  const idsReducer = createIdsReducer(schemas, actions);
+  describe('createIdsReducer', () => {
+    const actions = createEntityActions(schemas);
+    const reducer = createIdsReducer(schemas.skill, actions);
 
-  test('default state', () => {
-    const actual = idsReducer(undefined, { type: '' });
-    expect(actual).toEqual(emptyState.ids);
-  });
+    test('default state', () => {
+      const actual = reducer(undefined, { type: '' });
+      expect(actual).toEqual([]);
+    });
 
-  test('passthrough', () => {
-    const actual = idsReducer(emptyState.ids, { type: '' });
-    expect(actual).toEqual(emptyState.ids);
+    test('passthrough', () => {
+      const actual = reducer([], { type: '' });
+      expect(actual).toEqual([]);
+    });
   });
 });

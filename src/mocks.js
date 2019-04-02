@@ -19,16 +19,18 @@ const projectSchema = schemas.project;
 const jobSchema = schemas.job;
 
 const emptyState = {
-  entities: {
-    skill: {},
-    project: {},
-    job: {}
+  skill: {
+    entities: {},
+    ids: []
   },
-  ids: {
-    skill: [],
-    project: [],
-    job: []
-  }
+  project: {
+    entities: {},
+    ids: []
+  },
+  job: {
+    entities: {},
+    ids: []
+  },
 };
 
 module.exports = {

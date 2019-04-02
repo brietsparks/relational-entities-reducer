@@ -8,4 +8,14 @@ const createReducer = (initialState, handlers) => {
   }
 };
 
-module.exports = { createReducer };
+const combineReducers = (reducers = {}) => {
+  return (state = {}, action) => {
+    return Object.keys(reducers).reduce((reducedState, stateKey) => {
+      const reducer = reducers[stateKey];
+      reducedState[stateKey] = reducer(state[stateKey], action);
+      return reducedState;
+    }, {});
+  };
+};
+
+module.exports = { createReducer, combineReducers };

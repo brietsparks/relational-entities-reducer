@@ -1,6 +1,6 @@
 const { createReducer } = require('../util');
 
-const createIdsOfTypeReducer = (schema, actions) => {
+const createIdsReducer = (schema, actions) => {
   const { ADD, REMOVE } = actions;
 
   return createReducer([], {
@@ -23,22 +23,6 @@ const createIdsOfTypeReducer = (schema, actions) => {
   });
 };
 
-const createIdsReducer = (schemas, actions) => {
-  const reducers = Object.keys(schemas).reduce((reducers, entityType) => {
-    const schema = schemas[entityType];
-    reducers[entityType] = createIdsOfTypeReducer(schema, actions);
-    return reducers;
-  }, {});
-
-  return (state = {}, action) => {
-    // equivalent of combineReducers
-    return Object.keys(reducers).reduce((reducedState, stateKey) => {
-      const reducer = reducers[stateKey];
-      reducedState[stateKey] = reducer(state[stateKey], action);
-      return reducedState;
-    }, {})
-  };
-};
 
 module.exports = {
   createIdsReducer,
