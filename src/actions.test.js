@@ -4,14 +4,15 @@ const { schemas } = require('./mocks');
 describe('actions', () => {
   const {
     ADD,
-    EDIT,
     REMOVE,
+    EDIT,
     LINK,
     UNLINK,
     REORDER_ENTITY,
     REORDER_LINK,
     add,
     remove,
+    edit,
     link,
     unlink,
     reorderEntity,
@@ -19,7 +20,7 @@ describe('actions', () => {
   } = createEntityActions(schemas, action => `my-namespace.${action}`);
 
   describe('add', () => {
-    test('throws if entity type dne', () => {
+    it('throws if entity type dne', () => {
       const actual = () => add('chicken', 'c1');
       const error = new Error('invalid entity type "chicken"');
 
@@ -42,7 +43,7 @@ describe('actions', () => {
   });
 
   describe('remove', () => {
-    test('throws if entity type dne', () => {
+    it('throws if entity type dne', () => {
       const actual = () => remove('chicken', 'c1');
       const error = new Error('invalid entity type "chicken"');
 
@@ -56,6 +57,43 @@ describe('actions', () => {
         entityType: 'project',
         entityId: 'p1'
       };
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe('edit', () => {
+    it('throws if entity type dne', () => {
+      const actual = () => edit('chicken', 'c1', {});
+      const error = new Error('invalid entity type "chicken"');
+
+      expect(actual).toThrow(error);
+    });
+
+    test('happy', () => {
+      const actual = edit('project', 'p1', { name: 'My web app' });
+      const expected = {
+        type: EDIT,
+        entityType: 'project',
+        entityId: 'p1',
+        entity: { name: 'My web app' }
+      };
+
+      expect(actual).toEqual(expected);
+    });
+
+    it('purges relational data', () => {
+      const actual = edit(
+        'project',
+        'p1',
+        { name: 'My web app', skillIds: ['s1'], jobId: 'j1' }
+      );
+      const expected = {
+        type: EDIT,
+        entityType: 'project',
+        entityId: 'p1',
+        entity: { name: 'My web app' }
+      };
+
       expect(actual).toEqual(expected);
     });
   });

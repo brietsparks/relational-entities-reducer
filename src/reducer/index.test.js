@@ -227,6 +227,84 @@ describe('reducer/index', () => {
       });
     });
   });
+
+  describe('edit', () => {
+    test('edit entity attributes', () => {
+      const state = {
+        skill: {
+          entities: { 's1': {} },
+          ids: ['s1']
+        },
+        project: {
+          entities: {},
+          ids: []
+        },
+        job: {
+          entities: {},
+          ids: []
+        }
+      };
+
+      const action = actions.edit('skill', 's1', { name: 'Java' });
+      const actual = reducer(state, action);
+      const expected = {
+        skill: {
+          entities: { 's1': { name: 'Java' } },
+          ids: ['s1']
+        },
+        project: {
+          entities: {},
+          ids: []
+        },
+        job: {
+          entities: {},
+          ids: []
+        }
+      };
+
+      expect(actual).toEqual(expected);
+    });
+
+    test('no-op on editing relational data', () => {
+      const state = {
+        skill: {
+          entities: {},
+          ids: []
+        },
+        project: {
+          entities: { 'p1': {} },
+          ids: ['p1']
+        },
+        job: {
+          entities: {},
+          ids: []
+        }
+      };
+
+      const action = actions.edit('project', 'p1', {
+        name: 'My web app',
+        skillIds: ['s1'],
+        jobId: 'j1'
+      });
+      const actual = reducer(state, action);
+      const expected = {
+        skill: {
+          entities: {},
+          ids: []
+        },
+        project: {
+          entities: { 'p1': { name: 'My web app' } },
+          ids: ['p1']
+        },
+        job: {
+          entities: {},
+          ids: []
+        }
+      };
+
+      expect(actual).toEqual(expected);
+    });
+  });
 });
 
 

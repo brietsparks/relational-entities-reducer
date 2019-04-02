@@ -2,7 +2,7 @@ const { createReducer } = require('../util');
 const { removeLinkedIds } = require('./functions');
 
 const createEntitiesReducer = (schema, actions) => {
-  const { ADD, REMOVE } = actions;
+  const { ADD, REMOVE, EDIT } = actions;
 
   return createReducer({}, {
     [ADD]: (state, { entityType, entityId, entity, entityExists }) => {
@@ -30,6 +30,16 @@ const createEntitiesReducer = (schema, actions) => {
 
         return newState;
       }
+    },
+    [EDIT]: (state, { entityType, entityId, entity }) => {
+      if (entityType !== schema.type) {
+        return state;
+      }
+
+      return {
+        ...state,
+        [entityId]: { ...state[entityId], ...entity }
+      };
     }
   });
 };

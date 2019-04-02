@@ -1,4 +1,4 @@
-const { defaultNamespace } = require('./util');
+const { defaultNamespace, makeIdKey, makeIdsKey } = require('./util');
 const { validateSchemasObject } = require('./schema');
 
 const createEntityActions = (schemas, namespace = defaultNamespace) => {
@@ -40,6 +40,22 @@ const createEntityActions = (schemas, namespace = defaultNamespace) => {
 
   const edit = (entityType, entityId, entity) => {
     validateEntityType(entityType);
+
+    // edit does not yet support changing relational data
+    const schema = schemas[entityType];
+    schema.many.forEach(relEntityType => {
+      const idsKey = makeIdsKey(relEntityType);
+      if (entity.hasOwnProperty(idsKey)) {
+        delete entity[idsKey];
+      }
+    });
+
+    schema.one.forEach(relEntityType => {
+      const idKey = makeIdKey(relEntityType);
+      if (entity.hasOwnProperty(idKey)) {
+        delete entity[idKey];
+      }
+    });
 
     return {
       type: EDIT,
@@ -86,6 +102,7 @@ const createEntityActions = (schemas, namespace = defaultNamespace) => {
     REORDER_LINK,
     add,
     remove,
+    edit,
     link,
     unlink,
     reorderEntity,

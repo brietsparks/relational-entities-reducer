@@ -1,7 +1,8 @@
 const schemas = {
   skill: {
     type: 'skill',
-    many: ['project']
+    many: ['project'],
+    one: []
   },
   project: {
     type: 'project',
@@ -10,7 +11,8 @@ const schemas = {
   },
   job: {
     type: 'job',
-    many: ['project']
+    many: ['project'],
+    one: []
   }
 };
 
