@@ -41,8 +41,8 @@ const createEntitiesReducer = (schema, actions) => {
         [entityId]: { ...state[entityId], ...entity }
       };
     },
-    [LINK]: (state, { subjectEntityType, subjectEntityId, targetEntityType, targetEntityId }) => {
-      if (subjectEntityType !== schema.type && targetEntityType !== schema.type) {
+    [LINK]: (state, { entityType1, entityId1, entityType2, entityId2 }) => {
+      if (entityType1 !== schema.type && entityType2 !== schema.type) {
         return state;
       }
 

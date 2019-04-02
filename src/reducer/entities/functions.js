@@ -52,8 +52,10 @@ const removeLinkedIds = (
   return newState;
 };
 
-const linkEntities = (state, entityId, linkableEntityType, linkableEntityId) => {
+const linkEntities = (state, schema, entityId, otherEntityType, otherEntityId) => {
+  const entity = state[entityId];
 
+  // todo
 };
 
 module.exports = { removeLinkedIds };
