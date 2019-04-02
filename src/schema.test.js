@@ -3,7 +3,7 @@ const { schemas } = require('./mocks');
 
 describe('parseSchema', () => {
   describe('validateSchemas', () => {
-    test('schemas key must equal type', () => {
+    test('schema key must equal .type', () => {
       let actual, error;
 
       actual = () => validateSchemasObject({ foo: {} });
@@ -19,7 +19,8 @@ describe('parseSchema', () => {
       const schemas = {
         foo: {
           type: 'foo',
-          many: 'bar'
+          many: 'bar',
+          one: []
         }
       };
 
@@ -33,7 +34,8 @@ describe('parseSchema', () => {
       const schemas = {
         foo: {
           type: 'foo',
-          many: ['bar']
+          many: ['bar'],
+          one: []
         }
       };
 
@@ -47,6 +49,7 @@ describe('parseSchema', () => {
       const schemas = {
         foo: {
           type: 'foo',
+          many: [],
           one: 'bar'
         }
       };
@@ -61,12 +64,33 @@ describe('parseSchema', () => {
       const schemas = {
         foo: {
           type: 'foo',
+          many: [],
           one: ['bar']
         }
       };
 
       const actual = () => validateSchemasObject(schemas);
       const error = new Error('foo .one relation "bar" does not have a schema');
+
+      expect(actual).toThrow(error);
+    });
+
+    test('entity cannot be of both one and many relation', () => {
+      const schemas = {
+        foo: {
+          type: 'foo',
+          one: ['bar'],
+          many: ['bar']
+        },
+        bar: {
+          type: 'bar',
+          one: ['foo'],
+          many: []
+        }
+      };
+
+      const actual = () => validateSchemasObject(schemas);
+      const error = new Error('foo relation to "bar" cannot be both a one and many relation');
 
       expect(actual).toThrow(error);
     });
@@ -83,22 +107,16 @@ describe('parseSchema', () => {
         type: 'skill',
         many: ['project'],
         one: [],
-        // idsKeys: ['projectIds'],
-        // idKeys: []
       },
       project: {
         type: 'project',
         many: ['skill'],
         one: ['job'],
-        // idsKeys: ['skillIds'],
-        // idKeys: ['jobId']
       },
       job: {
         type: 'job',
         many: ['project'],
         one: [],
-        // idsKeys: ['projectIds'],
-        // idKeys: []
       }
     };
 

@@ -82,7 +82,7 @@ const createEntityActions = (schemas, namespace = defaultNamespace) => {
     validateEntityType(targetEntityType);
 
     if (!doesRelationExists(subjectEntityType, targetEntityType)) {
-      throw new Error(`cannot link a ${subjectEntityType} with a ${targetEntityType} because the entity schema contains no relation between the two types`);
+      throw new Error(`cannot link a ${subjectEntityType} with a ${targetEntityType} because the entity schema contains no relation between the two`);
     }
 
     return {

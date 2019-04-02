@@ -113,6 +113,13 @@ describe('actions', () => {
       expect(actual).toThrow(error);
     });
 
+    it('throws if no relation exists between the two types', () => {
+      const actual = () => link('skill', 's1', 'job', 'j1');
+      const error = new Error('cannot link a skill with a job because the entity schema contains no relation between the two')
+
+      expect(actual).toThrow(error);
+    });
+
     test('happy', () => {
       const actual = link('skill', 's1', 'project', 'p1');
       const expected = {

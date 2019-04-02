@@ -8,29 +8,37 @@ const validateSchemasObject = (schemas = {}) => {
       throw new Error(`schemas key "${type}" does not equal its type "${schema.type}"`);
     }
 
-    if (schema.many) {
-      if (!Array.isArray(schema.many)) {
-        throw new Error(`${type} schema .many must be an array`);
-      }
-
-      schema.many.forEach(relType => {
-        if (!schemas.hasOwnProperty(relType)) {
-          throw new Error(`${type} .many relation "${relType}" does not have a schema`);
-        }
-      })
+    if (!Array.isArray(schema.many)) {
+      throw new Error(`${type} schema .many must be an array`);
     }
 
-    if (schema.one) {
-      if (!Array.isArray(schema.one)) {
-        throw new Error(`${type} schema .one must be an array`);
+    schema.many.forEach(relType => {
+      if (!schemas.hasOwnProperty(relType)) {
+        throw new Error(`${type} .many relation "${relType}" does not have a schema`);
       }
+    });
 
-      schema.one.forEach(relType => {
-        if (!schemas.hasOwnProperty(relType)) {
-          throw new Error(`${type} .one relation "${relType}" does not have a schema`);
-        }
-      })
+    if (!Array.isArray(schema.one)) {
+      throw new Error(`${type} schema .one must be an array`);
     }
+
+    schema.one.forEach(relType => {
+      if (!schemas.hasOwnProperty(relType)) {
+        throw new Error(`${type} .one relation "${relType}" does not have a schema`);
+      }
+    });
+
+    schema.many.forEach(relType => {
+      if (schema.one.includes(relType)) {
+        throw new Error(`${type} relation to "${relType}" cannot be both a one and many relation`);
+      }
+    });
+
+    schema.one.forEach(relType => {
+      if (schema.many.includes(relType)) {
+        throw new Error(`${type} relation to "${relType}" cannot be both a one and many relation`);
+      }
+    })
   });
 };
 
