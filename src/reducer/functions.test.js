@@ -9,7 +9,6 @@ describe('reducer/functions', () => {
     const {
       ADD, add,
       REMOVE, remove,
-      EDIT, edit,
       LINK, link
     } = actions;
 
@@ -60,58 +59,6 @@ describe('reducer/functions', () => {
         };
 
         const action = add('skill', 's1');
-        const actual = preReduce(schemas, actions, state, action);
-        expect(actual).toEqual(action);
-      });
-    });
-
-    describe('on edit', () => {
-      test('appends .entityDoesNotExist to the action when the entity does not exist', () => {
-        const state = {
-          skill: {
-            entities: {},
-            ids: []
-          },
-          project: {
-            entities: {},
-            ids: []
-          },
-          job: {
-            entities: {},
-            ids: []
-          },
-        };
-
-        const action = edit('skill', 's1', { name: 'Java' });
-        const actual = preReduce(schemas, actions, state, action);
-        const expected = {
-          type: EDIT,
-          entityType: 'skill',
-          entityId: 's1',
-          entity: { name: 'Java' },
-          entityDoesNotExist: true
-        };
-
-        expect(actual).toEqual(expected);
-      });
-
-      test('no-op when entity exists', () => {
-        const state = {
-          skill: {
-            entities: { 's1': {} },
-            ids: ['s1']
-          },
-          project: {
-            entities: {},
-            ids: []
-          },
-          job: {
-            entities: {},
-            ids: []
-          },
-        };
-
-        const action = edit('skill', 's1', { name: 'Java' });
         const actual = preReduce(schemas, actions, state, action);
         expect(actual).toEqual(action);
       });

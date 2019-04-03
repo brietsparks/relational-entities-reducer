@@ -2,15 +2,16 @@ const { makeIdsKey, makeIdKey } = require('../util');
 const { getEntity } = require('../selectors');
 
 const preReduce = (schemas, actions, state, action) => {
-  const { ADD, REMOVE, EDIT, LINK } = actions;
+  const { ADD, REMOVE, LINK } = actions;
 
   if (action.type === ADD) {
-    const entity = getEntity(state, {
-      entityType: action.entityType,
-      entityId: action.entityId
-    });
+    const { entityType, entityId } = action;
 
-    if (entity) {
+    // check if entity already exists
+    const entityExists = getEntity(state, { entityType, entityId });
+    if (entityExists) {
+      // if so, then add a flag so that the ids reducer
+      // does not have to iterate to make this check
       action.entityExists = true;
     }
 
@@ -22,21 +23,6 @@ const preReduce = (schemas, actions, state, action) => {
     const entity = getEntity(state, { entityType, entityId });
     const schema = schemas.get(entityType);
     action.links = getLinks(entity, schema);
-
-    return action;
-  }
-
-  if (action.type === EDIT) {
-    const { entityType, entityId} = action;
-
-    const entity = getEntity(state, {
-      entityType: entityType,
-      entityId: entityId
-    });
-
-    if (!entity) {
-      action.entityDoesNotExist = true;
-    }
 
     return action;
   }

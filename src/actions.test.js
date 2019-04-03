@@ -28,13 +28,29 @@ describe('actions', () => {
     });
 
     describe('happy', () => {
-      test('without links', () => {
+      test('add empty entity', () => {
         const actual = add('project', 'p1');
         const expected = {
           type: ADD,
           entityType: 'project',
           entityId: 'p1',
           entity: {}
+        };
+
+        expect(actual).toEqual(expected);
+      });
+
+      test('add entity with data', () => {
+        const actual = add(
+          'project',
+          'p1',
+          { name: 'my web app' }
+        );
+        const expected = {
+          type: ADD,
+          entityType: 'project',
+          entityId: 'p1',
+          entity: { name: 'my web app' }
         };
 
         expect(actual).toEqual(expected);

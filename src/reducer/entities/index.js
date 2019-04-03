@@ -1,5 +1,5 @@
 const { createReducer } = require('../util');
-const { removeLinkedIds } = require('./functions');
+const { removeLinkedIds, entityHasForeignKey } = require('./functions');
 
 const createEntitiesReducer = (schema, actions) => {
   const { ADD, REMOVE, EDIT, LINK } = actions;
@@ -31,8 +31,12 @@ const createEntitiesReducer = (schema, actions) => {
         return newState;
       }
     },
-    [EDIT]: (state, { entityType, entityId, entity, entityDoesNotExist }) => {
-      if (entityType !== schema.type || entityDoesNotExist) {
+    [EDIT]: (state, { entityType, entityId, entity }) => {
+      if (entityType !== schema.type) {
+        return state;
+      }
+
+      if (!state[entityId]) {
         return state;
       }
 

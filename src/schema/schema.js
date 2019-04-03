@@ -27,6 +27,18 @@ class Schema {
     this.entityTypesByManyFk = entityTypesByManyFk;
   }
 
+  getManyForeignKeys() {
+    return this.many;
+  }
+
+  getOneForeignKeys() {
+    return this.one;
+  }
+
+  getForeignKeys() {
+    return [...this.many, ...this.one];
+  }
+
   getOneForeignKey(entityType, throws = true) {
     const oneFk = this.oneFksByEntityType[entityType];
 
