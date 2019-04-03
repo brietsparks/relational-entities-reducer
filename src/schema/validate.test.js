@@ -100,26 +100,26 @@ describe('parseSchema', () => {
     });
   });
 
-  test('transformSchemaDefs', () => {
-    const actual = transformSchemaDefs(schemas);
-    const expected = {
-      skill: {
-        type: 'skill',
-        many: ['project'],
-        one: [],
-      },
-      project: {
-        type: 'project',
-        many: ['skill'],
-        one: ['job'],
-      },
-      job: {
-        type: 'job',
-        many: ['project'],
-        one: [],
-      }
-    };
-
-    expect(actual).toEqual(expected);
-  });
+  // test('transformSchemaDefs', () => {
+  //   const actual = transformSchemaDefs(schemas);
+  //   const expected = {
+  //     skill: {
+  //       type: 'skill',
+  //       many: ['project'],
+  //       one: [],
+  //     },
+  //     project: {
+  //       type: 'project',
+  //       many: ['skill'],
+  //       one: ['job'],
+  //     },
+  //     job: {
+  //       type: 'job',
+  //       many: ['project'],
+  //       one: [],
+  //     }
+  //   };
+  //
+  //   expect(actual).toEqual(expected);
+  // });
 });

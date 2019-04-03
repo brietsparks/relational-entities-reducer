@@ -1,7 +1,7 @@
-const { makeManyFk, makeOneFk } = require('./util');
+const { validateSchemaDefs } = require('./validate');
 
 class Schema {
-  constructor(type, one = [], many = []) {
+  constructor({ type, one = [], many = [] }) {
     this.type = type;
     this.entityType = type;
     this.one = one;
@@ -9,14 +9,14 @@ class Schema {
 
     const oneFksByEntityType = {}, entityTypesByOneFk = {};
     this.one.forEach(entityType => {
-      const oneFk = makeOneFk(entityType);
+      const oneFk = `${entityType}Id`;
       oneFksByEntityType[entityType] = oneFk;
       entityTypesByOneFk[oneFk] = entityType;
     });
 
     const manyFksByEntityType = {}, entityTypesByManyFk = {};
     this.many.forEach(entityType => {
-      const manyFk = makeManyFk(entityType);
+      const manyFk = `${entityType}Ids`;
       manyFksByEntityType[entityType] = manyFk;
       entityTypesByManyFk[manyFk] = entityType;
     });
@@ -116,4 +116,29 @@ class Schema {
   }
 }
 
-module.exports = { Schema };
+class Schemas {
+  constructor(schemaDefs) {
+    validateSchemaDefs(schemaDefs);
+
+    this.schemas = {};
+
+    Object.keys(schemaDefs).forEach(type => {
+      const schemaDef = schemaDefs[type];
+
+      schemaDef.many = schemaDef.many || [];
+      schemaDef.one = schemaDef.one || [];
+
+      this.schemas[type] = new Schema(schemaDef);
+    });
+  }
+
+  get(type) {
+    return this.schemas[type];
+  }
+
+  has(type) {
+    return !!this.get(type);
+  }
+}
+
+module.exports = { Schema, Schemas };

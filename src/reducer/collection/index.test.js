@@ -1,11 +1,11 @@
 const { createCollectionReducer } = require('./index');
-const { schemas, emptyState } = require('../../mocks');
+const { schemaDefs, emptyState } = require('../../mocks');
 const { createEntityActions } = require('../../actions');
 
 describe('reducer/collection/index', () => {
   describe('createCollectionReducer', () => {
-    const actions = createEntityActions(schemas);
-    const reducer = createCollectionReducer(schemas.skill, actions);
+    const actions = createEntityActions(schemaDefs);
+    const reducer = createCollectionReducer(schemaDefs.skill, actions);
 
     test('default state', () => {
       const actual = reducer(undefined, { type: '' });

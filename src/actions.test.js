@@ -1,5 +1,5 @@
 const { createEntityActions } = require('./actions');
-const { schemas } = require('./mocks');
+const { schemaDefs } = require('./mocks');
 
 describe('actions', () => {
   const {
@@ -17,7 +17,7 @@ describe('actions', () => {
     unlink,
     reorderEntity,
     reorderLink
-  } = createEntityActions(schemas, action => `my-namespace.${action}`);
+  } = createEntityActions(schemaDefs, action => `my-namespace.${action}`);
 
   describe('add', () => {
     it('throws if entity type dne', () => {

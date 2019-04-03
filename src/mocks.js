@@ -1,4 +1,4 @@
-const schemas = {
+const schemaDefs = {
   skill: {
     type: 'skill',
     many: ['project'],
@@ -16,10 +16,6 @@ const schemas = {
   }
 };
 
-const skillSchema = schemas.skill;
-const projectSchema = schemas.project;
-const jobSchema = schemas.job;
-
 const emptyState = {
   skill: {
     entities: {},
@@ -36,9 +32,6 @@ const emptyState = {
 };
 
 module.exports = {
-  skillSchema,
-  projectSchema,
-  jobSchema,
-  schemas,
+  schemaDefs,
   emptyState
 };

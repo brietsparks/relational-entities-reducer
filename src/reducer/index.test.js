@@ -1,10 +1,10 @@
 const { createRootReducer } = require('./index');
 const { createEntityActions } = require('../actions');
-const { schemas, emptyState } = require('../mocks');
+const { schemaDefs, emptyState } = require('../mocks');
 
 describe('reducer/index', () => {
-  const actions = createEntityActions(schemas);
-  const reducer = createRootReducer(schemas, actions);
+  const actions = createEntityActions(schemaDefs);
+  const reducer = createRootReducer(schemaDefs, actions);
 
   test('default state', () => {
     const actual = reducer(undefined, { type: '' });

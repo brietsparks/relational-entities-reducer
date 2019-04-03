@@ -1,5 +1,5 @@
 const { removeLinkedIds } = require('./functions');
-const { schemas } = require('../../mocks');
+const { schemaDefs } = require('../../mocks');
 
 describe('reducer/entities/functions', () => {
   describe('removeLinkedIds', () => {
@@ -25,7 +25,7 @@ describe('reducer/entities/functions', () => {
       const actual = removeLinkedIds(
         state,
         links,
-        schemas.project,
+        schemaDefs.project,
         removableEntityType,
         removableEntityId
       );
@@ -66,7 +66,7 @@ describe('reducer/entities/functions', () => {
       const actual = removeLinkedIds(
         state,
         links,
-        schemas.project,
+        schemaDefs.project,
         removableEntityType,
         removableEntityId
       );
@@ -93,7 +93,7 @@ describe('reducer/entities/functions', () => {
         skill: [],
       };
 
-      const actual = removeLinkedIds(state, links, schemas.skill, 'project', 'p1');
+      const actual = removeLinkedIds(state, links, schemaDefs.skill, 'project', 'p1');
 
       expect(actual).toEqual(state);
     });
@@ -108,7 +108,7 @@ describe('reducer/entities/functions', () => {
         skill: ['s1', 's2'],
       };
 
-      const actual = removeLinkedIds(state, links, schemas.skill, 'project', 'p1');
+      const actual = removeLinkedIds(state, links, schemaDefs.skill, 'project', 'p1');
 
       expect(actual).toEqual(state);
     });
