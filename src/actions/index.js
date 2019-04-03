@@ -1,5 +1,6 @@
-const { defaultNamespace, makeIdKey, makeIdsKey } = require('./util');
-const { Schemas } = require('./schema');
+const { defaultNamespace } = require('../util');
+const { Schemas } = require('../schema');
+const { purgeRelationalData } = require('./functions');
 
 const createEntityActions = (schemaDefs, namespace = defaultNamespace) => {
   const schemas = new Schemas(schemaDefs);
@@ -33,6 +34,10 @@ const createEntityActions = (schemaDefs, namespace = defaultNamespace) => {
   const add = (entityType, entityId, entity = {}, index) => {
     validateEntityType(entityType);
 
+    // not yet supporting changing relational data via add action
+    const schema = schemas.get(entityType);
+    purgeRelationalData(schema, entity);
+
     return {
       type: ADD,
       entityType, entityId, entity, index
@@ -50,24 +55,12 @@ const createEntityActions = (schemaDefs, namespace = defaultNamespace) => {
     };
   };
 
-  const edit = (entityType, entityId, entity) => {
+  const edit = (entityType, entityId, entity = {}) => {
     validateEntityType(entityType);
 
-    // edit does not yet support changing relational data
+    // not yet supporting changing relational data via edit action
     const schema = schemas.get(entityType);
-    schema.many.forEach(relEntityType => {
-      const idsKey = makeIdsKey(relEntityType);
-      if (entity.hasOwnProperty(idsKey)) {
-        delete entity[idsKey];
-      }
-    });
-
-    schema.one.forEach(relEntityType => {
-      const idKey = makeIdKey(relEntityType);
-      if (entity.hasOwnProperty(idKey)) {
-        delete entity[idKey];
-      }
-    });
+    purgeRelationalData(schema, entity);
 
     return {
       type: EDIT,

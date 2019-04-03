@@ -7,36 +7,43 @@ class Schema {
     this.one = one;
     this.many = many;
 
-    const oneFksByEntityType = {}, entityTypesByOneFk = {};
+    const oneFks = [], oneFksByEntityType = {}, entityTypesByOneFk = {};
     this.one.forEach(entityType => {
       const oneFk = `${entityType}Id`;
+      oneFks.push(oneFk);
       oneFksByEntityType[entityType] = oneFk;
       entityTypesByOneFk[oneFk] = entityType;
     });
 
-    const manyFksByEntityType = {}, entityTypesByManyFk = {};
+    const manyFks = [], manyFksByEntityType = {}, entityTypesByManyFk = {};
     this.many.forEach(entityType => {
       const manyFk = `${entityType}Ids`;
+      manyFks.push(manyFk);
       manyFksByEntityType[entityType] = manyFk;
       entityTypesByManyFk[manyFk] = entityType;
     });
 
+    // one-relations
+    this.oneFks = oneFks;
     this.oneFksByEntityType = oneFksByEntityType;
     this.entityTypesByOneFk = entityTypesByOneFk;
+
+    // many-relations
+    this.manyFks = manyFks;
     this.manyFksByEntityType = manyFksByEntityType;
     this.entityTypesByManyFk = entityTypesByManyFk;
   }
 
   getManyForeignKeys() {
-    return this.many;
+    return this.manyFks;
   }
 
   getOneForeignKeys() {
-    return this.one;
+    return this.oneFks;
   }
 
   getForeignKeys() {
-    return [...this.many, ...this.one];
+    return [...this.manyFks, ...this.oneFks];
   }
 
   getOneForeignKey(entityType, throws = true) {

@@ -1,5 +1,5 @@
-const { createEntityActions } = require('./actions');
-const { schemaDefs } = require('./mocks');
+const { createEntityActions } = require('./index');
+const { schemaDefs } = require('../mocks');
 
 describe('actions', () => {
   const {
@@ -46,11 +46,29 @@ describe('actions', () => {
           'p1',
           { name: 'my web app' }
         );
+
         const expected = {
           type: ADD,
           entityType: 'project',
           entityId: 'p1',
           entity: { name: 'my web app' }
+        };
+
+        expect(actual).toEqual(expected);
+      });
+
+      it('purges relational data', () => {
+        const actual = add(
+          'project',
+          'p1',
+          { name: 'My web app', skillIds: ['s1'], jobId: 'j1' }
+        );
+
+        const expected = {
+          type: ADD,
+          entityType: 'project',
+          entityId: 'p1',
+          entity: { name: 'My web app' }
         };
 
         expect(actual).toEqual(expected);
