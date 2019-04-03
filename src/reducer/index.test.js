@@ -312,7 +312,100 @@ describe('reducer/index', () => {
     });
   });
 
+  describe('link', () => {
+    test('no-op when entity does not exist', () => {
+      const state = {
+        skill: {
+          entities: { 's1': {} },
+          ids: ['s1']
+        },
+        project: {
+          entities: { 'p1': {} },
+          ids: ['p1']
+        },
+        job: {
+          entities: {},
+          ids: []
+        },
+      };
 
+      let action, actual;
+      action = actions.link('skill', 's1', 'project', 'p1000');
+      actual = reducer(state, action);
+      expect(actual).toEqual(state);
+
+      action = actions.link('skill', 's1000', 'project', 'p1');
+      actual = reducer(state, action);
+      expect(actual).toEqual(state);
+    });
+
+    test('no-op when entities are already linked', () => {
+      const state = {
+        skill: {
+          entities: {
+            's1': { projectIds: ['p1'] },
+          },
+          ids: ['s1']
+        },
+        project: {
+          entities: {
+            'p1': { skillIds: ['s1'] }
+          },
+          ids: ['p1']
+        },
+        job: {
+          entities: {},
+          ids: []
+        },
+      };
+
+      const action = actions.link('skill', 's1', 'project', 'p1');
+      const actual = reducer(state, action);
+
+      expect(actual).toEqual(state);
+    });
+
+    test('link two unlinked entities', () => {
+      const state = {
+        skill: {
+          entities: { 's1': {} },
+          ids: ['s1']
+        },
+        project: {
+          entities: { 'p1': {} },
+          ids: ['p1']
+        },
+        job: {
+          entities: {},
+          ids: []
+        },
+      };
+
+      const action = actions.link('skill', 's1', 'project', 'p1');
+      const actual = reducer(state, action);
+
+      const expected = {
+        skill: {
+          entities: {
+            's1': { projectIds: ['p1'] },
+          },
+          ids: ['s1']
+        },
+        project: {
+          entities: {
+            'p1': { skillIds: ['s1'] }
+          },
+          ids: ['p1']
+        },
+        job: {
+          entities: {},
+          ids: []
+        },
+      };
+
+      expect(actual).toEqual(expected);
+    });
+  });
 });
 
 

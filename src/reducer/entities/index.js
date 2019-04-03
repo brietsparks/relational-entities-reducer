@@ -41,10 +41,43 @@ const createEntitiesReducer = (schema, actions) => {
         [entityId]: { ...state[entityId], ...entity }
       };
     },
-    [LINK]: (state, { entityType1, entityId1, entityType2, entityId2 }) => {
-      if (entityType1 !== schema.type && entityType2 !== schema.type) {
+    [LINK]: (state, { entityType1, entityId1, entityType2, entityId2, entityDoesNotExist }) => {
+      if (
+        (entityType1 !== schema.type && entityType2 !== schema.type) ||
+        entityDoesNotExist
+      ) {
         return state;
       }
+
+      let entityId, foreignEntityType, foreignEntityId;
+      if (entityType1 === schema.type) {
+        entityId = entityId1;
+        foreignEntityType = entityType2;
+        foreignEntityId = entityId2;
+      } else {
+        entityId = entityId2;
+        foreignEntityType = entityType1;
+        foreignEntityId = entityId1;
+      }
+
+      const foreignKey = schema.getForeignKey(foreignEntityType);
+
+      const entity = { ...state[entityId] };
+
+      if (!entity[foreignKey]) {
+        entity[foreignKey] = [];
+      }
+
+      if (entity[foreignKey].includes(foreignEntityId)) {
+        return state;
+      }
+
+      entity[foreignKey] = [...entity[foreignKey], foreignEntityId];
+
+      return {
+        ...state,
+        [entityId]: entity
+      };
     }
   });
 };

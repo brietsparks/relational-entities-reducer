@@ -84,7 +84,7 @@ const createEntityActions = (schemaDefs, namespace = defaultNamespace) => {
     if (!doesRelationExists(entityType1, entityType2)) {
       throw new Error(`cannot link a ${entityType1} with a ${entityType2} because the entity schema contains no relation between the two`);
     }
-
+1
     return {
       type: LINK,
       entityType1, entityId1, entityType2, entityId2
