@@ -265,7 +265,7 @@ describe('reducer/index', () => {
       expect(actual).toEqual(expected);
     });
 
-    test('no-op on editing relational data', () => {
+    test('no-op when attempting to edit relational data', () => {
       const state = {
         skill: {
           entities: {},
@@ -303,6 +303,12 @@ describe('reducer/index', () => {
       };
 
       expect(actual).toEqual(expected);
+    });
+
+    test('no-op when attempting to edit a non-existent entity', () => {
+      const action = actions.edit('skill', 's1', { name: 'Java' });
+      const actual = reducer(emptyState, action);
+      expect(actual).toEqual(emptyState);
     });
   });
 

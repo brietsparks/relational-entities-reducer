@@ -31,8 +31,8 @@ const createEntitiesReducer = (schema, actions) => {
         return newState;
       }
     },
-    [EDIT]: (state, { entityType, entityId, entity }) => {
-      if (entityType !== schema.type) {
+    [EDIT]: (state, { entityType, entityId, entity, entityDoesNotExist }) => {
+      if (entityType !== schema.type || entityDoesNotExist) {
         return state;
       }
 
@@ -45,8 +45,6 @@ const createEntitiesReducer = (schema, actions) => {
       if (entityType1 !== schema.type && entityType2 !== schema.type) {
         return state;
       }
-
-
     }
   });
 };
