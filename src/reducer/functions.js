@@ -46,7 +46,7 @@ const preReduce = (schemas, actions, state, action) => {
   if (action.type === REMOVE) {
     const { entityType, entityId } = action;
     const entity = getEntity(state, { entityType, entityId });
-    const schema = schemas[entityType];
+    const schema = schemas.get(entityType);
     action.links = getLinks(entity, schema);
 
     return action;

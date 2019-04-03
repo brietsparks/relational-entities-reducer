@@ -1,5 +1,5 @@
 const { getLinks, preReduce } = require('./functions');
-const { schemaDefs } = require('../mocks');
+const { schemaDefs, schemas } = require('../mocks');
 const { createEntityActions } = require('../actions');
 
 
@@ -64,7 +64,7 @@ describe('reducer/functions', () => {
         };
 
         const action = add('skill', 's1');
-        const actual = preReduce(schemaDefs, actions, state, action);
+        const actual = preReduce(schemas, actions, state, action);
         const expected = {
           type: ADD,
           entityType: 'skill',
@@ -93,7 +93,7 @@ describe('reducer/functions', () => {
         };
 
         const action = add('skill', 's1');
-        const actual = preReduce(schemaDefs, actions, state, action);
+        const actual = preReduce(schemas, actions, state, action);
         expect(actual).toEqual(action);
       });
     });
@@ -127,7 +127,7 @@ describe('reducer/functions', () => {
       };
 
       const action = remove('project', 'p1');
-      const actual = preReduce(schemaDefs, actions, state, action);
+      const actual = preReduce(schemas, actions, state, action);
 
       const expected = {
         type: REMOVE,
@@ -161,7 +161,7 @@ describe('reducer/functions', () => {
 
         let action, actual, expected;
         action = link('project', 'p1', 'skill', 's1');
-        actual = preReduce(schemaDefs, actions, state, action);
+        actual = preReduce(schemas, actions, state, action);
         expected = {
           type: LINK,
           entityType1: 'project',
@@ -174,7 +174,7 @@ describe('reducer/functions', () => {
         expect(actual).toEqual(expected);
 
         action = link('skill', 's1', 'project', 'p1');
-        actual = preReduce(schemaDefs, actions, state, action);
+        actual = preReduce(schemas, actions, state, action);
         expected = {
           type: LINK,
           entityType1: 'skill',
@@ -204,7 +204,7 @@ describe('reducer/functions', () => {
         };
 
         const action = link('skill', 's1', 'project', 'p1');
-        const actual = preReduce(schemaDefs, actions, state, action);
+        const actual = preReduce(schemas, actions, state, action);
         expect(actual).toEqual(action);
       });
     });

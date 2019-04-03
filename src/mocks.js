@@ -1,3 +1,5 @@
+const { Schemas } = require('./schema');
+
 const schemaDefs = {
   skill: {
     type: 'skill',
@@ -16,6 +18,8 @@ const schemaDefs = {
   }
 };
 
+const schemas = new Schemas(schemaDefs);
+
 const emptyState = {
   skill: {
     entities: {},
@@ -33,5 +37,6 @@ const emptyState = {
 
 module.exports = {
   schemaDefs,
+  schemas,
   emptyState
 };

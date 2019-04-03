@@ -1,8 +1,8 @@
 const { defaultNamespace, makeIdKey, makeIdsKey } = require('./util');
-const { validateSchemaDefs } = require('./schema/validate');
+const { Schemas } = require('./schema');
 
-const createEntityActions = (schemas, namespace = defaultNamespace) => {
-  validateSchemaDefs(schemas);
+const createEntityActions = (schemaDefs, namespace = defaultNamespace) => {
+  const schemas = new Schemas(schemaDefs);
 
   const ADD = namespace('ADD');
   const REMOVE = namespace('REMOVE');
@@ -13,7 +13,7 @@ const createEntityActions = (schemas, namespace = defaultNamespace) => {
   const REORDER_LINK = namespace('REORDER_LINK');
 
   const validateEntityType = entityType => {
-    if (!schemas.hasOwnProperty(entityType)) {
+    if (!schemas.has(entityType)) {
       throw new Error(`invalid entity type "${entityType}"`);
     }
   };
@@ -21,11 +21,11 @@ const createEntityActions = (schemas, namespace = defaultNamespace) => {
   const doesRelationExists = (entityType1, entityType2) => {
     return (
       (
-        schemas[entityType1].many.includes(entityType2) ||
-        schemas[entityType1].one.includes(entityType2)
+        schemas.get(entityType1).hasMany(entityType2) ||
+        schemas.get(entityType1).hasOne(entityType2)
       ) && (
-        schemas[entityType2].many.includes(entityType1) ||
-        schemas[entityType2].one.includes(entityType1)
+        schemas.get(entityType2).hasMany(entityType1) ||
+        schemas.get(entityType2).hasOne(entityType1)
       )
     );
   };
@@ -54,7 +54,7 @@ const createEntityActions = (schemas, namespace = defaultNamespace) => {
     validateEntityType(entityType);
 
     // edit does not yet support changing relational data
-    const schema = schemas[entityType];
+    const schema = schemas.get(entityType);
     schema.many.forEach(relEntityType => {
       const idsKey = makeIdsKey(relEntityType);
       if (entity.hasOwnProperty(idsKey)) {

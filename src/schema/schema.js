@@ -1,4 +1,4 @@
-const { validateSchemaDefs } = require('./validate');
+const { cleanSchemaDefs, validateSchemaDefs } = require('./functions');
 
 class Schema {
   constructor({ type, one = [], many = [] }) {
@@ -118,6 +118,8 @@ class Schema {
 
 class Schemas {
   constructor(schemaDefs) {
+    schemaDefs = cleanSchemaDefs(schemaDefs);
+
     validateSchemaDefs(schemaDefs);
 
     this.schemas = {};
@@ -130,6 +132,10 @@ class Schemas {
 
       this.schemas[type] = new Schema(schemaDef);
     });
+  }
+
+  getTypes() {
+    return Object.keys(this.schemas);
   }
 
   get(type) {

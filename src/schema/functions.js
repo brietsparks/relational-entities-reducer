@@ -1,9 +1,9 @@
-const validateSchemaDefs = (schemas = {}) => {
-  Object.keys(schemas).forEach(type => {
-    const schema = schemas[type];
+const validateSchemaDefs = (schemaDefs = {}) => {
+  Object.keys(schemaDefs).forEach(type => {
+    const schema = schemaDefs[type];
 
     if (schema.type !== type) {
-      throw new Error(`schemas key "${type}" does not equal its type "${schema.type}"`);
+      throw new Error(`schemaDefs key "${type}" does not equal its type "${schema.type}"`);
     }
 
     if (!Array.isArray(schema.many)) {
@@ -11,7 +11,7 @@ const validateSchemaDefs = (schemas = {}) => {
     }
 
     schema.many.forEach(relType => {
-      if (!schemas.hasOwnProperty(relType)) {
+      if (!schemaDefs.hasOwnProperty(relType)) {
         throw new Error(`${type} .many relation "${relType}" does not have a schema`);
       }
     });
@@ -21,7 +21,7 @@ const validateSchemaDefs = (schemas = {}) => {
     }
 
     schema.one.forEach(relType => {
-      if (!schemas.hasOwnProperty(relType)) {
+      if (!schemaDefs.hasOwnProperty(relType)) {
         throw new Error(`${type} .one relation "${relType}" does not have a schema`);
       }
     });
@@ -41,21 +41,18 @@ const validateSchemaDefs = (schemas = {}) => {
 };
 
 // this mutates
-const transformSchemaDefs = (schemas) => {
-  Object.keys(schemas).forEach(type => {
-    const schema = schemas[type];
+const cleanSchemaDefs = (schemaDefs) => {
+  Object.keys(schemaDefs).forEach(type => {
+    const schema = schemaDefs[type];
 
     schema.many = schema.many || [];
     schema.one = schema.one || [];
-
-    // schema.idsKeys = schema.many.map(relEntityType => makeIdsKey(relEntityType));
-    // schema.idKeys = schema.one.map(relEntityType => makeIdKey(relEntityType));
   });
 
-  return schemas;
+  return schemaDefs;
 };
 
 module.exports = {
   validateSchemaDefs,
-  transformSchemaDefs
+  cleanSchemaDefs
 };
