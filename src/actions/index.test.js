@@ -27,6 +27,10 @@ describe('actions', () => {
       expect(actual).toThrow(error);
     });
 
+    it('throws if trying to link to a non-related entity', () => {
+
+    });
+
     describe('happy', () => {
       test('add empty entity', () => {
         const actual = add('project', 'p1');
@@ -52,23 +56,6 @@ describe('actions', () => {
           entityType: 'project',
           entityId: 'p1',
           entity: { name: 'my web app' }
-        };
-
-        expect(actual).toEqual(expected);
-      });
-
-      it('purges relational data', () => {
-        const actual = add(
-          'project',
-          'p1',
-          { name: 'My web app', skillIds: ['s1'], jobId: 'j1' }
-        );
-
-        const expected = {
-          type: ADD,
-          entityType: 'project',
-          entityId: 'p1',
-          entity: { name: 'My web app' }
         };
 
         expect(actual).toEqual(expected);

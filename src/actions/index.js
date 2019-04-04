@@ -20,23 +20,22 @@ const createEntityActions = (schemaDefs, namespace = defaultNamespace) => {
   };
 
   const doesRelationExists = (entityType1, entityType2) => {
-    return (
-      (
-        schemas.get(entityType1).hasMany(entityType2) ||
-        schemas.get(entityType1).hasOne(entityType2)
-      ) && (
-        schemas.get(entityType2).hasMany(entityType1) ||
-        schemas.get(entityType2).hasOne(entityType1)
-      )
-    );
+    return schemas.get(entityType1).has(entityType2) &&
+      schemas.get(entityType2).has(entityType1)
+    ;
   };
 
   const add = (entityType, entityId, entity = {}, index) => {
     validateEntityType(entityType);
 
-    // not yet supporting changing relational data via add action
     const schema = schemas.get(entityType);
-    purgeRelationalData(schema, entity);
+    const foreignKeys = schema
+      .getForeignKeys()
+      .filter(fk => Object.keys(entity).includes(fk))
+      .forEach(fk => {
+        const foreignEntityType = schema.getEntityType(fk);
+        // todo throw error if no relation
+      });
 
     return {
       type: ADD,
