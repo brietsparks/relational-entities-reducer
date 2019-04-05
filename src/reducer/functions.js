@@ -1,11 +1,10 @@
-const { makeIdsKey, makeIdKey } = require('../util');
 const { getEntity } = require('../selectors');
 
 const preReduce = (schemas, actions, state, action) => {
   const { ADD, REMOVE, LINK } = actions;
 
   if (action.type === ADD) {
-    const { entityType, entityId } = action;
+    const { entityType, entityId, entity } = action;
 
     // check if entity already exists
     const entityExists = getEntity(state, { entityType, entityId });
@@ -15,6 +14,11 @@ const preReduce = (schemas, actions, state, action) => {
       action.entityExists = true;
     }
 
+    // handle entity containing foreign keys
+    // const schema = schemas.get(entityType);
+    // const foreignKeys = schema.getForeignKeys().filter(fk => Object.keys(entity).includes(fk));
+
+
     return action;
   }
 
@@ -22,7 +26,7 @@ const preReduce = (schemas, actions, state, action) => {
     const { entityType, entityId } = action;
     const entity = getEntity(state, { entityType, entityId });
     const schema = schemas.get(entityType);
-    action.links = getLinks(entity, schema);
+    action.links = getLinks(entity, schema, state);
 
     return action;
   }
@@ -54,28 +58,43 @@ const preReduce = (schemas, actions, state, action) => {
   return action;
 };
 
-const getLinks = (entity, schema) => {
+const getLinks = (entity, schema, state) => {
   const links = {};
 
-  if (Array.isArray(schema.many)) {
-    schema.many.reduce((links, relEntity) => {
-      const idsKey = makeIdsKey(relEntity);
-      if (Array.isArray(entity[idsKey])) {
-        links[relEntity] = entity[idsKey];
-      }
-      return links;
-    }, links)
-  }
+  schema.getManyForeignKeys().reduce((links, foreignKey) => {
+    const foreignEntityIds = entity[foreignKey];
 
-  if (Array.isArray(schema.one)) {
-    schema.one.reduce((links, relEntity) => {
-      const idKey = makeIdKey(relEntity);
-      if (entity[idKey]) {
-        links[relEntity] = entity[idKey];
+    if (Array.isArray(foreignEntityIds)) {
+      const foreignEntityType = schema.getEntityType(foreignKey);
+
+      links[foreignEntityType] = foreignEntityIds.filter(foreignEntityId => {
+        return !!getEntity(state, {
+          entityType: foreignEntityType,
+          entityId: foreignEntityId
+        });
+      });
+    }
+
+    return links;
+  }, links);
+
+  schema.getOneForeignKeys().reduce((links, foreignKey) => {
+    const foreignEntityId = entity[foreignKey];
+
+    if (foreignEntityId) {
+      const foreignEntityType = schema.getEntityType(foreignKey);
+
+      const entityExists = getEntity(state, {
+        entityType: foreignEntityType,
+        entityId: foreignEntityId
+      });
+
+      if (entityExists) {
+        links[foreignEntityType] = foreignEntityId;
       }
-      return links;
-    }, links)
-  }
+    }
+    return links;
+  }, links);
 
   return links;
 };

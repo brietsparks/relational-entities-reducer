@@ -28,15 +28,6 @@ const createEntityActions = (schemaDefs, namespace = defaultNamespace) => {
   const add = (entityType, entityId, entity = {}, index) => {
     validateEntityType(entityType);
 
-    const schema = schemas.get(entityType);
-    const foreignKeys = schema
-      .getForeignKeys()
-      .filter(fk => Object.keys(entity).includes(fk))
-      .forEach(fk => {
-        const foreignEntityType = schema.getEntityType(fk);
-        // todo throw error if no relation
-      });
-
     return {
       type: ADD,
       entityType, entityId, entity, index

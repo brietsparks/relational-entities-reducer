@@ -27,10 +27,6 @@ describe('actions', () => {
       expect(actual).toThrow(error);
     });
 
-    it('throws if trying to link to a non-related entity', () => {
-
-    });
-
     describe('happy', () => {
       test('add empty entity', () => {
         const actual = add('project', 'p1');

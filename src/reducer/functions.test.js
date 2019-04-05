@@ -1,6 +1,7 @@
 const { getLinks, preReduce } = require('./functions');
 const { schemaDefs, schemas } = require('../mocks');
 const { createEntityActions } = require('../actions');
+const { Schema } = require('../schema');
 
 
 describe('reducer/functions', () => {
@@ -61,6 +62,10 @@ describe('reducer/functions', () => {
         const action = add('skill', 's1');
         const actual = preReduce(schemas, actions, state, action);
         expect(actual).toEqual(action);
+      });
+
+      test('', () => {
+
       });
     });
 
@@ -177,35 +182,58 @@ describe('reducer/functions', () => {
   });
 
   describe('getLinks', () => {
-    const schema = {
-      type: 'a',
-      many: ['b', 'c', 'd'],
-      one: ['f', 'g', 'h']
-    };
+    test('empty entity', () => {
+      const schema = new Schema({
+        type: 'a',
+        many: ['b'],
+        one: ['c']
+      });
 
-    test('entity with no links', () => {
       const entity = {};
       const actual = getLinks(entity, schema);
       expect(actual).toEqual({});
     });
 
-    test('entity with links', () => {
+    it('returns a map of entity type -> linked ids of existing entities', () => {
+      const schema = new Schema({
+        type: 'a',
+        many: ['b', 'c'],
+        one: ['d', 'e']
+      });
+
       const entity = {
-        bIds: ['b1', 'b2'],
+        bIds: ['b1', 'b2', 'b10000'],
         cIds: ['c1', 'c2'],
-        fId: 'f1',
-        gId: 'g1'
+        dId: 'd1',
+        eId: 'e100000',
+        z: 'extra data'
       };
 
-      const actual = getLinks(entity, schema);
+      const state = {
+        b: {
+          ids: ['b1', 'b2'],
+          entities: { 'b1': {}, 'b2': {} },
+        },
+        c: {
+          ids: ['c1', 'c2'],
+          entities: { 'c1': {}, 'c2': {} },
+        },
+        d: {
+          ids: ['d1'],
+          entities: { 'd1': {} }
+        },
+        e: {
+          ids: ['e1'],
+          entities: { 'e1': {} }
+        }
+      };
 
+      const actual = getLinks(entity, schema, state);
       const expected = {
         b: ['b1', 'b2'],
         c: ['c1', 'c2'],
-        f: 'f1',
-        g: 'g1',
+        d: 'd1',
       };
-
       expect(actual).toEqual(expected);
     });
   });
