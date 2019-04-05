@@ -14,7 +14,7 @@ describe('reducer/functions', () => {
     } = actions;
 
     describe('on add', () => {
-      test('appends .entityExists to the action when the entity already exists', () => {
+      it('appends .entityExists to the action when the entity already exists', () => {
         const state = {
           skill: {
             entities: { 's1': {} },
@@ -64,8 +64,45 @@ describe('reducer/functions', () => {
         expect(actual).toEqual(action);
       });
 
-      test('', () => {
+      it('appends .links to the action when entity contains links to existing entities', () => {
+        const state = {
+          skill: {
+            entities: { 's1': {} },
+            ids: ['s1']
+          },
+          project: {
+            entities: {},
+            ids: []
+          },
+          job: {
+            entities: { 'j1': {} },
+            ids: ['j1']
+          },
+        };
 
+        const entity = {
+          name: 'my web app',
+          skillIds: ['s1', 's2'],
+          jobId: 'j1'
+        };
+
+        const action = add('project', 'p1', entity);
+
+        const actual = preReduce(schemas, actions, state, action);
+
+        const expected = {
+          type: ADD,
+          entityType: 'project',
+          entityId: 'p1',
+          entity,
+          index: undefined,
+          links: {
+            skill: ['s1'],
+            job: 'j1'
+          }
+        };
+
+        expect(actual).toEqual(expected);
       });
     });
 

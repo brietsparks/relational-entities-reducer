@@ -15,9 +15,11 @@ const preReduce = (schemas, actions, state, action) => {
     }
 
     // handle entity containing foreign keys
-    // const schema = schemas.get(entityType);
-    // const foreignKeys = schema.getForeignKeys().filter(fk => Object.keys(entity).includes(fk));
-
+    const schema = schemas.get(entityType);
+    const links = getLinks(entity, schema, state);
+    if (Object.keys(links).length) {
+      action.links = links;
+    }
 
     return action;
   }
