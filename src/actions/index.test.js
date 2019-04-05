@@ -116,17 +116,14 @@ describe('actions', () => {
   });
 
   describe('link', () => {
-    it('throws if subject entity type dne', () => {
-      const actual = () => link('chicken', 'c1', 'skill', 's1');
-      const error = new Error('invalid entity type "chicken"');
+    it('throws if entity type dne', () => {
+      let error, actual;
+      error = new Error('invalid entity type "chicken"');
 
+      actual = () => link('skill', 's1', 'chicken', 'c1');
       expect(actual).toThrow(error);
-    });
 
-    it('throws if target entity type dne', () => {
-      const actual = () => link('skill', 's1', 'chicken', 'c1');
-      const error = new Error('invalid entity type "chicken"');
-
+      actual = () => link('chicken', 'c1', 'skill', 's1');
       expect(actual).toThrow(error);
     });
 
@@ -141,6 +138,39 @@ describe('actions', () => {
       const actual = link('skill', 's1', 'project', 'p1');
       const expected = {
         type: LINK,
+        entityType1: 'skill',
+        entityId1: 's1',
+        entityType2: 'project',
+        entityId2: 'p1'
+      };
+
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe('unlink', () => {
+    it('throws if entity type dne', () => {
+      let actual, error;
+      error = new Error('invalid entity type "chicken"');
+
+      actual = () => unlink('chicken', 'c1', 'skill', 's1');
+      expect(actual).toThrow(error);
+
+      actual = () => unlink('skill', 's1', 'chicken', 'c1');
+      expect(actual).toThrow(error);
+    });
+
+    it('throws if no relation exists between the two types', () => {
+      const actual = () => unlink('skill', 's1', 'job', 'j1');
+      const error = new Error('cannot unlink a skill from a job because the entity schema contains no relation between the two')
+
+      expect(actual).toThrow(error);
+    });
+
+    test('happy', () => {
+      const actual = unlink('skill', 's1', 'project', 'p1');
+      const expected = {
+        type: UNLINK,
         entityType1: 'skill',
         entityId1: 's1',
         entityType2: 'project',

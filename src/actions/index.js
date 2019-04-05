@@ -76,8 +76,18 @@ const createEntityActions = (schemaDefs, namespace = defaultNamespace) => {
 
   const linkMany = (linkDefs = []) => {};
 
-  const unlink = (entityType1, entityId1, targetEntities = []) => {
+  const unlink = (entityType1, entityId1, entityType2, entityId2) => {
+    validateEntityType(entityType1);
+    validateEntityType(entityType2);
 
+    if (!doesRelationExists(entityType1, entityType2)) {
+      throw new Error(`cannot unlink a ${entityType1} from a ${entityType2} because the entity schema contains no relation between the two`);
+    }
+
+    return {
+      type: UNLINK,
+      entityType1, entityId1, entityType2, entityId2
+    };
   };
 
   const unlinkMany = () => {};

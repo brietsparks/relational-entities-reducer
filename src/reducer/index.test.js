@@ -454,7 +454,257 @@ describe('reducer/index', () => {
       expect(actual).toEqual(expected);
     });
   });
+
+  describe('unlink', () => {
+    test('no-op when entities are not linked', () => {
+      const state = {
+        skill: {
+          entities: { 's1': {} },
+          ids: ['s1']
+        },
+        project: {
+          entities: { 'p1': {} },
+          ids: ['p1']
+        },
+        job: {
+          entities: {},
+          ids: []
+        },
+      };
+
+      let action, actual;
+      action = actions.unlink('skill', 's1', 'project', 'p1000');
+      actual = reducer(state, action);
+      expect(actual).toEqual(state);
+    });
+
+    test('no-op when both entities do not exist', () => {
+      const state = {
+        skill: {
+          entities: {},
+          ids: []
+        },
+        project: {
+          entities: {},
+          ids: []
+        },
+        job: {
+          entities: {},
+          ids: []
+        },
+      };
+
+      let action, actual;
+      action = actions.unlink('skill', 's1', 'project', 'p1000');
+      actual = reducer(state, action);
+      expect(actual).toEqual(state);
+    });
+
+    describe('unlink two linked entities', () => {
+      test('many relation', () => {
+        const state = {
+          skill: {
+            entities: {
+              's0': { projectIds: ['p1'] },
+              's1': { projectIds: ['p0', 'p1', 'p2'] },
+              's2': { projectIds: ['p1'] },
+            },
+            ids: ['s0', 's1', 's2']
+          },
+          project: {
+            entities: {
+              'p0': { skillIds: ['s1'] },
+              'p1': { skillIds: ['s0', 's1', 's2'] },
+              'p2': { skillIds: ['s1'] },
+            },
+            ids: ['p0', 'p1', 'p2']
+          },
+          job: {
+            entities: {},
+            ids: []
+          },
+        };
+
+        const action = actions.unlink('skill', 's1', 'project', 'p1');
+        const actual = reducer(state, action);
+        const expected = {
+          skill: {
+            entities: {
+              's0': { projectIds: ['p1'] },
+              's1': { projectIds: ['p0', 'p2'] },
+              's2': { projectIds: ['p1'] },
+            },
+            ids: ['s0', 's1', 's2']
+          },
+          project: {
+            entities: {
+              'p0': { skillIds: ['s1'] },
+              'p1': { skillIds: ['s0', 's2'] },
+              'p2': { skillIds: ['s1'] },
+            },
+            ids: ['p0', 'p1', 'p2']
+          },
+          job: {
+            entities: {},
+            ids: []
+          },
+        };
+
+        expect(actual).toEqual(expected);
+      });
+
+      test('one relation', () => {
+        const state = {
+          skill: {
+            entities: {},
+            ids: []
+          },
+          project: {
+            entities: {
+              'p0': { jobId: 'j1' },
+              'p1': { jobId: 'j1' },
+              'p2': { jobId: 'j1' },
+            },
+            ids: ['p0', 'p1', 'p2']
+          },
+          job: {
+            entities: {
+              'j1': { projectIds: ['p0', 'p1', 'p2'] }
+            },
+            ids: ['j1']
+          },
+        };
+
+        const expected = {
+          skill: {
+            entities: {},
+            ids: []
+          },
+          project: {
+            entities: {
+              'p0': { jobId: 'j1' },
+              'p1': { jobId: null },
+              'p2': { jobId: 'j1' },
+            },
+            ids: ['p0', 'p1', 'p2']
+          },
+          job: {
+            entities: {
+              'j1': { projectIds: ['p0', 'p2'] }
+            },
+            ids: ['j1']
+          },
+        };
+
+        let action, actual;
+
+        // test both combinations to ensure that the remove of the
+        // one-relation entity id occurs in both the entity and
+        // the foreign entity
+        action = actions.unlink('job', 'j1', 'project', 'p1');
+        actual = reducer(state, action);
+        expect(actual).toEqual(expected);
+
+        action = actions.unlink('project', 'p1', 'job', 'j1');
+        actual = reducer(state, action);
+        expect(actual).toEqual(expected);
+      });
+    });
+
+    describe('unlinking given an invalid state', () => {
+      test('many relation', () => {
+        const state = {
+          skill: {
+            entities: {
+              's1': { projectIds: [] },
+            },
+            ids: ['s1']
+          },
+          project: {
+            entities: {
+              'p1': { skillIds: ['s1'] },
+            },
+            ids: ['p1']
+          },
+          job: {
+            entities: {},
+            ids: []
+          },
+        };
+        const action = actions.unlink('skill', 's1', 'project', 'p1');
+        const actual = reducer(state, action);
+
+        const expected = {
+          skill: {
+            entities: {
+              's1': { projectIds: [] },
+            },
+            ids: ['s1']
+          },
+          project: {
+            entities: {
+              'p1': { skillIds: [] },
+            },
+            ids: ['p1']
+          },
+          job: {
+            entities: {},
+            ids: []
+          },
+        };
+
+        expect(actual).toEqual(expected);
+      });
+
+      test('one relation', () => {
+        const state = {
+          skill: {
+            entities: {},
+            ids: []
+          },
+          project: {
+            entities: {
+              'p1': { jobId: 'j1' },
+            },
+            ids: ['p1']
+          },
+          job: {
+            entities: {
+              'j1': {}
+            },
+            ids: ['j1']
+          },
+        };
+
+        const expected = {
+          skill: {
+            entities: {},
+            ids: []
+          },
+          project: {
+            entities: {
+              'p1': { jobId: null },
+            },
+            ids: ['p1']
+          },
+          job: {
+            entities: {
+              'j1': {}
+            },
+            ids: ['j1']
+          },
+        };
+
+        let action, actual;
+
+        action = actions.unlink('job', 'j1', 'project', 'p1');
+        actual = reducer(state, action);
+        expect(actual).toEqual(expected);
+
+        action = actions.unlink('project', 'p1', 'job', 'j1');
+        actual = reducer(state, action);
+        expect(actual).toEqual(expected);
+      });
+    });
+  });
 });
-
-
-
