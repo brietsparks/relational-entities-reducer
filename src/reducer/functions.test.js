@@ -94,7 +94,11 @@ describe('reducer/functions', () => {
           type: ADD,
           entityType: 'project',
           entityId: 'p1',
-          entity,
+          entity: {
+            name: 'my web app',
+            skillIds: ['s1'],
+            jobId: 'j1'
+          },
           index: undefined,
           links: {
             skill: ['s1'],
@@ -227,11 +231,12 @@ describe('reducer/functions', () => {
       });
 
       const entity = {};
-      const actual = getLinks(entity, schema);
-      expect(actual).toEqual({});
+      const [ links, cleanEntity ] = getLinks(entity, schema);
+      expect(links).toEqual({});
+      expect(cleanEntity).toEqual({});
     });
 
-    it('returns a map of entity type -> linked ids of existing entities', () => {
+    it('returns a map of entity type -> linked ids of existing entities, and an entity purged of nonexistent link ids', () => {
       const schema = new Schema({
         type: 'a',
         many: ['b', 'c'],
@@ -265,13 +270,22 @@ describe('reducer/functions', () => {
         }
       };
 
-      const actual = getLinks(entity, schema, state);
-      const expected = {
+      const [ links, cleanEntity ] = getLinks(entity, schema, state);
+      const expectedLinks = {
         b: ['b1', 'b2'],
         c: ['c1', 'c2'],
         d: 'd1',
       };
-      expect(actual).toEqual(expected);
+
+      const expectedCleanEntity = {
+        bIds: ['b1', 'b2'],
+        cIds: ['c1', 'c2'],
+        dId: 'd1',
+        z: 'extra data'
+      };
+
+      expect(links).toEqual(expectedLinks);
+      expect(cleanEntity).toEqual(expectedCleanEntity);
     });
   });
 });

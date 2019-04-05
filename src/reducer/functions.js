@@ -14,12 +14,14 @@ const preReduce = (schemas, actions, state, action) => {
       action.entityExists = true;
     }
 
-    // handle entity containing foreign keys
+    // if there are linked entity ids, append .links to the payload,
+    // and remove any non-existent entity ids from foreign key collections
     const schema = schemas.get(entityType);
-    const links = getLinks(entity, schema, state);
+    const [ links, cleanEntity ] = getLinks(entity, schema, state);
     if (Object.keys(links).length) {
       action.links = links;
     }
+    action.entity = cleanEntity;
 
     return action;
   }
@@ -28,7 +30,8 @@ const preReduce = (schemas, actions, state, action) => {
     const { entityType, entityId } = action;
     const entity = getEntity(state, { entityType, entityId });
     const schema = schemas.get(entityType);
-    action.links = getLinks(entity, schema, state);
+    const [ links ] = getLinks(entity, schema, state);
+    action.links = links;
 
     return action;
   }
@@ -62,6 +65,7 @@ const preReduce = (schemas, actions, state, action) => {
 
 const getLinks = (entity, schema, state) => {
   const links = {};
+  const cleanEntity = {...entity};
 
   schema.getManyForeignKeys().reduce((links, foreignKey) => {
     const foreignEntityIds = entity[foreignKey];
@@ -69,12 +73,16 @@ const getLinks = (entity, schema, state) => {
     if (Array.isArray(foreignEntityIds)) {
       const foreignEntityType = schema.getEntityType(foreignKey);
 
-      links[foreignEntityType] = foreignEntityIds.filter(foreignEntityId => {
+      const existingForeignEntityIds = foreignEntityIds.filter(foreignEntityId => {
         return !!getEntity(state, {
           entityType: foreignEntityType,
           entityId: foreignEntityId
         });
       });
+
+
+      links[foreignEntityType] = existingForeignEntityIds;
+      cleanEntity[foreignKey] = existingForeignEntityIds;
     }
 
     return links;
@@ -93,12 +101,15 @@ const getLinks = (entity, schema, state) => {
 
       if (entityExists) {
         links[foreignEntityType] = foreignEntityId;
+        cleanEntity[foreignKey] = foreignEntityId;
+      } else {
+        delete cleanEntity[foreignKey];
       }
     }
     return links;
   }, links);
 
-  return links;
+  return [ links, cleanEntity ];
 };
 
 module.exports = {
