@@ -1,7 +1,7 @@
 const { createReducer } = require('../util');
 
 const createIdsReducer = (schema, actions) => {
-  const { ADD, REMOVE } = actions;
+  const { ADD, REMOVE, REORDER_ENTITY } = actions;
 
   return createReducer([], {
     [ADD]: (state, { entityType, entityId, index, entityExists }) => {
@@ -19,6 +19,23 @@ const createIdsReducer = (schema, actions) => {
       }
 
       return state.filter(entityId => entityId !== removableId);
+    },
+    [REORDER_ENTITY]: (state, { entityType, sourceIndex, destinationIndex }) => {
+      if (sourceIndex === destinationIndex) {
+        return state;
+      }
+
+      const newState = [...state];
+
+      const entityId = newState.splice(sourceIndex, 1)[0];
+
+      if (!entityId) {
+        return state;
+      }
+
+      newState.splice(destinationIndex, 0, entityId);
+
+      return newState;
     }
   });
 };

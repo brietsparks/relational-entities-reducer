@@ -707,4 +707,63 @@ describe('reducer/index', () => {
       });
     });
   });
+
+  describe('reorder entity', () => {
+    test('no-op on non-existent index', () => {
+      const state = {
+        skill: {
+          entities: { 's1': {}, 's2': {} },
+          ids: ['s1', 's2' ]
+        },
+        project: {
+          entities: {},
+          ids: []
+        },
+        job: {
+          entities: {},
+          ids: []
+        },
+      };
+
+      const action = actions.reorderEntity('skill', 5, 6);
+      const actual = reducer(state, action);
+      expect(actual).toEqual(state);
+    });
+
+    test('reorders entity', () => {
+      const state = {
+        skill: {
+          entities: { 's1': {}, 's2': {}, 's3': {}, 's4': {}, 's5': {} },
+          ids: ['s1', 's2', 's3', 's4', 's5']
+        },
+        project: {
+          entities: {},
+          ids: []
+        },
+        job: {
+          entities: {},
+          ids: []
+        },
+      };
+
+      const action = actions.reorderEntity('skill', 1, 3);
+      const actual = reducer(state, action);
+      const expected = {
+        skill: {
+          entities: { 's1': {}, 's2': {}, 's3': {}, 's4': {}, 's5': {} },
+          ids: ['s1', 's3', 's4', 's2', 's5']
+        },
+        project: {
+          entities: {},
+          ids: []
+        },
+        job: {
+          entities: {},
+          ids: []
+        },
+      };
+
+      expect(actual).toEqual(expected);
+    });
+  });
 });

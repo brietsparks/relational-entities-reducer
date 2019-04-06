@@ -13,6 +13,8 @@ const createEntityActions = (schemaDefs, namespace = defaultNamespace) => {
   const REORDER_ENTITY = namespace('REORDER_ENTITY');
   const REORDER_LINK = namespace('REORDER_LINK');
 
+  // todo: standardize checking/exception-throwing
+
   const validateEntityType = entityType => {
     if (!schemas.has(entityType)) {
       throw new Error(`invalid entity type "${entityType}"`);
@@ -92,19 +94,56 @@ const createEntityActions = (schemaDefs, namespace = defaultNamespace) => {
 
   const unlinkMany = () => {};
 
-  const reorderEntity = (entityType, sourceIndex, destinationIndex) => {
+  const validateIndex = (name, index) => {
+    if (index < 0) {
+      throw new Error(`invalid ${name}. ${name} must be >=0. given ${index}`);
+    }
+  };
 
+  const reorderEntity = (entityType, sourceIndex, destinationIndex) => {
+    validateEntityType(entityType);
+
+    if (sourceIndex < 0) {
+      validateIndex('source index', sourceIndex);
+    }
+
+    if (destinationIndex < 0) {
+      validateIndex('destination index', destinationIndex);
+    }
+
+    return {
+      type: REORDER_ENTITY,
+      entityType, sourceIndex, destinationIndex
+    };
   };
 
   const reorderLink = (
-    sourceEntityType,
-    sourceEntityId,
-    linkedEntityType,
+    entityType,
+    entityId,
+    foreignEntityType,
     sourceIndex,
     destinationIndex,
     destinationEntityId,
   ) => {
+    validateEntityType(entityType);
+    validateEntityType(foreignEntityType);
 
+    if (!doesRelationExists(entityType, foreignEntityType)) {
+      throw new Error(`cannot reorder ${entityType} entity's ${foreignEntityType} links because no relation exists between the two`);
+    }
+
+    validateIndex('source index', sourceIndex);
+    validateIndex('destination index', destinationIndex);
+
+    return {
+      type: REORDER_LINK,
+      entityType,
+      entityId,
+      foreignEntityType,
+      sourceIndex,
+      destinationIndex,
+      destinationEntityId,
+    };
   };
 
   return {

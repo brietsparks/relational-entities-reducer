@@ -149,7 +149,7 @@ describe('actions', () => {
   });
 
   describe('unlink', () => {
-    it('throws if entity type dne', () => {
+    it('throws on invalid entity type', () => {
       let actual, error;
       error = new Error('invalid entity type "chicken"');
 
@@ -175,6 +175,91 @@ describe('actions', () => {
         entityId1: 's1',
         entityType2: 'project',
         entityId2: 'p1'
+      };
+
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe('reorderEntity', () => {
+    it('throws on invalid entity type', () => {
+      const actual = () => reorderEntity('chicken', 0, 1);
+      const error = new Error('invalid entity type "chicken"');
+      expect(actual).toThrow(error);
+    });
+
+    it('throws on invalid index', () => {
+      let actual, error;
+
+      actual = () => reorderEntity('skill', -1, 1);
+      error = new Error('invalid source index. source index must be >=0. given -1');
+      expect(actual).toThrow(error);
+
+      actual = () => reorderEntity('skill', 1, -1);
+      error = new Error('invalid destination index. destination index must be >=0. given -1');
+      expect(actual).toThrow(error);
+    });
+
+    test('happy', () => {
+      const actual = reorderEntity('skill', 0, 1);
+      const expected = {
+        type: REORDER_ENTITY,
+        entityType: 'skill',
+        sourceIndex: 0,
+        destinationIndex: 1
+      };
+
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe('reorderLink', () => {
+    it('throws on invalid entity', () => {
+      let actual, error;
+
+      actual = () => reorderLink('chicken', 'c1', 'project', 0, 1, 's2');
+      error = new Error('invalid entity type "chicken"');
+      expect(actual).toThrow(error);
+
+      actual = () => reorderLink('skill', 's1', 'chicken', 0, 1, 'c1');
+      error = new Error('invalid entity type "chicken"');
+      expect(actual).toThrow(error);
+    });
+
+    it('throws if entity relation exists', () => {
+      let actual, error;
+
+      actual = () => reorderLink('job', 'j1', 'skill', 0, 1, 's2');
+      error = new Error("cannot reorder job entity's skill links because no relation exists between the two");
+      expect(actual).toThrow(error);
+
+      actual = () => reorderLink('skill', 's1', 'job', 0, 1, 'j1');
+      error = new Error("cannot reorder skill entity's job links because no relation exists between the two");
+      expect(actual).toThrow(error);
+    });
+
+    it('throws on invalid index', () => {
+      let actual, error;
+
+      actual = () => reorderLink('project', 'p1', 'skill', -1, 1, 's2');
+      error = new Error('invalid source index. source index must be >=0. given -1');
+      expect(actual).toThrow(error);
+
+      actual = () => reorderLink('project', 'p1', 'skill', 1, -1, 's2');
+      error = new Error('invalid destination index. destination index must be >=0. given -1');
+      expect(actual).toThrow(error);
+    });
+
+    test('happy', () => {
+      const actual = reorderLink('project', 'p1', 'skill', 0, 2, 's2');
+      const expected = {
+        type: REORDER_LINK,
+        entityType: 'project',
+        entityId: 'p1',
+        foreignEntityType: 'skill',
+        sourceIndex: 0,
+        destinationIndex: 2,
+        destinationEntityId: 's2'
       };
 
       expect(actual).toEqual(expected);

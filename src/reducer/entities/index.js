@@ -2,7 +2,7 @@ const { createReducer } = require('../util');
 const { removeLinkedIds } = require('./functions');
 
 const createEntitiesReducer = (schema, actions) => {
-  const { ADD, REMOVE, EDIT, LINK, UNLINK } = actions;
+  const { ADD, REMOVE, EDIT, LINK, UNLINK, REORDER_LINK } = actions;
 
   return createReducer({}, {
     [ADD]: (state, { entityType, entityId, entity, entityExists }) => {
@@ -135,6 +135,20 @@ const createEntitiesReducer = (schema, actions) => {
         ...state,
         [entityId]: entity
       };
+    },
+    [REORDER_LINK]: (state, {
+      entityType,
+      entityId,
+      foreignEntityType,
+      sourceIndex,
+      destinationIndex,
+      destinationEntityId,
+    }) => {
+      if (schema.type === entityType) {
+        return state;
+      }
+
+
     }
   });
 };
