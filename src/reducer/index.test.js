@@ -766,4 +766,216 @@ describe('reducer/index', () => {
       expect(actual).toEqual(expected);
     });
   });
+
+  describe('reorder link', () => {
+    test('no-op on non-existent entity', () => {
+      const state = {
+        skill: {
+          entities: {
+            's1': { projectIds: ['p1'] }
+          },
+          ids: ['s1']
+        },
+        project: {
+          entities: {
+            'p1': { skillIds: ['s1'] }
+          },
+          ids: ['p1']
+        },
+        job: {
+          entities: {},
+          ids: []
+        },
+      };
+
+      const action = actions.reorderLink('skill', 's1000', 'project', 0, 1);
+      const actual = reducer(state, action);
+      expect(actual).toEqual(state);
+    });
+
+    test('no-op on non-existent entity foreign key', () => {
+      const state = {
+        skill: {
+          entities: {
+            's1': {}
+          },
+          ids: ['s1']
+        },
+        project: {
+          entities: {
+            'p1': {}
+          },
+          ids: ['p1']
+        },
+        job: {
+          entities: {},
+          ids: []
+        },
+      };
+
+      const action = actions.reorderLink('skill', 's1', 'project', 0, 1);
+      const actual = reducer(state, action);
+      expect(actual).toEqual(state);
+    });
+
+    test('no-op on non-existent index', () => {
+      const state = {
+        skill: {
+          entities: {
+            's1': { projectIds: ['p1'] }
+          },
+          ids: ['s1']
+        },
+        project: {
+          entities: {
+            'p1': { skillIds: ['s1'] }
+          },
+          ids: ['p1']
+        },
+        job: {
+          entities: {},
+          ids: []
+        },
+      };
+
+      const action = actions.reorderLink('skill', 's1', 'project', 5, 6);
+      const actual = reducer(state, action);
+      expect(actual).toEqual(state);
+    });
+
+    test('no-op on non-existent destination entity', () => {
+      const state = {
+        skill: {
+          entities: {
+            's1': { projectIds: ['p1'] }
+          },
+          ids: ['s1']
+        },
+        project: {
+          entities: {
+            'p1': { skillIds: ['s1'] }
+          },
+          ids: ['p1']
+        },
+        job: {
+          entities: {},
+          ids: []
+        },
+      };
+
+      const action = actions.reorderLink('skill', 's1', 'project', 0, 0, 'p1000');
+      const actual = reducer(state, action);
+      expect(actual).toEqual(state);
+    });
+
+    describe('happy', () => {
+      test('reorder link on same entity', () => {
+        const state = {
+          skill: {
+            entities: {
+              's1': { projectIds: ['p1', 'p2', 'p3', 'p4', 'p5'] }
+            },
+            ids: ['s1']
+          },
+          project: {
+            entities: {
+              'p1': { skillIds: ['s1'] },
+              'p2': { skillIds: ['s1'] },
+              'p3': { skillIds: ['s1'] },
+              'p4': { skillIds: ['s1'] },
+              'p5': { skillIds: ['s1'] }
+            },
+            ids: ['p1', 'p2', 'p3', 'p4', 'p5']
+          },
+          job: {
+            entities: {},
+            ids: []
+          },
+        };
+
+        const action = actions.reorderLink('skill', 's1', 'project', 1, 3);
+        const actual = reducer(state, action);
+        const expected = {
+          skill: {
+            entities: {
+              's1': { projectIds: ['p1', 'p3', 'p4', 'p2', 'p5'] }
+            },
+            ids: ['s1']
+          },
+          project: {
+            entities: {
+              'p1': { skillIds: ['s1'] },
+              'p2': { skillIds: ['s1'] },
+              'p3': { skillIds: ['s1'] },
+              'p4': { skillIds: ['s1'] },
+              'p5': { skillIds: ['s1'] }
+            },
+            ids: ['p1', 'p2', 'p3', 'p4', 'p5']
+          },
+          job: {
+            entities: {},
+            ids: []
+          },
+        };
+
+        expect(actual).toEqual(expected);
+      });
+
+      test('reorder link to different entity', () => {
+        const state = {
+          skill: {
+            entities: {
+              's1': { projectIds: ['p1', 'p2', 'p3'] },
+              's2': { projectIds: ['p4', 'p5', 'p6'] }
+            },
+            ids: ['s1']
+          },
+          project: {
+            entities: {
+              'p1': { skillIds: ['s1'] },
+              'p2': { skillIds: ['s1'] },
+              'p3': { skillIds: ['s1'] },
+              'p4': { skillIds: ['s2'] },
+              'p5': { skillIds: ['s2'] },
+              'p6': { skillIds: ['s2'] }
+            },
+            ids: ['p1', 'p2', 'p3', 'p4', 'p5', 'p6']
+          },
+          job: {
+            entities: {},
+            ids: []
+          },
+        };
+
+        const action = actions.reorderLink('skill', 's1', 'project', 1, 2, 's2');
+        const actual = reducer(state, action);
+        const expected = {
+          skill: {
+            entities: {
+              's1': { projectIds: ['p1', 'p3'] },
+              's2': { projectIds: ['p4', 'p5', 'p2', 'p6'] }
+            },
+            ids: ['s1']
+          },
+          project: {
+            entities: {
+              'p1': { skillIds: ['s1'] },
+              'p2': { skillIds: ['s1'] },
+              'p3': { skillIds: ['s1'] },
+              'p4': { skillIds: ['s2'] },
+              'p5': { skillIds: ['s2'] },
+              'p6': { skillIds: ['s2'] }
+            },
+            ids: ['p1', 'p2', 'p3', 'p4', 'p5', 'p6']
+          },
+          job: {
+            entities: {},
+            ids: []
+          },
+        };
+
+        expect(actual).toEqual(expected);
+      });
+    });
+  });
 });

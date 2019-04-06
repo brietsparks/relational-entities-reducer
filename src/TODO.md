@@ -1,8 +1,4 @@
-schema raw -> processed
-
-namespace
-    - prefix -> namespace
-    - namespace api arg as string or function
+immutable state util
     
 edge-case
     schema entity type is a number

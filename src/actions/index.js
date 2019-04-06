@@ -128,8 +128,9 @@ const createEntityActions = (schemaDefs, namespace = defaultNamespace) => {
     validateEntityType(entityType);
     validateEntityType(foreignEntityType);
 
-    if (!doesRelationExists(entityType, foreignEntityType)) {
-      throw new Error(`cannot reorder ${entityType} entity's ${foreignEntityType} links because no relation exists between the two`);
+    const schema = schemas.get(entityType);
+    if (!schema.hasMany(foreignEntityType)) {
+      throw new Error(`cannot reorder ${entityType} entity's ${foreignEntityType} links because ${entityType} does not have a many-relation of ${foreignEntityType}`);
     }
 
     validateIndex('source index', sourceIndex);

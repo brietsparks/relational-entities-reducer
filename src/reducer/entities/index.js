@@ -144,11 +144,84 @@ const createEntitiesReducer = (schema, actions) => {
       destinationIndex,
       destinationEntityId,
     }) => {
-      if (schema.type === entityType) {
+      if (schema.type !== entityType) {
         return state;
       }
 
+      const entity = state[entityId];
 
+      // no-op when non-existent entity
+      if (!entity) {
+        return state;
+      }
+
+      // whether we are attempting to reorder the foreign entity id within the same entity;
+      const reorderInSameEntity = entityId === destinationEntityId || !destinationEntityId;
+
+      const destinationEntity = reorderInSameEntity
+        ? entity
+        : state[destinationEntityId];
+
+      // no-op when non-existent destination entity
+      if (!destinationEntity) {
+        return state;
+      }
+
+      const foreignKey = schema.getForeignKey(foreignEntityType);
+      const foreignEntityIds = entity[foreignKey];
+
+      // no-op when the foreign entity ids variable is not an array
+      if (!foreignEntityIds || !Array.isArray(foreignEntityIds)) {
+        return state;
+      }
+
+      // shallow copy the foreign entity ids
+      const newForeignEntityIds = [...foreignEntityIds];
+
+      // take foreign entity id out of the collection
+      const foreignEntityId = newForeignEntityIds.splice(sourceIndex, 1)[0];
+
+      // no-op when non-existent source index
+      if (!foreignEntityId) {
+        return state;
+      }
+
+      if (reorderInSameEntity) {
+        // reorder link within the same entity
+        newForeignEntityIds.splice(destinationIndex, 0, foreignEntityId);
+      }
+
+      // shallow copy entity with new foreign entity ids
+      const newEntity = {...entity, [foreignKey]: newForeignEntityIds};
+
+      if (!reorderInSameEntity) {
+        // reorder link to a different entity
+        let destinationForeignEntityIds = destinationEntity[foreignKey];
+
+        destinationForeignEntityIds = Array.isArray(destinationForeignEntityIds)
+          ? destinationForeignEntityIds
+          : [];
+
+        const newDestinationForeignEntityIds = [...destinationForeignEntityIds];
+
+        newDestinationForeignEntityIds.splice(destinationIndex, 0, foreignEntityId);
+
+        const newDestinationEntity = {
+          ...destinationEntity,
+          [foreignKey]: newDestinationForeignEntityIds
+        };
+
+        return {
+          ...state,
+          [entityId]: newEntity,
+          [destinationEntityId]: newDestinationEntity
+        };
+      }
+
+      return {
+        ...state,
+        [entityId]: newEntity
+      };
     }
   });
 };

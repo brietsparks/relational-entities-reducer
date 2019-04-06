@@ -226,15 +226,19 @@ describe('actions', () => {
       expect(actual).toThrow(error);
     });
 
-    it('throws if entity relation exists', () => {
+    it('throws if entity does not have a many-relation of the foreign entity', () => {
       let actual, error;
 
       actual = () => reorderLink('job', 'j1', 'skill', 0, 1, 's2');
-      error = new Error("cannot reorder job entity's skill links because no relation exists between the two");
+      error = new Error("cannot reorder job entity's skill links because job does not have a many-relation of skill");
       expect(actual).toThrow(error);
 
       actual = () => reorderLink('skill', 's1', 'job', 0, 1, 'j1');
-      error = new Error("cannot reorder skill entity's job links because no relation exists between the two");
+      error = new Error("cannot reorder skill entity's job links because skill does not have a many-relation of job");
+      expect(actual).toThrow(error);
+
+      actual = () => reorderLink('project', 'p1', 'job', 0, 1, 'j1');
+      error = new Error("cannot reorder project entity's job links because project does not have a many-relation of job");
       expect(actual).toThrow(error);
     });
 
