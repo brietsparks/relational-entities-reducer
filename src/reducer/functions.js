@@ -100,7 +100,7 @@ const getLinks = (entity, schema, state) => {
       });
 
       if (entityExists) {
-        links[foreignEntityType] = foreignEntityId;
+        links[foreignEntityType] = [foreignEntityId];
         cleanEntity[foreignKey] = foreignEntityId;
       } else {
         delete cleanEntity[foreignKey];

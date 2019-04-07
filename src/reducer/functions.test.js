@@ -102,7 +102,7 @@ describe('reducer/functions', () => {
           index: undefined,
           links: {
             skill: ['s1'],
-            job: 'j1'
+            job: ['j1']
           }
         };
 
@@ -147,7 +147,7 @@ describe('reducer/functions', () => {
         entityId: 'p1',
         links: {
           skill: ['s1', 's2'],
-          job: 'j1'
+          job: ['j1']
         }
       };
 
@@ -274,7 +274,7 @@ describe('reducer/functions', () => {
       const expectedLinks = {
         b: ['b1', 'b2'],
         c: ['c1', 'c2'],
-        d: 'd1',
+        d: ['d1'],
       };
 
       const expectedCleanEntity = {
