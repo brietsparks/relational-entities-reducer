@@ -45,6 +45,8 @@ const cleanSchemaDefs = (schemaDefs) => {
   Object.keys(schemaDefs).forEach(type => {
     const schema = schemaDefs[type];
 
+    schema.type = type;
+
     schema.many = schema.many || [];
     schema.one = schema.one || [];
   });

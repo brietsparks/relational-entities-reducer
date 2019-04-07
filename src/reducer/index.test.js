@@ -106,7 +106,9 @@ describe('reducer/index', () => {
 
       const expected = {
         skill: {
-          entities: { 's1': {} },
+          entities: {
+            's1': { projectIds: ['p1'] }
+          },
           ids: ['s1']
         },
         project: {
@@ -120,7 +122,9 @@ describe('reducer/index', () => {
           ids: ['p1']
         },
         job: {
-          entities: { 'j1': {} },
+          entities: {
+            'j1': { projectIds: ['p1'] }
+          },
           ids: ['j1']
         },
       };

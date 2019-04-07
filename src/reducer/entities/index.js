@@ -5,9 +5,38 @@ const createEntitiesReducer = (schema, actions) => {
   const { ADD, REMOVE, EDIT, LINK, UNLINK, REORDER_LINK } = actions;
 
   return createReducer({}, {
-    [ADD]: (state, { entityType, entityId, entity, entityExists }) => {
-      if (entityType !== schema.type || entityExists) {
+    [ADD]: (state, { entityType, entityId, entity, entityExists, links }) => {
+      if (entityExists) {
         return state;
+      }
+
+      // please refactor
+      if (entityType !== schema.type) {
+        if (!links || !Object.keys(links).includes(schema.type)) {
+          return state;
+        }
+
+        const newState = { ...state };
+
+        const foreignKey = schema.getForeignKey(entityType);
+
+        if (Array.isArray(links[schema.type])) {
+          const linkableEntityIds = links[schema.type];
+          linkableEntityIds.forEach(linkableEntityId => {
+            const linkableEntity = { ...state[linkableEntityId] };
+            const linkableEntityForeignEntityIds = linkableEntity[foreignKey] || [];
+            linkableEntity[foreignKey] = [...linkableEntityForeignEntityIds, entityId];
+            newState[linkableEntityId] = linkableEntity;
+          });
+        } else {
+          const linkableEntityId = links[schema.type];
+          const linkableEntity = { ...state[linkableEntityId] };
+          const linkableEntityForeignEntityIds = linkableEntity[foreignKey] || [];
+          linkableEntity[foreignKey] = [...linkableEntityForeignEntityIds, entityId];
+          newState[linkableEntityId] = linkableEntity;
+        }
+
+        return newState;
       }
 
       return {
@@ -192,7 +221,7 @@ const createEntitiesReducer = (schema, actions) => {
       }
 
       // shallow copy entity with new foreign entity ids
-      const newEntity = {...entity, [foreignKey]: newForeignEntityIds};
+      const newEntity = { ...entity, [foreignKey]: newForeignEntityIds };
 
       if (!reorderInSameEntity) {
         // reorder link to a different entity
