@@ -15,7 +15,7 @@ Install with yarn:
 
 `yarn add relational-entities-reducer`
 
-## Example / Demo
+## [Example / Demo](https://brietsparks.github.io/react-gh-pages)
 
 ## Usage
 
