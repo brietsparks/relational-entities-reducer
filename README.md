@@ -1,4 +1,4 @@
-#Relational Entities Reducer
+# Relational Entities Reducer
 
 Reducers, actions, and selectors for read and write operations on relational entity state.
 - zero-dependency
