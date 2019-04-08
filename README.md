@@ -1,5 +1,7 @@
 # Relational Entities Reducer
 
+## [Example / Demo](https://brietsparks.github.io/relational-entities-reducer-examples)
+
 Reducers, actions, and selectors for read and write operations on relational entity state.
 - zero-dependency
 - framework agnostic (use with/without React, Redux, etc)
@@ -14,8 +16,6 @@ Install with npm:
 Install with yarn:
 
 `yarn add relational-entities-reducer`
-
-## [Example / Demo](https://brietsparks.github.io/relational-entities-reducer-examples)
 
 ## Usage
 
