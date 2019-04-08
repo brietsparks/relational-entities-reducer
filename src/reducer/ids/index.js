@@ -13,8 +13,18 @@ const createIdsReducer = (schema, actions) => {
         ? [...state].splice(index, 0, entityId)
         : [...state, entityId];
     },
-    [REMOVE]: (state, { entityType, entityId: removableId }) => {
+    [REMOVE]: (state, { entityType, entityId: removableId, links, deletableLinkedEntityTypes }) => {
       if (entityType !== schema.type) {
+        if (deletableLinkedEntityTypes.includes(schema.type)) {
+          const deletableEntityIds = links[schema.type];
+
+          if (!deletableEntityIds) {
+            return state;
+          }
+
+          return state.filter(entityId => !deletableEntityIds.includes(entityId))
+        }
+
         return state;
       }
 

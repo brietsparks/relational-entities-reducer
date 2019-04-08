@@ -60,21 +60,41 @@ describe('actions', () => {
   });
 
   describe('remove', () => {
-    it('throws if entity type dne', () => {
+    it('throws if invalid entity type', () => {
       const actual = () => remove('chicken', 'c1');
       const error = new Error('invalid entity type "chicken"');
 
       expect(actual).toThrow(error);
     });
 
-    test('happy', () => {
-      const actual = remove('project', 'p1');
-      const expected = {
-        type: REMOVE,
-        entityType: 'project',
-        entityId: 'p1'
-      };
-      expect(actual).toEqual(expected);
+    it('throws if invalid deletable linked entity type', () => {
+      const actual = () => remove('project', 'p1', ['chicken']);
+      const error = new Error('invalid entity type "chicken"');
+      expect(actual).toThrow(error);
+    });
+
+    describe('happy', () => {
+      test('without deletable linked entity types', () => {
+        const actual = remove('project', 'p1');
+        const expected = {
+          type: REMOVE,
+          entityType: 'project',
+          entityId: 'p1',
+          deletableLinkedEntityTypes: []
+        };
+        expect(actual).toEqual(expected);
+      });
+
+      test('with deletable linked entity types', () => {
+        const actual = remove('job', 'j1', ['project']);
+        const expected = {
+          type: REMOVE,
+          entityType: 'job',
+          entityId: 'j1',
+          deletableLinkedEntityTypes: ['project']
+        };
+        expect(actual).toEqual(expected);
+      });
     });
   });
 

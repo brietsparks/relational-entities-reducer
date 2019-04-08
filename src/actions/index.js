@@ -38,12 +38,14 @@ const createEntityActions = (schemaDefs, namespace = defaultNamespace) => {
 
   const addMany = () => {};
 
-  const remove = (entityType, entityId) => {
+  const remove = (entityType, entityId, deletableLinkedEntityTypes = []) => {
     validateEntityType(entityType);
+
+    deletableLinkedEntityTypes.forEach(linkedType => validateEntityType(linkedType));
 
     return {
       type: REMOVE,
-      entityType, entityId
+      entityType, entityId, deletableLinkedEntityTypes
     };
   };
 

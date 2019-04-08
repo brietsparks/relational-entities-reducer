@@ -278,6 +278,56 @@ describe('reducer/index', () => {
         expect(actual).toEqual(expected);
       });
     });
+
+    test('remove entity and its linked entities', () => {
+      const state = {
+        skill: {
+          entities: {
+            's1': { projectIds: ['p1'] },
+            's2': {}
+          },
+          ids: ['s2']
+        },
+        project: {
+          entities: {
+            'p1': {
+              skillIds: ['s1'],
+              jobId: 'j1'
+            }
+          },
+          ids: ['p1']
+        },
+        job: {
+          entities: {
+            'j1': { projectIds: ['p1'] },
+            'j2': {}
+          },
+          ids: ['j1', 'j2']
+        },
+      };
+
+      const action = actions.remove('project', 'p1', ['skill', 'job']);
+
+
+      const actual = reducer(state, action);
+
+      const expected = {
+        skill: {
+          entities: { 's2': {} },
+          ids: ['s2']
+        },
+        project: {
+          entities: {},
+          ids: []
+        },
+        job: {
+          entities: { 'j2': {} },
+          ids: ['j2']
+        },
+      };
+
+      expect(actual).toEqual(expected);
+    });
   });
 
   describe('edit', () => {

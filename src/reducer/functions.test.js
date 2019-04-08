@@ -148,7 +148,8 @@ describe('reducer/functions', () => {
         links: {
           skill: ['s1', 's2'],
           job: ['j1']
-        }
+        },
+        deletableLinkedEntityTypes: []
       };
 
       expect(actual).toEqual(expected);
