@@ -31,6 +31,10 @@ const createIdsReducer = (schema, actions) => {
       return state.filter(entityId => entityId !== removableId);
     },
     [REORDER_ENTITY]: (state, { entityType, sourceIndex, destinationIndex }) => {
+      if (entityType !== schema.type) {
+        return state;
+      }
+
       if (sourceIndex === destinationIndex) {
         return state;
       }
