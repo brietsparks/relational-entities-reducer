@@ -16,7 +16,7 @@ Reducers, actions, and selectors for read and write operations on relational ent
 
 Install with npm:
 
-`npm install relational-entities-reducer`
+`npm install relational-entities-reducer --save`
 
 Install with yarn:
 
