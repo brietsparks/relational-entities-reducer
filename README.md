@@ -1,11 +1,15 @@
 # Relational Entities Reducer
 
-## [Example / Demo](https://brietsparks.github.io/relational-entities-reducer-examples)
-
 Reducers, actions, and selectors for read and write operations on relational entity state.
 - zero-dependency
 - framework agnostic (use with/without React, Redux, etc)
 - pure, non-mutating functions (no persistent objects behind the scenes)
+
+
+## [Example / Demo]
+
+[Example source](https://github.com/brietsparks/relational-entities-reducer-examples)
+[Example demo](https://brietsparks.github.io/relational-entities-reducer-examples)
 
 ## Installation
 
@@ -85,3 +89,4 @@ In this example, the state will look like:
     ```
 
 ## API
+Todo
