@@ -9,6 +9,7 @@ Reducers, actions, and selectors for read and write operations on relational ent
 ## Example/Demo
 
 [Example source](https://github.com/brietsparks/relational-entities-reducer-examples)
+
 [Example demo](https://brietsparks.github.io/relational-entities-reducer-examples)
 
 ## Installation
