@@ -28,7 +28,7 @@ This library strives for simplicity.
 
 1. Define a schema of your entity relationships:
     
-    ```
+    ```js
     const mySchema = {
         post: {
             many: ['comment', 'category'],
@@ -43,7 +43,7 @@ This library strives for simplicity.
     ```
 
 2. Use the schema to make the actions and reducers
-    ```
+    ```js
     import { createReducer, createActions, selectors} from 'relational-entities-reducer';
     
     /* ACTIONS */
@@ -72,7 +72,7 @@ This library strives for simplicity.
 3. Use the actions to write to the state, and use selectors to read from the state.
 In this example, the state will look like:
 
-    ```
+    ```js
     {
         post: {
             entities: {},
