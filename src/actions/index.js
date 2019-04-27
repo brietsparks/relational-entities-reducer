@@ -49,16 +49,18 @@ const createEntityActions = (schemaDefs, namespace = defaultNamespace) => {
     };
   };
 
-  const edit = (entityType, entityId, entity = {}) => {
+  const edit = (entityType, entityId, entity = {}, options = {}) => {
     validateEntityType(entityType);
 
-    // not yet supporting changing relational data via edit action
     const schema = schemas.get(entityType);
-    purgeRelationalData(schema, entity);
+
+    if (!options.forceRelationalEdit) {
+      purgeRelationalData(schema, entity);
+    }
 
     return {
       type: EDIT,
-      entityType, entityId, entity
+      entityType, entityId, entity, options
     }
   };
 

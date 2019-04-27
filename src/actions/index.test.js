@@ -112,7 +112,8 @@ describe('actions', () => {
         type: EDIT,
         entityType: 'project',
         entityId: 'p1',
-        entity: { name: 'My web app' }
+        entity: { name: 'My web app' },
+        options: {}
       };
 
       expect(actual).toEqual(expected);
@@ -128,7 +129,26 @@ describe('actions', () => {
         type: EDIT,
         entityType: 'project',
         entityId: 'p1',
-        entity: { name: 'My web app' }
+        entity: { name: 'My web app' },
+        options: {}
+      };
+
+      expect(actual).toEqual(expected);
+    });
+
+    it('it does not purge relational data if forceRelationalEdit option is true', () => {
+      const actual = edit(
+        'project',
+        'p1',
+        { name: 'My web app', skillIds: ['s1'], jobId: 'j1' },
+        { forceRelationalEdit: true }
+      );
+      const expected = {
+        type: EDIT,
+        entityType: 'project',
+        entityId: 'p1',
+        entity: { name: 'My web app', skillIds: ['s1'], jobId: 'j1' },
+        options: { forceRelationalEdit: true }
       };
 
       expect(actual).toEqual(expected);

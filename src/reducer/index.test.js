@@ -407,6 +407,58 @@ describe('reducer/index', () => {
       expect(actual).toEqual(expected);
     });
 
+    test('can force-edit-relational data if option is set', () => {
+      const state = {
+        skill: {
+          entities: {
+            's1': {},
+            's2': {}
+          },
+          ids: ['s1', 's2']
+        },
+        project: {
+          entities: {
+            'p1': { skillIds: ['s1', 's2'] }
+          },
+          ids: ['p1']
+        },
+        job: {
+          entities: {},
+          ids: []
+        }
+      };
+
+      const action = actions.edit(
+        'project',
+        'p1',
+        { skillIds: ['s2', 's1'] },
+        { forceRelationalEdit: true }
+      );
+
+      const actual = reducer(state, action);
+      const expected = {
+        skill: {
+          entities: {
+            's1': {},
+            's2': {}
+          },
+          ids: ['s1', 's2']
+        },
+        project: {
+          entities: {
+            'p1': { skillIds: ['s2', 's1'] }
+          },
+          ids: ['p1']
+        },
+        job: {
+          entities: {},
+          ids: []
+        }
+      };
+
+      expect(actual).toEqual(expected);
+    });
+
     test('no-op when attempting to edit a non-existent entity', () => {
       const action = actions.edit('skill', 's1', { name: 'Java' });
       const actual = reducer(emptyState, action);
