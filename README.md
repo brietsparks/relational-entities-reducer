@@ -1,21 +1,26 @@
-#Relational Entities Reducer
+# Relational Entities Reducer
 
 Reducers, actions, and selectors for read and write operations on relational entity state.
 - zero-dependency
 - framework agnostic (use with/without React, Redux, etc)
 - pure, non-mutating functions (no persistent objects behind the scenes)
 
+
+## Example/Demo
+
+[Example source](https://github.com/brietsparks/relational-entities-reducer-examples)
+
+[Example demo](https://brietsparks.github.io/relational-entities-reducer-examples)
+
 ## Installation
 
 Install with npm:
 
-`npm install relational-entities-reducer`
+`npm install relational-entities-reducer --save`
 
 Install with yarn:
 
 `yarn add relational-entities-reducer`
-
-## [Example / Demo](https://brietsparks.github.io/react-gh-pages)
 
 ## Usage
 
@@ -23,7 +28,7 @@ This library strives for simplicity.
 
 1. Define a schema of your entity relationships:
     
-    ```
+    ```js
     const mySchema = {
         post: {
             many: ['comment', 'category'],
@@ -38,7 +43,7 @@ This library strives for simplicity.
     ```
 
 2. Use the schema to make the actions and reducers
-    ```
+    ```js
     import { createReducer, createActions, selectors} from 'relational-entities-reducer';
     
     /* ACTIONS */
@@ -67,7 +72,7 @@ This library strives for simplicity.
 3. Use the actions to write to the state, and use selectors to read from the state.
 In this example, the state will look like:
 
-    ```
+    ```js
     {
         post: {
             entities: {},
@@ -85,3 +90,4 @@ In this example, the state will look like:
     ```
 
 ## API
+Todo
