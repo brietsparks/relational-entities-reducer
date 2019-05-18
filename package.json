@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --watchAll"
+    "test": "jest --watchAll",
+    "coverage": "jest --coverage",
+    "coveralls": "cat ./coverage/lcov.info | node node_modules/.bin/coveralls"
   },
   "repository": {
     "type": "git",
@@ -17,6 +19,7 @@
   },
   "homepage": "https://github.com/brietsparks/relational-entities-reducer#readme",
   "devDependencies": {
-    "jest": "^24.5.0"
+    "jest": "^24.5.0",
+    "coveralls": "^3.0.3"
   }
 }

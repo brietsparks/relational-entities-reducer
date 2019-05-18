@@ -1,3 +1,5 @@
+[![Coverage Status](https://coveralls.io/repos/github/brietsparks/relational-entities-reducer/badge.svg?branch=master)](https://coveralls.io/github/brietsparks/relational-entities-reducer?branch=master)
+
 # Relational Entities Reducer
 
 Reducers, actions, and selectors for read and write operations on relational entity state.
