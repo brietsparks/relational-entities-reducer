@@ -2,9 +2,11 @@ const { Schemas } = require('../schema');
 const { createCollectionReducer } = require('./collection');
 const { preReduce } = require('./functions');
 const { combineReducers } = require('./util');
+const { createEntityActions } = require('../actions');
 
-const createRootReducer = (schemaDefs, actions) => {
+const createRootReducer = schemaDefs => {
   const schemas = new Schemas(schemaDefs);
+  const actions = createEntityActions(schemaDefs);
 
   const collectionReducers = schemas.getTypes().reduce((reducers, entityType) => {
     const schema = schemas.get(entityType);
