@@ -1,10 +1,12 @@
 {
   "name": "relational-entities-reducer",
-  "version": "0.0.0",
+  "version": "0.3.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --watchAll",
+    "coverage": "jest --coverage",
+    "coveralls": "cat ./coverage/lcov.info | node node_modules/.bin/coveralls"
   },
   "repository": {
     "type": "git",
@@ -15,5 +17,9 @@
   "bugs": {
     "url": "https://github.com/brietsparks/relational-entities-reducer/issues"
   },
-  "homepage": "https://github.com/brietsparks/relational-entities-reducer#readme"
+  "homepage": "https://github.com/brietsparks/relational-entities-reducer#readme",
+  "devDependencies": {
+    "jest": "^24.5.0",
+    "coveralls": "^3.0.3"
+  }
 }
