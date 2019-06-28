@@ -1,4 +1,2 @@
 node_modules/
-.idea/
-.coveralls.yml
-coverage/
+dist/
