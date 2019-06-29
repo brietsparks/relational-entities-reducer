@@ -78,7 +78,7 @@ export const createActions = (
     [resourceKey]: resource
   });
 
-  const changeBatch = (...resources: [ResourceType, ResourceId, Resource, number?][]) => ({
+  const changeBatch = (...resources: [ResourceType, ResourceId, Resource][]) => ({
     type: CHANGE_BATCH,
     [resourcesKey]: resources
   });
