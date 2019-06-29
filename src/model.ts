@@ -1,45 +1,81 @@
-export type EntityDef = {
-  many?: string[],
-  one?: string[],
-  foreignKeys?: { [entityType: string]: string }
+export const MANY = 'many';
+export const ONE = 'one';
+
+type Relations = {
+  [foreignKey: string]: Relation
 }
 
-export type EntityDefs = {
-  [entityType: string]: EntityDef
+type Relation = {
+  has: 'many' | 'one',
+  type: string
 }
 
-export function validateEntityDefs(entityDefs: EntityDefs = {}) {
-  Object.keys(entityDefs).forEach((entityType: string) => {
-    const entityDef = entityDefs[entityType];
+export type ModelDef = {
+  [entityType: string]: Relations
+}
 
-    if (typeof entityDef !== 'object' || entityDef === null) {
-      throw new Error(`the '${entityType}' entity definition must be an object`);
-    }
+export class Entity {
+  constructor(type: string, relations: Relations, model: Model) {
+  }
+}
 
-    const { many = [], one = [] } = entityDef;
+export class Model {
+}
 
-    if (!(many instanceof Array)) {
-      throw new Error(`${entityType} .many must be an array`);
-    }
+export class InvalidModelDefinition extends Error {}
 
-    many.forEach(relatedType => {
-      if (!entityDefs.hasOwnProperty(relatedType)) {
-        throw new Error(`${entityType} contains .many.${relatedType}, but ${relatedType} is not defined as an entity`);
+export const validateModelDef = (modelDef: ModelDef) => {
+  validateObject(modelDef, 'model definition');
+
+  Object.keys(modelDef).forEach(entityType => {
+    const relations = modelDef[entityType];
+
+    validateObject(relations, `.${entityType}`);
+
+    Object.keys(relations).forEach(foreignKey => {
+      const relation = relations[foreignKey];
+
+      validateObject(relation, `.${entityType}.${foreignKey}`);
+
+      // a relation .has must be "many" or "one"
+      if (relation.has !== MANY && relation.has !== ONE) {
+        throw new InvalidModelDefinition(`.${entityType}.${foreignKey}.has must be either "many" or "one"`)
       }
 
-      if (one.includes(relatedType)) {
-        throw new Error(`${entityType} cannot have ${relatedType} as both a .many and .one relation`);
-      }
-    });
+      // a relation .type must be a string
+      validateString(relation.type, `.${entityType}.${foreignKey}.type`);
 
-    if (!(one instanceof Array)) {
-      throw new Error(`${entityType} .one must be an array`);
-    }
-
-    one.forEach(relatedType => {
-      if (!entityDefs.hasOwnProperty(relatedType)) {
-        throw new Error(`${entityType} contains .one.${relatedType}, but ${relatedType} is not defined as an entity`);
+      // a foreign entity must be defined at the root level of the model
+      if (!modelDef.hasOwnProperty(relation.type)) {
+        throw new InvalidModelDefinition(`.${entityType}.${foreignKey}.type "${relation.type}" is invalid because ${relation.type} is not defined as an entity`);
       }
-    });
+
+      // a related foreign entity must have a relation that points back to this entity
+      let hasReciprocalRelation = false;
+
+      const foreignDef = modelDef[relation.type];
+      Object.keys(foreignDef).forEach(foreignForeignKey => {
+        const foreignRelation = foreignDef[foreignForeignKey];
+        if (foreignRelation.type === entityType) {
+          hasReciprocalRelation = true;
+        }
+      });
+
+      if (!hasReciprocalRelation) {
+        throw new InvalidModelDefinition(`.${entityType}.${foreignKey}.type "${relation.type}" is invalid because ${relation.type} does not have a reciprocal relation for ${entityType}`);
+      }
+    })
   });
-}
+};
+
+const validateObject = (v: any, phrase: string) => {
+  if (typeof v !== 'object' || v === null) {
+    throw new InvalidModelDefinition(`${phrase} must be an object`);
+  }
+};
+
+const validateString = (v: any, phrase: string) => {
+  if (typeof v !== 'string') {
+    throw new InvalidModelDefinition(`${phrase} must be a string`);
+  }
+};

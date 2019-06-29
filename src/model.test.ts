@@ -1,116 +1,115 @@
-import { validateEntityDefs } from './model';
+import { validateModelDef, InvalidModelDefinition } from './model';
+
+const nonObjects = [null, 1, true, false, 'string', undefined];
+const nonStrings = [null, 1, true, false, undefined, [], {}];
 
 describe('model', () => {
-  describe('validateEntityDefs', () => {
-    it('accepts undefined', () => {
-      validateEntityDefs();
-    });
-
-    it('accepts an empty object', () => {
-      validateEntityDefs({});
-    })
-
-    it('accepts an empty object for an entityDef', () => {
-      const entityDefs = {
-        'skill': {}
-      }
-
-      validateEntityDefs(entityDefs);
-    })
-
-    it('throws if an entityDef is not an object', () => {
-      const cases = [null, 1, true, false, 'string', undefined]
-
-      cases.forEach(def => {
-        const entityDefs = { 'skill': def }
-
+  describe('validateModelDef', () => {
+    it('throws if not given an object', () => {
+      nonObjects.forEach(nonObject => {
         // @ts-ignore
-        const actual = () => validateEntityDefs(entityDefs);
-        const error = new Error(`the 'skill' entity definition must be an object`);
+        const actual = () => validateModelDef(nonObject);
+        const error = new InvalidModelDefinition('model definition must be an object');
 
         expect(actual).toThrow(error);
       });
-    })
+    });
 
-    it('throws if entityDef .many is not an array', () => {
-      const cases = [null, 1, true, false, 'string', {}];
-
-      cases.forEach(many => {
-        const entityDefs = {
-          'skill': { many }
+    it(`throws if entity relations is not an object`, () => {
+      nonObjects.forEach(nonObject => {
+        const modelDef = {
+          post: nonObject
         };
 
         // @ts-ignore
-        const actual = () => validateEntityDefs(entityDefs);
-        const error = new Error("skill .many must be an array")
-
+        const actual = () => validateModelDef(modelDef);
+        const error = new InvalidModelDefinition('.post must be an object');
         expect(actual).toThrow(error);
-      });
+      })
     });
 
-    it('throws if entityDef .one is not an array', () => {
-      const cases = [null, 1, true, false, 'string', {}];
-
-      cases.forEach(one => {
-        const entityDefs = {
-          'skill': { one }
+    it('throws if an entity relation is not an object', () => {
+      nonObjects.forEach(nonObject => {
+        const modelDef = {
+          post: {
+            'commentIds': nonObject
+          }
         };
 
         // @ts-ignore
-        const actual = () => validateEntityDefs(entityDefs);
-        const error = new Error("skill .one must be an array")
-
+        const actual = () => validateModelDef(modelDef);
+        const error = new InvalidModelDefinition('.post.commentIds must be an object');
         expect(actual).toThrow(error);
       });
     });
 
-    it('throws if an item in .many is not a key in the entityDefs object', () => {
-      const entityDefs = {
-        'project': {
-          many: ['skill', 'chicken']
-        },
-        'skill': {
-          many: ['project']
-        },
-      };
+    it('throws if an entity relation is not either "many" or "one"', () => {
+      ['foo', ...nonStrings].forEach(nonString => {
+        const modelDef = {
+          post: {
+            'commentIds': {
+              has: nonString,
+              type: 'comment'
+            }
+          }
+        };
 
-      const actual = () => validateEntityDefs(entityDefs);
-      const error = new Error('project contains .many.chicken, but chicken is not defined as an entity')
-
-      expect(actual).toThrow(error);
+        // @ts-ignore
+        const actual = () => validateModelDef(modelDef);
+        const error = new InvalidModelDefinition('.post.commentIds.has must be either "many" or "one"');
+        expect(actual).toThrow(error);
+      });
     });
 
-    it('throws if an item in .one is not a key in the entityDefs object', () => {
-      const entityDefs = {
-        'project': {
-          one: ['organization', 'chicken']
-        },
-        'organization': {
-          many: ['project']
-        },
-      };
+    it('throws if an entity relation .type is not a string', () => {
+      nonStrings.forEach(nonString => {
+        const modelDef = {
+          post: {
+            'commentIds': {
+              has: 'many',
+              type: nonString
+            }
+          }
+        };
 
-      const actual = () => validateEntityDefs(entityDefs);
-      const error = new Error('project contains .one.chicken, but chicken is not defined as an entity')
-
-      expect(actual).toThrow(error);
+        // @ts-ignore
+        const actual = () => validateModelDef(modelDef);
+        const error = new InvalidModelDefinition('.post.commentIds.type must be a string');
+        expect(actual).toThrow(error);
+      });
     });
 
-    it('throws if an item is in both .one and .many', () => {
-      const entityDefs = {
-        'project': {
-          many: ['skill'],
-          one: ['skill']
-        },
-        'skill': {
-          many: ['project']
+    it('throws if a foreign entity type is not defined as an entity', () => {
+      const modelDef = {
+        post: {
+          'commentIds': {
+            has: 'many',
+            type: 'comment'
+          }
         }
       };
 
-      const actual = () => validateEntityDefs(entityDefs);
-      const error = new Error('project cannot have skill as both a .many and .one relation');
-
+      // @ts-ignore
+      const actual = () => validateModelDef(modelDef);
+      const error = new InvalidModelDefinition('.post.commentIds.type "comment" is invalid because comment is not defined as an entity');
       expect(actual).toThrow(error);
-    })
-  })
-})
+    });
+
+    it('throws if a foreign entity does not have a reciprocal relation defined', () => {
+      const modelDef = {
+        post: {
+          'commentIds': {
+            has: 'many',
+            type: 'comment'
+          }
+        },
+        comment: {}
+      };
+
+      // @ts-ignore
+      const actual = () => validateModelDef(modelDef);
+      const error = new InvalidModelDefinition('.post.commentIds.type "comment" is invalid because comment does not have a reciprocal relation for post');
+      expect(actual).toThrow(error);
+    });
+  });
+});
