@@ -16,6 +16,16 @@ type ResourceType = string;
 type ResourceId = string | number;
 type Resource = object;
 
+type AddOptions = {
+  index?: number
+}
+
+type RemoveOptions = {
+  removeRelated?: RemovalChain
+}
+
+type RemovalChain = string[][]
+
 export const createActions = (
   // model: Model, // model will be needed for action param validation
   {
@@ -27,62 +37,76 @@ export const createActions = (
   }: Options = {}
 ) => {
   const ADD = namespace('ADD');
-  const ADD_MANY = namespace('ADD_MANY');
+  const ADD_BATCH = namespace('ADD_BATCH');
   const CHANGE = namespace('CHANGE');
-  const CHANGE_MANY = namespace('CHANGE_MANY');
+  const CHANGE_BATCH = namespace('CHANGE_BATCH');
   const REMOVE = namespace('REMOVE');
-  const REMOVE_MANY = namespace('REMOVE_MANY');
+  const REMOVE_BATCH = namespace('REMOVE_BATCH');
 
-  const add = (resourceType: ResourceType, resourceId: ResourceId, resource?: Resource, index?: number) => {
+  const add = (
+    resourceType: ResourceType,
+    resourceId: ResourceId,
+    resource?: Resource,
+    options?: AddOptions
+  ) => {
     return {
       type: ADD,
       [resourceTypeKey]: resourceType,
       [resourceIdKey]: resourceId,
       [resourceKey]: resource,
-      index
+      options
     };
   };
 
-  const addMany = (...resources: [ResourceType, ResourceId, Resource?, number?][]) => ({
-    type: ADD_MANY,
+  const addBatch = (...resources: [ResourceType, ResourceId, Resource?, AddOptions?][]) => ({
+    type: ADD_BATCH,
     [resourcesKey]: resources
   });
 
-  const change = (resourceType: ResourceType, resourceId: ResourceId, resource: Resource) => ({
+  const change = (
+    resourceType: ResourceType,
+    resourceId: ResourceId,
+    resource: Resource
+  ) => ({
     type: CHANGE,
     [resourceTypeKey]: resourceType,
     [resourceIdKey]: resourceId,
     [resourceKey]: resource
   });
 
-  const changeMany = (...resources: [ResourceType, ResourceId, Resource, number?][]) => ({
-    type: CHANGE_MANY,
+  const changeBatch = (...resources: [ResourceType, ResourceId, Resource, number?][]) => ({
+    type: CHANGE_BATCH,
     [resourcesKey]: resources
   });
 
-  const remove = (resourceType: ResourceType, resourceId: ResourceId) => ({
+  const remove = (
+    resourceType: ResourceType,
+    resourceId: ResourceId,
+    options?: RemoveOptions
+  ) => ({
     type: REMOVE,
     [resourceTypeKey]: resourceType,
     [resourceIdKey]: resourceId,
+    options
   });
 
-  const removeMany = (...resources: [ResourceType, ResourceId][]) => ({
-    type: REMOVE_MANY,
+  const removeBatch = (...resources: [ResourceType, ResourceId][]) => ({
+    type: REMOVE_BATCH,
     [resourcesKey]: resources
   });
 
   return {
     ADD,
-    ADD_MANY,
+    ADD_BATCH,
     CHANGE,
-    CHANGE_MANY,
+    CHANGE_BATCH,
     REMOVE,
-    REMOVE_MANY,
+    REMOVE_BATCH,
     add,
-    addMany,
+    addBatch,
     change,
-    changeMany,
+    changeBatch,
     remove,
-    removeMany,
+    removeBatch,
   };
 };

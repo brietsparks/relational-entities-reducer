@@ -1,16 +1,16 @@
 import { createActions } from './actions';
 
 describe('createActions', () => {
-  const namespace = (actionType: string) => `thing.${actionType}`;
-  const resourceTypeKey = 'thingType';
-  const resourceIdKey = 'thingId';
-  const resourceKey = 'thing';
-  const resourcesKey = 'things';
+  const namespace = (actionType: string) => `record.${actionType}`;
+  const resourceTypeKey = 'recordType';
+  const resourceIdKey = 'recordId';
+  const resourceKey = 'record';
+  const resourcesKey = 'records';
 
   describe('default options', () => {
     const {
       add, ADD,
-      addMany, ADD_MANY
+      addBatch, ADD_BATCH
     } = createActions();
 
     describe('add', () => {
@@ -36,30 +36,30 @@ describe('createActions', () => {
       });
 
       test('with type, id, data, and index', () => {
-        const actual = add('comment', 'c1', { text: 'foo' }, 4);
+        const actual = add('comment', 'c1', { text: 'foo' }, { index: 4 });
         const expected = {
           type: ADD,
           resourceType: 'comment',
           resourceId: 'c1',
           resource: { text: 'foo' },
-          index: 4
+          options: { index: 4 }
         };
         expect(actual).toEqual(expected);
       });
     });
 
-    test('add many', () => {
-      const actual = addMany(
+    test('add batch', () => {
+      const actual = addBatch(
         ['comment', 'c1'],
         ['comment', 'c2', { text: 'foo' }],
-        ['post', 'p1', undefined, 4]
+        ['post', 'p1', undefined, { index: 4 }]
       );
       const expected = {
-        type: ADD_MANY,
+        type: ADD_BATCH,
         resources: [
           ['comment', 'c1'],
           ['comment', 'c2', { text: 'foo' }],
-          ['post', 'p1', undefined, 4]
+          ['post', 'p1', undefined, { index: 4 }]
         ]
       };
       expect(actual).toEqual(expected);
