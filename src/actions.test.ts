@@ -8,7 +8,10 @@ describe('createActions', () => {
   const resourcesKey = 'things';
 
   describe('default options', () => {
-    const { ADD, add } = createActions();
+    const {
+      add, ADD,
+      addMany, ADD_MANY
+    } = createActions();
 
     describe('add', () => {
       test('with type and id', () => {
@@ -43,6 +46,23 @@ describe('createActions', () => {
         };
         expect(actual).toEqual(expected);
       });
+    });
+
+    test('add many', () => {
+      const actual = addMany(
+        ['comment', 'c1'],
+        ['comment', 'c2', { text: 'foo' }],
+        ['post', 'p1', undefined, 4]
+      );
+      const expected = {
+        type: ADD_MANY,
+        resources: [
+          ['comment', 'c1'],
+          ['comment', 'c2', { text: 'foo' }],
+          ['post', 'p1', undefined, 4]
+        ]
+      };
+      expect(actual).toEqual(expected);
     });
   });
 });

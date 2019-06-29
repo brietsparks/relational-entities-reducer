@@ -16,13 +16,16 @@ type ResourceType = string;
 type ResourceId = string | number;
 type Resource = object;
 
-export const createActions = ({
-  namespace = defaultNamespace,
-  resourceTypeKey = defaultResourceTypeKey,
-  resourceIdKey = defaultResourceIdKey,
-  resourceKey = defaultResourceKey,
-  resourcesKey = defaultResourcesKey
-}: Options = {}) => {
+export const createActions = (
+  // model: Model, // model will be needed for action param validation
+  {
+    namespace = defaultNamespace,
+    resourceTypeKey = defaultResourceTypeKey,
+    resourceIdKey = defaultResourceIdKey,
+    resourceKey = defaultResourceKey,
+    resourcesKey = defaultResourcesKey
+  }: Options = {}
+) => {
   const ADD = namespace('ADD');
   const ADD_MANY = namespace('ADD_MANY');
   const CHANGE = namespace('CHANGE');
@@ -40,7 +43,7 @@ export const createActions = ({
     };
   };
 
-  const addMany = (resources: [ResourceType, ResourceId, Resource, number?][] = []) => ({
+  const addMany = (...resources: [ResourceType, ResourceId, Resource?, number?][]) => ({
     type: ADD_MANY,
     [resourcesKey]: resources
   });
@@ -52,7 +55,7 @@ export const createActions = ({
     [resourceKey]: resource
   });
 
-  const changeMany = (resources: [ResourceType, ResourceId, Resource, number?][] = []) => ({
+  const changeMany = (...resources: [ResourceType, ResourceId, Resource, number?][]) => ({
     type: CHANGE_MANY,
     [resourcesKey]: resources
   });
@@ -63,7 +66,7 @@ export const createActions = ({
     [resourceIdKey]: resourceId,
   });
 
-  const removeMany = (resources: [ResourceType, ResourceId][] = []) => ({
+  const removeMany = (...resources: [ResourceType, ResourceId][]) => ({
     type: REMOVE_MANY,
     [resourcesKey]: resources
   });
