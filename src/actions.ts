@@ -17,14 +17,18 @@ type ResourceId = string | number;
 type Resource = object;
 
 type AddOptions = {
-  index?: number
+  index?: number,
+  addRelated?: boolean
+}
+
+type EditOptions = {
 }
 
 type RemoveOptions = {
-  removeRelated?: RemovalChain
+  removeRelated?: RelationChain
 }
 
-type RemovalChain = string[][]
+type RelationChain = string[][]
 
 export const createActions = (
   // model: Model, // model will be needed for action param validation
