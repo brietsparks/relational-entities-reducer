@@ -68,8 +68,7 @@ export const makeAdd = (namespace: Namespace, model: Model) => {
 
 type FkData = Record<Fkey, Set<Id>>
 
-
-export const convertRelatedIdsToSets = (resourceType: Type, data: Data, model: Model) => {
+export const convertRelatedIdsToSets = (resourceType: Type, data: Data, model: Model): Data => {
   const fks = model.getEntity(resourceType).getFksMany();
 
   const fkData: FkData = {};

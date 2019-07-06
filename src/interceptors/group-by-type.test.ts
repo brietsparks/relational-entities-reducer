@@ -58,4 +58,20 @@ describe('interceptor/on-add', () => {
 
     expect(actual).toEqual(expected);
   });
+
+  test('with empty state', () => {
+    const action = {
+      type: 'whatever',
+      resources: new Map()
+    };
+
+    const actual = groupByType(action);
+
+    const expected = {
+      type: 'whatever',
+      resources: {}
+    };
+
+    expect(actual).toEqual(expected);
+  });
 });

@@ -115,25 +115,25 @@ describe('actions/add', () => {
         });
       });
     });
+  });
 
-    test('convertRelatedIdsToSets', () => {
-      const model = new Model(modelSchema);
+  test('convertRelatedIdsToSets', () => {
+    const model = new Model(modelSchema);
 
-      const data = {
-        authorId: 'u1',
-        editorIds: ['u2', 'u3'],
-        commentIds: ['c1', 'c2']
-      };
+    const data = {
+      authorId: 'u1',
+      editorIds: ['u2', 'u3'],
+      commentIds: ['c1', 'c2']
+    };
 
-      const actual = convertRelatedIdsToSets('post', data, model);
+    const actual = convertRelatedIdsToSets('post', data, model);
 
-      const expected = {
-        authorId: 'u1',
-        editorIds: new Set(['u2', 'u3']),
-        commentIds: new Set(['c1', 'c2'])
-      };
+    const expected = {
+      authorId: 'u1',
+      editorIds: new Set(['u2', 'u3']),
+      commentIds: new Set(['c1', 'c2'])
+    };
 
-      expect(actual).toEqual(expected);
-    });
+    expect(actual).toEqual(expected);
   });
 });

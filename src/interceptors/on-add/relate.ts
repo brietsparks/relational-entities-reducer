@@ -24,7 +24,7 @@ interface Resource {
   options: { ignoreIdIndex?: boolean }
 }
 
-export type Resources = Map<CompositeIdString, Resource>;
+type Resources = Map<CompositeIdString, Resource>;
 
 export default function relate(model: Model, state: State, action: Action): Action {
   const resources = action.resources;
