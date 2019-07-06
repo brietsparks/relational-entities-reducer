@@ -1,8 +1,8 @@
 {
-  "name": "rel-ent-red-2a",
+  "name": "relational-entities-reducer",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "jest --watchAll",
     "build" : "tsc"
