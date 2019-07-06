@@ -1,8 +1,15 @@
 import { createResourcesReducer } from './resources';
 import { createIdsReducer } from './ids';
 import { Type, CollectionState } from '../model/resource';
-import { Action, Actions } from '../actions';
 import { Model } from '../model';
+
+export interface Actions {
+  ADD: string
+}
+
+export interface Action {
+  type: string
+}
 
 export type Reducer = (state: CollectionState|undefined, action: Action) => CollectionState;
 

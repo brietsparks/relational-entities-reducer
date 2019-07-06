@@ -1,5 +1,5 @@
 import { Model } from '../model';
-import { CompositeIdString, Id, State, Type } from '../model/resource';
+import { Id, State, Type } from '../model/resource';
 import { Actions, Action } from '../actions';
 import interceptor from '../interceptor';
 import { createCollectionReducer, Reducer as CollectionReducer } from './collection';
