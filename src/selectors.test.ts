@@ -3,8 +3,8 @@ import { nonObjects, nonArrays } from './mocks';
 import {
   InvalidState,
   getCollection,
-  getCollectionResources,
-  getCollectionIds,
+  getResources,
+  getIds,
   getResource,
   getDoesResourceExist
 } from './selectors';
@@ -36,7 +36,7 @@ describe('selectors', () => {
     });
   });
 
-  describe('getCollectionResources', () => {
+  describe('getResources', () => {
     it('throws if resources is not an object', () => {
       nonObjects.forEach(nonObject => {
         const state = {
@@ -47,7 +47,7 @@ describe('selectors', () => {
         };
 
         // @ts-ignore
-        const actual = () => getCollectionResources(state, 'comment');
+        const actual = () => getResources(state, 'comment');
         const error = new InvalidState('resources of "comment" collection must be a(n) object literal')
 
         expect(actual).toThrow(error);
@@ -62,14 +62,14 @@ describe('selectors', () => {
         }
       };
 
-      const actual = getCollectionResources(state, 'comment');
+      const actual = getResources(state, 'comment');
       const expected = { 'c1': {} };
 
       expect(actual).toEqual(expected);
     });
   });
 
-  describe('getCollectionIds', () => {
+  describe('getIds', () => {
     it('throws if ids is not an array', () => {
       nonArrays.forEach(nonArray => {
         const state = {
@@ -80,7 +80,7 @@ describe('selectors', () => {
         };
 
         // @ts-ignore
-        const actual = () => getCollectionIds(state, 'comment');
+        const actual = () => getIds(state, 'comment');
         const error = new InvalidState('ids of "comment" collection must be a(n) array');
 
         expect(actual).toThrow(error);
@@ -95,7 +95,7 @@ describe('selectors', () => {
         }
       };
 
-      const actual = getCollectionIds(state, 'comment');
+      const actual = getIds(state, 'comment');
       const expected = ['c1'];
 
       expect(actual).toEqual(expected);

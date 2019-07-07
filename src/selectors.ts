@@ -15,7 +15,7 @@ export const getCollection = (state: State, type: resource.Type) => {
   return collection;
 };
 
-export const getCollectionResources = (state: State, type: resource.Type) => {
+export const getResources = (state: State, type: resource.Type) => {
   const collection = getCollection(state, type);
 
   const resources = collection.resources;
@@ -27,7 +27,7 @@ export const getCollectionResources = (state: State, type: resource.Type) => {
   return resources;
 };
 
-export const getCollectionIds = (state: State, type: resource.Type) => {
+export const getIds = (state: State, type: resource.Type) => {
   const collection = getCollection(state, type);
 
   const ids = collection.ids;
@@ -40,7 +40,7 @@ export const getCollectionIds = (state: State, type: resource.Type) => {
 };
 
 export const getResource = (state: State, [type, id]: resource.CompositeId): Data => {
-  const resources = getCollectionResources(state, type);
+  const resources = getResources(state, type);
   return resources[id];
 };
 
