@@ -51,9 +51,8 @@ export const makeAdd = (namespace: Namespace, model: Model) => {
       resource.data = data ? convertRelatedIdsToSets(resourceType, data, model) : {};
       resource.options = options || {};
 
-      /* add to outputs */
+      // add to outputs
       const compositeIdString = makeCompositeIdString(resourceType, resourceId);
-
       outputResources.set(compositeIdString, resource)
     });
 

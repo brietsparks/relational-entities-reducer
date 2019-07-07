@@ -71,6 +71,52 @@ describe('model/model', () => {
   describe('Entity', () => {
     const model = new Model(modelSchema);
 
+    test('hasFk', () => {
+      let actual;
+
+      actual = model.getEntity('post').hasFk('commentIds');
+      expect(actual).toEqual(true);
+
+      actual = model.getEntity('post').hasFk('chickenIds');
+      expect(actual).toEqual(false);
+    });
+
+    describe('isManyFk', () => {
+      it('returns whether a valid fk is a many-relation', () => {
+        let actual;
+
+        actual = model.getEntity('post').isManyFk('commentIds');
+        expect(actual).toEqual(true);
+
+        actual = model.getEntity('post').isManyFk('authorId');
+        expect(actual).toEqual(false);
+      });
+
+      it('throws if given invalid fk', () => {
+        const actual = () => model.getEntity('post').isManyFk('chickenIds');
+        const error = new Error('entity "post" has no fk "chickenIds"');
+        expect(actual).toThrow(error);
+      });
+    });
+
+    describe('isOneFk', () => {
+      it('returns whether a valid fk is a many-relation', () => {
+        let actual;
+
+        actual = model.getEntity('post').isOneFk('authorId');
+        expect(actual).toEqual(true);
+
+        actual = model.getEntity('post').isOneFk('commentIds');
+        expect(actual).toEqual(false);
+      });
+
+      it('throws if given invalid fk', () => {
+        const actual = () => model.getEntity('post').isOneFk('chickenIds');
+        const error = new Error('entity "post" has no fk "chickenIds"');
+        expect(actual).toThrow(error);
+      });
+    });
+
     test('getFksMany', () => {
       const actual = model.getEntity('user').getFksMany();
       const expected = [

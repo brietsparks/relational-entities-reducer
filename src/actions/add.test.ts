@@ -8,7 +8,6 @@ describe('actions/add', () => {
 
     it('returns an action TYPE', () => {
       const model = new Model({});
-      const namespace = (type: string) => `n.${type}`;
       const { TYPE } = makeAdd(namespace, model);
       expect(TYPE).toEqual('n.ADD');
     });

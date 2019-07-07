@@ -34,6 +34,26 @@ export class Entity {
     return new Error(`entity "${this.type}" has no fk "${fk}"`);
   }
 
+  hasFk(fk: Fkey): boolean {
+    return Object.keys(this.schema).includes(fk);
+  }
+
+  isManyFk(fk: Fkey): boolean {
+    if (!this.hasFk(fk)) {
+      throw this.errorFkDoesNotExist(fk);
+    }
+
+    return this.schema[fk].has === MANY;
+  }
+
+  isOneFk(fk: Fkey): boolean {
+    if (!this.hasFk(fk)) {
+      throw this.errorFkDoesNotExist(fk);
+    }
+
+    return this.schema[fk].has === ONE;
+  }
+
   getFksMany(): Fkey[] {
     return Object.entries(this.schema).reduce((fksMany, [fk, { has }]) => {
       if (has === MANY) {

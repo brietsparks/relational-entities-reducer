@@ -9,6 +9,30 @@ interface BatchItem {
   options?: object
 }
 
+export const validateResourceType = (resourceType: Type, model: Model) => {
+  if (!model.hasEntity(resourceType)) {
+    throw new Error (`model does not have an entity of type "${resourceType}"`);
+  }
+};
+
+export const validateResourceId = (resourceId: Id) => {
+  if (!isStringOrNumber(resourceId)) {
+    throw new Error(`resource id must be a string or number`)
+  }
+};
+
+export const validateResourceData = (data?: Data, isRequired = false) => {
+  if ((data || isRequired) && !isObject(data)) {
+    throw new Error(`resource data must be an object literal`);
+  }
+};
+
+export const validateOptions = (options?: object, isRequired = false) => {
+  if ((options || isRequired) && !isObject(options)) {
+    throw new Error(`resource options must be an object literal`);
+  }
+};
+
 export const validateBatchItem = (model: Model, item: BatchItem) => {
   const { resourceType, resourceId, data, options } = item;
 
