@@ -4,6 +4,15 @@ import { validateResourceOptions, validateResourceId, validateResourceType } fro
 import { Id, Type, CompositeId, RelationRemovalSchema } from '../interfaces';
 import { makeCompositeId } from '../util';
 
+export interface Action {
+  type: string,
+  resources: OutputResources
+}
+
+export interface Creator {
+  (...p: InputResources): Action
+}
+
 interface Resource {
   resourceType: Type;
   resourceId: Id;
@@ -19,15 +28,6 @@ type InputTuple = [Type, Id, Options?];
 type InputResource = InputObject | InputTuple;
 type InputResources = InputResource[];
 type OutputResources = { [s in CompositeId]: Resource }
-
-interface Creator {
-  (...p: InputResources): Action
-}
-
-export interface Action {
-  type: string,
-  resources: OutputResources
-}
 
 export const makeRemove = (namespace: Namespace, model: Model) => {
   const TYPE = namespace('REMOVE');

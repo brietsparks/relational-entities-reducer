@@ -1,6 +1,8 @@
-import { onAdd } from './interceptor';
+import { onAdd, onRemove } from './interceptor';
+
 import { modelSchema } from './mocks';
 import { Model } from './model';
+import { RelationRemovalSchema } from './interfaces';
 
 
 describe('interceptor', () => {
@@ -85,6 +87,96 @@ describe('interceptor', () => {
       ids: {
         comment: ['c0', 'c10'],
         post: ['p10']
+      }
+    };
+
+    expect(actual).toEqual(expected);
+  });
+
+  test('onRemove', () => {
+    const state = {
+      user: {
+        resources: {
+          'u1': { authoredPostIds: ['p1'], commentIds: ['c2'] },
+          'u2': {}
+        },
+        ids: ['u1', 'u2']
+      },
+      post: {
+        resources: {
+          'p1': { authorId: 'u1', commentIds: ['c1'] },
+        },
+        ids: ['p1']
+      },
+      comment: {
+        resources: {
+          'c1': { postId: 'p1' },
+          'c2': { userId: 'u1' }
+        },
+        ids: ['c1', 'c2']
+      }
+    };
+
+    const userRemovalSchema: RelationRemovalSchema = {
+      commentIds: {},
+      authoredPostIds: {
+        commentIds: {}
+      },
+      thisInvalidFkGetsSkipped: {}
+    };
+
+    const action = {
+      type: 'whatever',
+      resources: {
+        'user.u1': {
+          resourceType: 'user',
+          resourceId: 'u1',
+          options: { removeRelated: userRemovalSchema }
+        },
+        'user.u2': {
+          resourceType: 'user',
+          resourceId: 'u2',
+          options: {}
+        }
+      }
+    };
+
+    const actual = onRemove(model, state, action);
+
+    const expected = {
+      type: 'whatever',
+      resources: {
+        user: {
+          'u1': {
+            resourceType: 'user',
+            resourceId: 'u1',
+            options: { removeRelated: userRemovalSchema }
+          },
+          'u2': {
+            resourceType: 'user',
+            resourceId: 'u2',
+            options: {}
+          },
+        },
+        post: {
+          'p1': {
+            resourceType: 'post',
+            resourceId: 'p1',
+            options: {}
+          },
+        },
+        comment: {
+          'c1': {
+            resourceType: 'comment',
+            resourceId: 'c1',
+            options: {},
+          },
+          'c2': {
+            resourceType: 'comment',
+            resourceId: 'c2',
+            options: {},
+          }
+        }
       }
     };
 

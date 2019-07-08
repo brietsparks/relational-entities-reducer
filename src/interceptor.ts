@@ -27,6 +27,10 @@ export default (model: Model, state: State, action: Action, allActions: Actions)
     action = onAdd(model, state, action as InputAddAction);
   }
 
+  if (action.type === allActions.REMOVE) {
+    action = onRemove(model, state, action as InputRemoveAction);
+  }
+
   return action;
 }
 

@@ -4,7 +4,8 @@ import { Type, CollectionState } from '../interfaces';
 import { Model } from '../model';
 
 export interface Actions {
-  ADD: string
+  ADD: string,
+  REMOVE: string,
 }
 
 export interface Action {

@@ -1,10 +1,11 @@
 import makeActionsAndReducer from '.';
 import { modelSchema } from './mocks';
+import { RelationRemovalSchema } from './interfaces';
 
 describe('index', () => {
-  test('add resources', () => {
-    const { reducer, actions } = makeActionsAndReducer(modelSchema);
+  const { reducer, actions } = makeActionsAndReducer(modelSchema);
 
+  test('add resources', () => {
     const state = {
       'comment': {
         resources: { 'c1': {}, 'c2': {} },
@@ -58,5 +59,70 @@ describe('index', () => {
     };
 
     expect(actualChanged).toEqual(expectedChanged);
+  });
+
+  test('remove resources', () => {
+    const state = {
+      user: {
+        resources: {
+          'u1': { authoredPostIds: ['p1'], commentIds: ['c2'] },
+          'u2': { editablePostIds: ['p2'] },
+          'u3': {}
+        },
+        ids: ['u1', 'u2', 'u3']
+      },
+      post: {
+        resources: {
+          'p1': { authorId: 'u1', commentIds: ['c1'] },
+          'p2': { editorIds: ['u2'] }
+        },
+        ids: ['p1', 'p2']
+      },
+      comment: {
+        resources: {
+          'c1': { postId: 'p1' },
+          'c2': { userId: 'u1' }
+        },
+        ids: ['c1', 'c2']
+      }
+    };
+
+    const userRemovalSchema: RelationRemovalSchema = {
+      commentIds: {},
+      authoredPostIds: {
+        commentIds: {}
+      },
+      thisInvalidFkGetsSkipped: {}
+    };
+
+    const action = actions.remove(
+      ['user', 'u1', { removeRelated: userRemovalSchema }],
+      { resourceType: 'user', resourceId: 'u2' }
+    );
+
+    const actual = reducer(state, action);
+
+    const expected = {
+      user: {
+        resources: { 'u3': {} },
+        ids: ['u3']
+      },
+      post: {
+        resources: {
+          'p2': { editorIds: ['u2'] }
+        },
+        ids: ['p2']
+      },
+      comment: {
+        resources: {},
+        ids: []
+      },
+      permission: {
+        resources: {},
+        ids: []
+      }
+    };
+
+    expect(actual).toEqual(expected);
   });
 });

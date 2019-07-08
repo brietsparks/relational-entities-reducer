@@ -1,12 +1,29 @@
 import { Model } from '../model';
-import { Id, IdsState, Type } from '../interfaces';
+import {
+  IdsState,
+  Type,
+  IdsByType,
+  ResourceCollectionsByType,
+  ResourceCollectionObjectById,
+  ActionResource, RelationRemovalSchema
+} from '../interfaces';
 
-interface Actions { ADD: string }
+import { isObject } from '../util';
+
+interface Actions { ADD: string, REMOVE: string }
 interface Action { type: string }
 export type Reducer = (state: IdsState|undefined, action: Action) => IdsState;
 
 interface AddAction extends Action {
-  ids: { [type in Type]: Id[] }
+  ids: IdsByType
+}
+
+
+interface RemoveActionOptions {
+  removeRelated?: RelationRemovalSchema
+}
+interface RemoveAction extends Action {
+  resources: ResourceCollectionsByType<ResourceCollectionObjectById<ActionResource<RemoveActionOptions>>>
 }
 
 export const createIdsReducer = (type: Type, actions: Actions): Reducer => {
@@ -24,6 +41,17 @@ export const createIdsReducer = (type: Type, actions: Actions): Reducer => {
         }
 
         return [...state, ...addableIds];
+      }
+      case actions.REMOVE: {
+        const removeAction = action as RemoveAction;
+
+        const resourcesOfType = removeAction.resources[type];
+
+        if (!isObject(resourcesOfType)) {
+          return state;
+        }
+
+        return state.filter(id => !resourcesOfType[id]);
       }
       default:
         return state;

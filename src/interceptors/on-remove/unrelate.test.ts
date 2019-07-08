@@ -39,22 +39,20 @@ describe('interceptors/on-remove/unrelated', () => {
         thisInvalidFkGetsSkipped: {}
       };
 
-      const resources = {
-        'user.u1': {
-          resourceType: 'user',
-          resourceId: 'u1',
-          options: { removeRelated: userRemovalSchema }
-        },
-        'user.u2': {
-          resourceType: 'user',
-          resourceId: 'u2',
-          options: {}
-        }
-      };
-
-      const action: InputAction = {
+      const action = {
         type: 'whatever',
-        resources
+        resources: {
+          'user.u1': {
+            resourceType: 'user',
+            resourceId: 'u1',
+            options: { removeRelated: userRemovalSchema }
+          },
+          'user.u2': {
+            resourceType: 'user',
+            resourceId: 'u2',
+            options: {}
+          }
+        }
       };
 
       const actual = unrelate(model, state, action);
