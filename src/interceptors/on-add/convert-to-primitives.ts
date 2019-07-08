@@ -11,16 +11,7 @@ import {
 } from '../../interfaces';
 import { Model } from '../../model';
 
-export interface InputAction {
-  type: string,
-  resources: InputResourcesByType
-}
-
-export interface OutputAction {
-  type: string,
-  resources: OutputResourcesByType,
-  ids: IdsByType
-}
+type Output = [OutputResourcesByType,IdsByType];
 
 type Options = { ignoreIdIndex?: boolean };
 type Resource = ActionResource<Options>;
@@ -29,11 +20,11 @@ type InputResourcesByType = ResourceCollectionsByType<InputResources>
 type OutputResources = ResourceCollectionObjectById<Resource>;
 type OutputResourcesByType = ResourceCollectionsByType<OutputResources>;
 
-export default function convertToPrimitives(model: Model, action: InputAction): OutputAction {
+export default function convertToPrimitives(model: Model, resources: InputResourcesByType): Output {
   const outputResources: OutputResourcesByType = {};
   const outputIds: IdsByType = {};
 
-  Object.entries(action.resources).forEach(([resourceType, resources]) => {
+  Object.entries(resources).forEach(([resourceType, resources]) => {
     outputResources[resourceType] = {};
     outputIds[resourceType] = [];
 
@@ -48,11 +39,7 @@ export default function convertToPrimitives(model: Model, action: InputAction): 
     })
   });
 
-  return {
-    ...action,
-    resources: outputResources,
-    ids: outputIds
-  }
+  return [outputResources, outputIds];
 }
 
 type FkData = Record<Fkey, Id[]>

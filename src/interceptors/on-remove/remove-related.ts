@@ -10,14 +10,6 @@ import { Model } from '../../model';
 import { makeCompositeId } from '../../util';
 import * as selectors from '../../selectors';
 
-export interface InputAction extends Action {}
-export interface OutputAction extends Action {}
-
-interface Action {
-  type: string,
-  resources: Resources
-}
-
 interface Options {
   removeRelated?: RelationRemovalSchema
 }
@@ -25,11 +17,11 @@ interface Options {
 interface Resource extends ResourcePointerObject {
   options: Options
 }
-type Resources = ResourceCollectionObjectByCid<Resource>
-export default function removeRelated(model: Model, state: State, action: Action): Action {
+
+export type Resources = ResourceCollectionObjectByCid<Resource>
+export default function removeRelated(model: Model, state: State, resources: Resources): Resources {
   let relatedResources: Resources = {};
 
-  const resources = action.resources;
   Object.entries(resources).forEach(([compositeIdString, resource]) => {
     if (resource.options.removeRelated) {
       const relatedResourcesToRemove = getRelatedResourcesToRemove(
@@ -44,15 +36,10 @@ export default function removeRelated(model: Model, state: State, action: Action
     }
   });
 
-  const outputResources = {
+  return {
     ...resources,
     ...relatedResources
   };
-
-  return {
-    ...action,
-    resources: outputResources
-  }
 };
 
 export const getRelatedResourcesToRemove = (

@@ -6,7 +6,7 @@ import { makeCompositeId } from '../util';
 
 export interface Action {
   type: string,
-  resources: OutputResources
+  remove: OutputResources
 }
 
 export interface Creator {
@@ -59,7 +59,7 @@ export const makeRemove = (namespace: Namespace, model: Model) => {
 
     return {
       type: TYPE,
-      resources: outputResources
+      remove: outputResources
     }
   };
 

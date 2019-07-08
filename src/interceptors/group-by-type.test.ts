@@ -48,75 +48,39 @@ describe('interceptor/on-add', () => {
 
   describe('groupMapsByType', () => {
     it('nests resources into groups by resource type', () => {
-      const action = {
-        type: 'whatever',
-        resources: new Map(Object.entries(inputResourcesObject)),
-      };
-
-      const actual = groupMapsByType(action);
+      const actual = groupMapsByType(new Map(Object.entries(inputResourcesObject)));
 
       const expected = {
-        type: 'whatever',
-        resources: {
-          comment: new Map(Object.entries(outputCommentsObject)),
-          post: new Map(Object.entries(outputPostsObject))
-        },
+        comment: new Map(Object.entries(outputCommentsObject)),
+        post: new Map(Object.entries(outputPostsObject))
       };
 
       expect(actual).toEqual(expected);
     });
 
     test('with empty state', () => {
-      const action = {
-        type: 'whatever',
-        resources: new Map()
-      };
+      const actual = groupMapsByType(new Map());
 
-      const actual = groupMapsByType(action);
-
-      const expected = {
-        type: 'whatever',
-        resources: {}
-      };
-
-      expect(actual).toEqual(expected);
+      expect(actual).toEqual({});
     });
   });
 
   describe('groupObjectsByType', () => {
     it('nests resources into groups by resource type', () => {
-      const action = {
-        type: 'whatever',
-        resources: inputResourcesObject,
-      };
-
-      const actual = groupObjectsByType(action);
+      const actual = groupObjectsByType(inputResourcesObject);
 
       const expected = {
-        type: 'whatever',
-        resources: {
-          comment: outputCommentsObject,
-          post: outputPostsObject
-        },
+        comment: outputCommentsObject,
+        post: outputPostsObject
       };
 
       expect(actual).toEqual(expected);
     });
 
     test('with empty state', () => {
-      const action = {
-        type: 'whatever',
-        resources: {}
-      };
+      const actual = groupObjectsByType({});
 
-      const actual = groupObjectsByType(action);
-
-      const expected = {
-        type: 'whatever',
-        resources: {}
-      };
-
-      expect(actual).toEqual(expected);
+      expect(actual).toEqual({});
     });
   });
 });

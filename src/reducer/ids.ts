@@ -23,7 +23,7 @@ interface RemoveActionOptions {
   removeRelated?: RelationRemovalSchema
 }
 interface RemoveAction extends Action {
-  resources: ResourceCollectionsByType<ResourceCollectionObjectById<ActionResource<RemoveActionOptions>>>
+  remove: ResourceCollectionsByType<ResourceCollectionObjectById<ActionResource<RemoveActionOptions>>>
 }
 
 export const createIdsReducer = (type: Type, actions: Actions): Reducer => {
@@ -45,7 +45,7 @@ export const createIdsReducer = (type: Type, actions: Actions): Reducer => {
       case actions.REMOVE: {
         const removeAction = action as RemoveAction;
 
-        const resourcesOfType = removeAction.resources[type];
+        const resourcesOfType = removeAction.remove[type];
 
         if (!isObject(resourcesOfType)) {
           return state;

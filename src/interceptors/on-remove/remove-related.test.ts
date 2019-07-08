@@ -3,7 +3,7 @@ import { modelSchema } from '../../mocks';
 import removeRelated, { getRelatedResourcesToRemove } from './remove-related';
 import { RelationRemovalSchema } from '../../interfaces';
 
-describe('interceptors/on-remove/removeRelatedd', () => {
+describe('interceptors/on-remove/removeRelated', () => {
   const model = new Model(modelSchema);
 
   describe('removeRelated', () => {
@@ -39,52 +39,46 @@ describe('interceptors/on-remove/removeRelatedd', () => {
         thisInvalidFkGetsSkipped: {}
       };
 
-      const action = {
-        type: 'whatever',
-        resources: {
-          'user.u1': {
-            resourceType: 'user',
-            resourceId: 'u1',
-            options: { removeRelated: userRemovalSchema }
-          },
-          'user.u2': {
-            resourceType: 'user',
-            resourceId: 'u2',
-            options: {}
-          }
+      const resources = {
+        'user.u1': {
+          resourceType: 'user',
+          resourceId: 'u1',
+          options: { removeRelated: userRemovalSchema }
+        },
+        'user.u2': {
+          resourceType: 'user',
+          resourceId: 'u2',
+          options: {}
         }
       };
 
-      const actual = removeRelated(model, state, action);
+      const actual = removeRelated(model, state, resources);
 
       const expected = {
-        type: 'whatever',
-        resources: {
-          'user.u1': {
-            resourceType: 'user',
-            resourceId: 'u1',
-            options: { removeRelated: userRemovalSchema }
-          },
-          'user.u2': {
-            resourceType: 'user',
-            resourceId: 'u2',
-            options: {}
-          },
-          'post.p1': {
-            resourceType: 'post',
-            resourceId: 'p1',
-            options: {}
-          },
-          'comment.c1': {
-            resourceType: 'comment',
-            resourceId: 'c1',
-            options: {},
-          },
-          'comment.c2': {
-            resourceType: 'comment',
-            resourceId: 'c2',
-            options: {},
-          }
+        'user.u1': {
+          resourceType: 'user',
+          resourceId: 'u1',
+          options: { removeRelated: userRemovalSchema }
+        },
+        'user.u2': {
+          resourceType: 'user',
+          resourceId: 'u2',
+          options: {}
+        },
+        'post.p1': {
+          resourceType: 'post',
+          resourceId: 'p1',
+          options: {}
+        },
+        'comment.c1': {
+          resourceType: 'comment',
+          resourceId: 'c1',
+          options: {},
+        },
+        'comment.c2': {
+          resourceType: 'comment',
+          resourceId: 'c2',
+          options: {},
         }
       };
 

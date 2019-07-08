@@ -127,7 +127,7 @@ describe('interceptor', () => {
 
     const action = {
       type: 'whatever',
-      resources: {
+      remove: {
         'user.u1': {
           resourceType: 'user',
           resourceId: 'u1',
@@ -145,7 +145,7 @@ describe('interceptor', () => {
 
     const expected = {
       type: 'whatever',
-      resources: {
+      remove: {
         user: {
           'u1': {
             resourceType: 'user',

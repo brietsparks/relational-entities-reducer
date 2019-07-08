@@ -11,23 +11,11 @@ import { makeCompositeId } from '../../util';
 import { Model } from '../../model';
 import * as selectors from '../../selectors';
 
-export interface InputAction extends Action {}
-export interface OutputAction extends Action {}
-
-interface Action {
-  type: string,
-  resources: Resources
-}
-
-interface Options {
-  ignoreIdIndex?: boolean
-}
-
+interface Options { ignoreIdIndex?: boolean }
 type Resource = ActionResource<Options>;
 type Resources = ResourceCollectionMapByCid<Resource>;
 
-export default function relate(model: Model, state: State, action: Action): Action {
-  const resources = action.resources;
+export default function relate(model: Model, state: State, resources: Resources): Resources {
   const relatedResources: Resources = new Map();
 
   resources.forEach(resource => {
@@ -107,13 +95,8 @@ export default function relate(model: Model, state: State, action: Action): Acti
     });
   });
 
-  const outputResources: Resources = new Map([
+  return new Map([
     ...Array.from(resources),
     ...Array.from(relatedResources)
   ]);
-
-  return {
-    ...action,
-    resources: outputResources
-  };
 }

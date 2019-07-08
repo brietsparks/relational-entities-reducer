@@ -22,12 +22,16 @@ interface Action {
 
 export type Reducer = (state: ResourcesState|undefined, action: Action) => ResourcesState;
 
-interface ResourcesAction<R> extends Action {
-  resources: ResourceCollectionsByType<ResourceCollectionObjectById<R>>
+interface AddAction extends Action {
+  resources: ResourceCollectionsByType<ResourceCollectionObjectById<AddableResource>>
 }
 
 interface AddableResource extends ResourcePointerObject {
   data: Data
+}
+
+interface RemoveAction extends Action {
+  remove: ResourceCollectionsByType<ResourceCollectionObjectById<ResourcePointerObject>>
 }
 
 export const createResourcesReducer = (type: Type, actions: Actions): Reducer => {
@@ -36,7 +40,7 @@ export const createResourcesReducer = (type: Type, actions: Actions): Reducer =>
   return (state: ResourcesState = emptyState, action) => {
     switch (action.type) {
       case actions.ADD: {
-        const addAction = action as ResourcesAction<AddableResource>;
+        const addAction = action as AddAction;
 
         const resources = addAction.resources[type];
 
@@ -53,9 +57,9 @@ export const createResourcesReducer = (type: Type, actions: Actions): Reducer =>
         return {...state, ...addableResources};
       }
       case actions.REMOVE:
-        const removeAction = action as ResourcesAction<ResourcePointerObject>;
+        const removeAction = action as RemoveAction;
 
-        const resources = removeAction.resources[type];
+        const resources = removeAction.remove[type];
 
         if (!isObject(resources)) {
           return state;

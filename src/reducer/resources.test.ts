@@ -80,7 +80,7 @@ describe('reducer/resources', () => {
 
       const action = {
         type: 'REMOVE',
-        resources: {
+        remove: {
           comment: {
             'c1': { resourceType: 'comment', resourceId: 'c1' },
             'c3': { resourceType: 'comment', resourceId: 'c3' }

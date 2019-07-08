@@ -2,18 +2,17 @@
 import { Model } from './model';
 import {
   State,
-  Type,
-  Id,
   ResourceCollectionMapByCid,
-  ResourceCollectionMapById,
   ResourcePointerObject,
   ActionResource,
   ResourceCollectionsByType,
-  ResourceCollectionObjectById, ResourceCollectionObjectByCid
+  ResourceCollectionObjectById, ResourceCollectionObjectByCid, IdsByType
 } from './interfaces';
 
 // actions
 import { Action, Actions } from './actions';
+import { Action as InputAddAction } from './actions/add';
+import { Action as InputRemoveAction } from './actions/remove';
 
 // interceptors
 import { filterMap as filterMapResourcesByExistence, filterObject as filterObjectResourcesByExistence } from './interceptors/filter-by-existence';
@@ -34,36 +33,33 @@ export default (model: Model, state: State, action: Action, allActions: Actions)
   return action;
 }
 
-interface InputAddAction extends Action {
-  resources: ResourceCollectionMapByCid<ResourcePointerObject>
-}
 interface OutputAddAction extends Action {
-  resources: ResourceCollectionsByType<ResourceCollectionObjectById<ActionResource>>
+  resources: ResourceCollectionsByType<ResourceCollectionObjectById<ActionResource>>,
+  ids: IdsByType
 }
 export const onAdd = (model: Model, state: State, inputAction: InputAddAction): OutputAddAction => {
-  let intercepted;
+  const filtered = filterMapResourcesByExistence(model, state, inputAction.resources, false);
+  const interrelated = relate(model, state, filtered as ResourceCollectionMapByCid<ActionResource>);
+  const grouped = groupMapsByType(interrelated);
+  const [outputResources, outputIds] = convertToPrimitives(model, grouped as ResourceCollectionsByType<ResourceCollectionMapByCid<ActionResource>>);
 
-  intercepted = filterMapResourcesByExistence(model, state, inputAction, false);
-  intercepted = relate(model, state, intercepted as fromRelate.InputAction);
-  intercepted = groupMapsByType(intercepted);
-  intercepted = convertToPrimitives(model, intercepted as fromConvertToPrimitives.InputAction);
-
-  return intercepted;
+  return {
+    ...inputAction,
+    resources: outputResources,
+    ids: outputIds
+  };
 };
 
-
-interface InputRemoveAction extends Action {
-  resources: ResourceCollectionObjectByCid<ResourcePointerObject>
-}
 interface OutputRemoveAction extends Action {
-  resources: ResourceCollectionsByType<ResourceCollectionObjectById<ResourcePointerObject>>
+  remove: ResourceCollectionsByType<ResourceCollectionObjectById<ResourcePointerObject>>
 }
 export const onRemove = (model: Model, state: State, inputAction: InputRemoveAction): OutputRemoveAction => {
-  let intercepted;
+  const filtered = filterObjectResourcesByExistence(model, state, inputAction.remove, true);
+  const withRemovals = removeRelated(model, state, filtered as fromRemoveRelated.Resources);
+  const grouped = groupObjectsByType(withRemovals);
 
-  intercepted = filterObjectResourcesByExistence(model, state, inputAction, true);
-  intercepted = removeRelated(model, state, intercepted as fromRemoveRelated.InputAction);
-  intercepted = groupObjectsByType(intercepted);
-
-  return intercepted;
+  return {
+    type: inputAction.type,
+    remove: grouped
+  };
 };

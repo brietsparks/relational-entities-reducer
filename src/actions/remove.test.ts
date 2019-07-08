@@ -28,7 +28,7 @@ describe('actions/remove', () => {
 
         const expected = {
           type: TYPE,
-          resources: {
+          remove: {
             'comment.c1': {
               resourceType: 'comment',
               resourceId: 'c1',

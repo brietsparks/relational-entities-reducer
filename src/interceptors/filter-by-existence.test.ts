@@ -45,27 +45,17 @@ describe('interceptors/filter-by-Existence', () => {
     const resources = new Map(Object.entries(inputResourcesObject));
 
     it('can exclude items that already exist in state', () => {
-      const action = { type: 'whatever', resources };
+      const actual = filterMap(model, state, resources, false);
 
-      const actual = filterMap(model, state, action, false);
-
-      const expected = {
-        type: 'whatever',
-        resources: new Map(Object.entries(newResourcesObject))
-      };
+      const expected = new Map(Object.entries(newResourcesObject));
 
       expect(actual).toEqual(expected);
     });
 
     it('can exclude items that do not exist in state', () => {
-      const action = { type: 'whatever', resources };
+      const actual = filterMap(model, state, resources, true);
 
-      const actual = filterMap(model, state, action, true);
-
-      const expected = {
-        type: 'whatever',
-        resources: new Map(Object.entries(existingResourcesObject))
-      };
+      const expected = new Map(Object.entries(existingResourcesObject));
 
       expect(actual).toEqual(expected);
     });
@@ -73,29 +63,15 @@ describe('interceptors/filter-by-Existence', () => {
 
   describe('filterObject', () => {
     it('can exclude items that already exist in state', () => {
-      const action = { type: 'whatever', resources: inputResourcesObject };
+      const actual = filterObject(model, state, inputResourcesObject, false);
 
-      const actual = filterObject(model, state, action, false);
-
-      const expected = {
-        type: 'whatever',
-        resources: newResourcesObject
-      };
-
-      expect(actual).toEqual(expected);
+      expect(actual).toEqual(newResourcesObject);
     });
 
     it('can exclude items that do not exist in state', () => {
-      const action = { type: 'whatever', resources: inputResourcesObject };
+      const actual = filterObject(model, state, inputResourcesObject, true);
 
-      const actual = filterObject(model, state, action, true);
-
-      const expected = {
-        type: 'whatever',
-        resources: existingResourcesObject
-      };
-
-      expect(actual).toEqual(expected);
+      expect(actual).toEqual(existingResourcesObject);
     });
   });
 
