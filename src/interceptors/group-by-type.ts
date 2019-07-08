@@ -13,7 +13,7 @@ export interface InputAction<Resources> {
 export type OutputAction<Resources> = {
   type: string;
   resources: Resources;
-}
+};
 
 export type InputResourcesMap = Map<CompositeIdString, Resource>;
 export type OutputResourcesMap = { [type in Type]: Map<Id, Resource> };

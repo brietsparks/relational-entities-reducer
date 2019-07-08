@@ -18,12 +18,20 @@ interface Resource {
 type Resources = { [s in CompositeIdString]: Resource }
 
 export default function unrelate(model: Model, state: State, action: Action): Action {
-  const relatedResources: Resources = {};
+  let relatedResources: Resources = {};
 
   const resources = action.resources;
   Object.entries(resources).forEach(([compositeIdString, resource]) => {
     if (resource.options.removeRelated) {
+      const relatedResourcesToRemove = getRelatedResourcesToRemove(
+        resource.resourceType,
+        resource.resourceId,
+        resource.options.removeRelated,
+        model,
+        state
+      );
 
+      relatedResources = {...relatedResources, ...relatedResourcesToRemove}
     }
   });
 

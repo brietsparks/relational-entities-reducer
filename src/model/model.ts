@@ -15,6 +15,8 @@ import {
 } from './resource';
 import { Relation } from './schema';
 
+
+
 export class Entity {
   type: Type;
   schema: EntitySchema;

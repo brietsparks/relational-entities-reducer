@@ -24,7 +24,7 @@ interface Creator {
   (...p: InputResources): Action
 }
 
-interface Action {
+export interface Action {
   type: string,
   resources: OutputResources
 }
