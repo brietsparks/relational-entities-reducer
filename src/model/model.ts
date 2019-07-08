@@ -12,10 +12,8 @@ import {
   ResourcesState,
   IdsState,
   CollectionState
-} from './resource';
+} from '../interfaces';
 import { Relation } from './schema';
-
-
 
 export class Entity {
   type: Type;

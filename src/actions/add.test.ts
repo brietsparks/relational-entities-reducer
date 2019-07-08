@@ -1,4 +1,4 @@
-import { InputResources, makeAdd, convertRelatedIdsToSets } from './add';
+import { makeAdd, convertRelatedIdsToSets } from './add';
 import { Model } from '../model';
 import { nonStringsOrNumbers, nonObjectOptional, modelSchema } from '../mocks';
 

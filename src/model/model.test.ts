@@ -1,7 +1,7 @@
 import { Entity, Model } from './model';
 import { ModelSchema } from './schema';
 import { modelSchema } from '../mocks';
-import { MANY, ONE } from './resource';
+import { MANY, ONE } from '../interfaces';
 
 describe('model/model', () => {
   describe('Model', () => {

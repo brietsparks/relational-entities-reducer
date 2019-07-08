@@ -1,5 +1,5 @@
 import { Model } from '../model';
-import { Id, State, Type } from '../model/resource';
+import { State, Type } from '../interfaces';
 import { Actions, Action } from '../actions';
 import interceptor from '../interceptor';
 import { createCollectionReducer, Reducer as CollectionReducer } from './collection';
@@ -9,14 +9,6 @@ export type CollectionReducerMap = { [entityType in Type]: CollectionReducer };
 export interface Reducer {
   (state: State | undefined, action: Action): State
 }
-
-export interface BatchWriteAction<ResourceType> {
-  type: string
-  resources: ResourcesByType<ResourceType>
-}
-export type ResourcesByType<T> = { [type in Type]: Resources<T> }
-export type Resources<T> = { [id in Id]: T }
-
 
 export const createReducer = (model: Model, allActions: Actions): Reducer => {
   const emptyState = model.getEmptyState();

@@ -1,26 +1,9 @@
 import { Namespace } from '../options';
-import { Type, Id, Data, makeCompositeIdString, CompositeIdString, Fkey } from '../model/resource';
 import { Model } from '../model';
 import { validateBatchItem } from './validation';
 import { Action as GenericAction } from '.';
-
-export type Options = { index?: number };
-
-// inputs
-export interface Resource {
-  resourceType: Type;
-  resourceId: Id;
-  data?: Data;
-  options?: Options;
-}
-
-export type InputObject = Resource;
-export type InputTuple = [Type, Id, Data?, Options?];
-export type InputResource = InputObject | InputTuple;
-export type InputResources = InputResource[];
-
-// outputs
-export type OutputResources = Map<CompositeIdString, Resource>
+import { Type, Id, Data, Fkey, ResourcePointerObject, ActionResource, ResourceCollectionMapByCid } from '../interfaces';
+import { makeCompositeId } from '../util';
 
 export interface Action extends GenericAction {
   resources: OutputResources,
@@ -29,31 +12,45 @@ export interface Creator {
   (...p: InputResources): Action
 }
 
+type Options = { index?: number };
+
+// inputs
+interface InputResourceObject extends ResourcePointerObject {
+  data?: Data;
+  options?: Options;
+}
+type InputResourceTuple = [Type, Id, Data?, Options?];
+type InputResource = InputResourceObject | InputResourceTuple;
+type InputResources = InputResource[];
+
+// outputs
+type OutputResource = ActionResource;
+type OutputResources = ResourceCollectionMapByCid<OutputResource>
+
 export const makeAdd = (namespace: Namespace, model: Model) => {
   const TYPE = namespace('ADD');
 
   const creator: Creator = (...resources: InputResources): Action => {
     const outputResources: OutputResources = new Map();
 
-    resources.forEach((resource: InputResource) => {
+    resources.forEach((inputResource: InputResource) => {
       // convert tuple to object
-      if (Array.isArray(resource)) {
-        const [ resourceType, resourceId, data, options ] = resource;
-        resource = { resourceType, resourceId, data, options };
-      }
+      inputResource = convertToObject(inputResource);
 
-      const { resourceType, resourceId, data, options } = resource;
+      const { resourceType, resourceId, data, options } = inputResource;
 
       // validate
-      validateBatchItem(model, resource);
+      validateBatchItem(model, inputResource);
 
       // default values
-      resource.data = data ? convertRelatedIdsToSets(resourceType, data, model) : {};
-      resource.options = options || {};
+      inputResource.data = data ? convertRelatedIdsToSets(resourceType, data, model) : {};
+      inputResource.options = options || {};
+
+      const outputResource = inputResource as OutputResource;
 
       // add to outputs
-      const compositeIdString = makeCompositeIdString(resourceType, resourceId);
-      outputResources.set(compositeIdString, resource)
+      const compositeIdString = makeCompositeId(resourceType, resourceId);
+      outputResources.set(compositeIdString, outputResource)
     });
 
     return {
@@ -63,6 +60,15 @@ export const makeAdd = (namespace: Namespace, model: Model) => {
   };
 
   return { TYPE, creator };
+};
+
+const convertToObject = (inputResource: InputResource): InputResourceObject => {
+  if (Array.isArray(inputResource)) {
+    const [resourceType, resourceId, data, options] = inputResource;
+    return { resourceType, resourceId, data, options };
+  }
+
+  return inputResource;
 };
 
 type FkData = Record<Fkey, Set<Id>>

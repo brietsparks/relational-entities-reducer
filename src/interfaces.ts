@@ -1,13 +1,12 @@
 export type Type = string;
-export type Id = string | number | symbol;
+export type Id = string | number;
 export type Data = { [s: string]: any };
 export type Fkey = string;
 export type CompositeId = string;
-
+export type Ids = Id[];
 export type Cardinality = 'many' | 'one';
 export const MANY = 'many';
 export const ONE = 'one';
-
 
 export type ResourcePointerTuple = [Type, Id];
 
@@ -30,6 +29,8 @@ export type ResourceCollectionsByType<Collection> = {
   [type in Type]: Collection
 }
 
+export type IdsByType = { [type in Type]: Ids }
+
 export interface RelatedPointer {
   relatedType: Type,
   relatedId: Id,
@@ -37,7 +38,7 @@ export interface RelatedPointer {
   reciprocalCardinality: Cardinality
 }
 
-export interface CollectionState {
+export interface CollectionState { // todo: change to EntityState
   resources: ResourcesState,
   ids: IdsState
 }

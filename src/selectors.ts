@@ -1,11 +1,9 @@
-import { resource } from './model';
-import { Data } from './model/resource';
-import { State } from './model/resource';
+import { Data, State, Type, ResourcePointerTuple } from './interfaces';
 import { isObject } from './util';
 
 export class InvalidState extends Error {}
 
-export const getCollection = (state: State, type: resource.Type) => {
+export const getCollection = (state: State, type: Type) => {
   const collection = state[type];
 
   if (!isObject(collection)) {
@@ -15,7 +13,7 @@ export const getCollection = (state: State, type: resource.Type) => {
   return collection;
 };
 
-export const getResources = (state: State, type: resource.Type) => {
+export const getResources = (state: State, type: Type) => {
   const collection = getCollection(state, type);
 
   const resources = collection.resources;
@@ -27,7 +25,7 @@ export const getResources = (state: State, type: resource.Type) => {
   return resources;
 };
 
-export const getIds = (state: State, type: resource.Type) => {
+export const getIds = (state: State, type: Type) => {
   const collection = getCollection(state, type);
 
   const ids = collection.ids;
@@ -39,12 +37,12 @@ export const getIds = (state: State, type: resource.Type) => {
   return ids;
 };
 
-export const getResource = (state: State, [type, id]: resource.CompositeId): Data => {
+export const getResource = (state: State, [type, id]: ResourcePointerTuple): Data => {
   const resources = getResources(state, type);
   return resources[id];
 };
 
-export const getDoesResourceExist = (state: State, [type, id]: resource.CompositeId): boolean  => {
+export const getDoesResourceExist = (state: State, [type, id]: ResourcePointerTuple): boolean  => {
   return !!getResource(state, [type, id]);
 };
 

@@ -1,8 +1,8 @@
 import { Namespace } from '../options';
 import { Model } from '../model';
-import { Id, Type, CompositeIdString, makeCompositeIdString } from '../model/resource';
 import { validateOptions, validateResourceId, validateResourceType } from './validation';
-import { RelationRemovalSchema } from '../interfaces';
+import { Id, Type, CompositeId, RelationRemovalSchema } from '../interfaces';
+import { makeCompositeId } from '../util';
 
 interface Resource {
   resourceType: Type;
@@ -18,7 +18,7 @@ type InputObject = Resource;
 type InputTuple = [Type, Id, Options?];
 type InputResource = InputObject | InputTuple;
 type InputResources = InputResource[];
-type OutputResources = { [s in CompositeIdString]: Resource }
+type OutputResources = { [s in CompositeId]: Resource }
 
 interface Creator {
   (...p: InputResources): Action
@@ -51,7 +51,7 @@ export const makeRemove = (namespace: Namespace, model: Model) => {
       resource.options = options || {};
 
       // add to outputs
-      const compositeIdString = makeCompositeIdString(resourceType, resourceId);
+      const compositeIdString = makeCompositeId(resourceType, resourceId);
       outputResources[compositeIdString] = resource;
 
       return outputResources;

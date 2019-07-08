@@ -1,6 +1,6 @@
 import { createResourcesReducer } from './resources';
 import { createIdsReducer } from './ids';
-import { Type, CollectionState } from '../model/resource';
+import { Type, CollectionState } from '../interfaces';
 import { Model } from '../model';
 
 export interface Actions {

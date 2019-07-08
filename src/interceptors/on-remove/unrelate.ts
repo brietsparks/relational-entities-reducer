@@ -1,22 +1,31 @@
-import { Id, Type, CompositeIdString } from '../../model/resource';
-import { RelationRemovalSchema } from '../../interfaces';
+import {
+  Id,
+  Type,
+  RelationRemovalSchema,
+  State,
+  ResourcePointerObject,
+  ResourceCollectionObjectByCid
+} from '../../interfaces';
 import { Model } from '../../model';
-import { State, makeCompositeIdString } from '../../model/resource';
+import { makeCompositeId } from '../../util';
 import * as selectors from '../../selectors';
 
-export interface Action {
+export interface InputAction extends Action {}
+export interface OutputAction extends Action {}
+
+interface Action {
   type: string,
   resources: Resources
 }
 
-interface Resource {
-  resourceType: Type,
-  resourceId: Id,
-  options: { removeRelated?: RelationRemovalSchema }
+interface Options {
+  removeRelated?: RelationRemovalSchema
 }
 
-type Resources = { [s in CompositeIdString]: Resource }
-
+interface Resource extends ResourcePointerObject {
+  options: Options
+}
+type Resources = ResourceCollectionObjectByCid<Resource>
 export default function unrelate(model: Model, state: State, action: Action): Action {
   let relatedResources: Resources = {};
 
@@ -80,7 +89,7 @@ export const getRelatedResourcesToRemove = (
     }
 
     relatedData.forEach((relatedId: Id) => {
-      const relatedCompositeIdString = makeCompositeIdString(relatedType, relatedId);
+      const relatedCompositeIdString = makeCompositeId(relatedType, relatedId);
 
       resourcesToRemove[relatedCompositeIdString] = {
         resourceType: relatedType,

@@ -1,33 +1,37 @@
-import { Data, Fkey, Id, Type } from '../../model/resource';
+import {
+  Data,
+  Fkey,
+  Id,
+  Type,
+  ActionResource,
+  ResourceCollectionMapById,
+  ResourceCollectionObjectById,
+  ResourceCollectionsByType,
+  IdsByType
+} from '../../interfaces';
 import { Model } from '../../model';
 
-interface Resource {
-  resourceType: Type;
-  resourceId: Id;
-  data: Data,
-  options: { ignoreIdIndex?: boolean }
-}
-
-type InputResources = Map<Id, Resource>
-type InputResourcesByType = { [type in Type]: InputResources }
 export interface InputAction {
   type: string,
   resources: InputResourcesByType
 }
 
-type OutputResources = { [id in Id]: Resource };
-type OutputResourcesByType = { [type in Type]: OutputResources };
-type OutputIds = Id[]
-type OutputIdsByType = { [type in Type]: OutputIds };
 export interface OutputAction {
   type: string,
   resources: OutputResourcesByType,
-  ids: OutputIdsByType
+  ids: IdsByType
 }
+
+type Options = { ignoreIdIndex?: boolean };
+type Resource = ActionResource<Options>;
+type InputResources = ResourceCollectionMapById<Resource>;
+type InputResourcesByType = ResourceCollectionsByType<InputResources>
+type OutputResources = ResourceCollectionObjectById<Resource>;
+type OutputResourcesByType = ResourceCollectionsByType<OutputResources>;
 
 export default function convertToPrimitives(model: Model, action: InputAction): OutputAction {
   const outputResources: OutputResourcesByType = {};
-  const outputIds: OutputIdsByType = {};
+  const outputIds: IdsByType = {};
 
   Object.entries(action.resources).forEach(([resourceType, resources]) => {
     outputResources[resourceType] = {};

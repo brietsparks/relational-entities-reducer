@@ -1,5 +1,5 @@
 import { Model } from '../model';
-import { Data, Id, Type } from '../model/resource';
+import { Data, Id, Type } from '../interfaces';
 import { isStringOrNumber, isObject } from '../util';
 
 interface BatchItem {

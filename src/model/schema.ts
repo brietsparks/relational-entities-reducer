@@ -1,5 +1,5 @@
 import { isObject } from '../util';
-import { Fkey, Type, MANY, ONE } from './resource';
+import { Fkey, Type, MANY, ONE } from '../interfaces';
 
 export type ModelSchema = {
   [t in Type]: EntitySchema

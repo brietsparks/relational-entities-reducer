@@ -1,30 +1,30 @@
 import {
-  makeCompositeIdString,
   State,
   Id,
-  Type,
-  CompositeIdString,
   MANY,
   ONE,
-  Data,
   RelatedPointer,
-} from '../../model/resource';
+  ResourceCollectionMapByCid,
+  ActionResource
+} from '../../interfaces';
+import { makeCompositeId } from '../../util';
 import { Model } from '../../model';
 import * as selectors from '../../selectors';
 
-export interface Action {
+export interface InputAction extends Action {}
+export interface OutputAction extends Action {}
+
+interface Action {
   type: string,
   resources: Resources
 }
 
-interface Resource {
-  resourceType: Type,
-  resourceId: Id,
-  data: Data,
-  options: { ignoreIdIndex?: boolean }
+interface Options {
+  ignoreIdIndex?: boolean
 }
 
-type Resources = Map<CompositeIdString, Resource>;
+type Resource = ActionResource<Options>;
+type Resources = ResourceCollectionMapByCid<Resource>;
 
 export default function relate(model: Model, state: State, action: Action): Action {
   const resources = action.resources;
@@ -42,7 +42,7 @@ export default function relate(model: Model, state: State, action: Action): Acti
       reciprocalCardinality
     }) => {
       // the key for getting/setting the addable in the batch
-      const relatedCompositeIdString = makeCompositeIdString(relatedType, relatedId);
+      const relatedCompositeIdString = makeCompositeId(relatedType, relatedId);
 
       // if it already exists in state, then make a resource of it, make the relation, and add it to the batch
       const existingResource = selectors.getResource(state, [relatedType, relatedId]);

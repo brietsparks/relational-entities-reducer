@@ -1,24 +1,23 @@
 import { Model } from '../model';
-import { State } from '../model/resource';
-import { Id, Type, CompositeIdString } from '../model/resource';
+import {
+  State,
+  ResourceCollectionMapByCid,
+  ResourceCollectionObjectByCid,
+  ResourcePointerObject
+} from '../interfaces';
 import * as selectors from '../selectors';
+
+interface InputAction<Resources> extends Action<Resources> {}
+interface OutputAction<Resources> extends Action<Resources> {}
 
 interface Action<Resources> {
   type: string,
   resources: Resources
 }
 
-interface Resource {
-  resourceType: Type,
-  resourceId: Id
-}
-
-type ResourcesMap = Map<CompositeIdString, Resource>;
+type ResourcesMap = ResourceCollectionMapByCid<ResourcePointerObject>;
 export const filterMap = (
-  model: Model,
-  state: State,
-  inputAction: Action<ResourcesMap>,
-  includeIfExists: boolean
+  model: Model, state: State, inputAction: Action<ResourcesMap>, includeIfExists: boolean
 ): Action<ResourcesMap> => {
   const outputResources: ResourcesMap = new Map();
 
@@ -42,7 +41,7 @@ export const filterMap = (
   }
 };
 
-type ResourcesObject = { [s in CompositeIdString]: Resource }
+type ResourcesObject = ResourceCollectionObjectByCid<ResourcePointerObject>
 export const filterObject = (
   model: Model,
   state: State,

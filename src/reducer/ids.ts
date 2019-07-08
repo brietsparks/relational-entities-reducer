@@ -1,7 +1,5 @@
 import { Model } from '../model';
-import { Data, Id, IdsState, Type } from '../model/resource';
-import { BatchWriteAction } from '.';
-import { isObject } from '../util';
+import { Id, IdsState, Type } from '../interfaces';
 
 interface Actions { ADD: string }
 interface Action { type: string }
