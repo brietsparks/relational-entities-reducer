@@ -3,7 +3,7 @@ import { State } from '../model/resource';
 import { Id, Type, CompositeIdString } from '../model/resource';
 import * as selectors from '../selectors';
 
-interface Action {
+interface Action<Resources> {
   type: string,
   resources: Resources
 }
@@ -13,17 +13,16 @@ interface Resource {
   resourceId: Id
 }
 
-export type Resources = Map<CompositeIdString, Resource>;
-
-export default function filterByExistence(
+type ResourcesMap = Map<CompositeIdString, Resource>;
+export const filterMap = (
   model: Model,
   state: State,
-  inputAction: Action,
+  inputAction: Action<ResourcesMap>,
   includeIfExists: boolean
-): Action {
-  const outputResources: Resources = new Map();
+): Action<ResourcesMap> => {
+  const outputResources: ResourcesMap = new Map();
 
-  inputAction.resources.forEach((resource, compositeId) => {
+  inputAction.resources.forEach((resource, compositeIdString) => {
     const existsInState = selectors.getDoesResourceExist(
       state, [resource.resourceType, resource.resourceId ]
     );
@@ -31,7 +30,36 @@ export default function filterByExistence(
     const shouldInclude = (existsInState && includeIfExists) || (!existsInState && !includeIfExists);
 
     if (shouldInclude) {
-      outputResources.set(compositeId, resource);
+      outputResources.set(compositeIdString, resource);
+    }
+
+    return outputResources;
+  });
+
+  return {
+    ...inputAction,
+    resources: outputResources
+  }
+};
+
+type ResourcesObject = { [s in CompositeIdString]: Resource }
+export const filterObject = (
+  model: Model,
+  state: State,
+  inputAction: Action<ResourcesObject>,
+  includeIfExists: boolean
+): Action<ResourcesObject> => {
+  const outputResources: ResourcesObject = {};
+
+  Object.entries(inputAction.resources).forEach(([compositeIdString, resource]) => {
+    const existsInState = selectors.getDoesResourceExist(
+      state, [resource.resourceType, resource.resourceId ]
+    );
+
+    const shouldInclude = (existsInState && includeIfExists) || (!existsInState && !includeIfExists);
+
+    if (shouldInclude) {
+      outputResources[compositeIdString] = resource;
     }
 
     return outputResources;

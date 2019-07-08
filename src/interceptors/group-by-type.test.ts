@@ -1,77 +1,122 @@
-import groupByType from './group-by-type';
+import { groupMapsByType, groupObjectsByType } from './group-by-type';
 
 describe('interceptor/on-add', () => {
-  it('nests resources into groups by resource type', () => {
-    const action = {
-      type: 'whatever',
-      resources: new Map(Object.entries({
-        'comment.c1': {
-          resourceType: 'comment',
-          resourceId: 'c1',
-          data: {},
-          options: {},
-        },
-        'comment.c3': {
-          resourceType: 'comment',
-          resourceId: 'c3',
-          data: {},
-          options: {},
-        },
-        'post.p2': {
-          resourceType: 'post',
-          resourceId: 'p2',
-          data: {},
-          options: {},
-        },
-      })),
-    };
+  const inputResourcesObject = {
+    'comment.c1': {
+      resourceType: 'comment',
+      resourceId: 'c1',
+      data: {},
+      options: {},
+    },
+    'comment.c3': {
+      resourceType: 'comment',
+      resourceId: 'c3',
+      data: {},
+      options: {},
+    },
+    'post.p2': {
+      resourceType: 'post',
+      resourceId: 'p2',
+      data: {},
+      options: {},
+    },
+  };
 
-    const actual = groupByType(action);
+  const outputCommentsObject = {
+    'c1': {
+      resourceType: 'comment',
+      resourceId: 'c1',
+      data: {},
+      options: {},
+    },
+    'c3': {
+      resourceType: 'comment',
+      resourceId: 'c3',
+      data: {},
+      options: {},
+    }
+  };
 
-    const expected = {
-      type: 'whatever',
-      resources: {
-        comment: new Map(Object.entries({
-          'c1': {
-            resourceType: 'comment',
-            resourceId: 'c1',
-            data: {},
-            options: {},
-          },
-          'c3': {
-            resourceType: 'comment',
-            resourceId: 'c3',
-            data: {},
-            options: {},
-          }
-        })),
-        post: new Map(Object.entries({
-          'p2': {
-            resourceType: 'post',
-            resourceId: 'p2',
-            data: {},
-            options: {},
-          },
-        }))
-      },
-    };
+  const outputPostsObject = {
+    'p2': {
+      resourceType: 'post',
+      resourceId: 'p2',
+      data: {},
+      options: {},
+    },
+  };
 
-    expect(actual).toEqual(expected);
+  describe('groupMapsByType', () => {
+    it('nests resources into groups by resource type', () => {
+      const action = {
+        type: 'whatever',
+        resources: new Map(Object.entries(inputResourcesObject)),
+      };
+
+      const actual = groupMapsByType(action);
+
+      const expected = {
+        type: 'whatever',
+        resources: {
+          comment: new Map(Object.entries(outputCommentsObject)),
+          post: new Map(Object.entries(outputPostsObject))
+        },
+      };
+
+      expect(actual).toEqual(expected);
+    });
+
+    test('with empty state', () => {
+      const action = {
+        type: 'whatever',
+        resources: new Map()
+      };
+
+      const actual = groupMapsByType(action);
+
+      const expected = {
+        type: 'whatever',
+        resources: {}
+      };
+
+      expect(actual).toEqual(expected);
+    });
   });
 
-  test('with empty state', () => {
-    const action = {
-      type: 'whatever',
-      resources: new Map()
-    };
+  describe('groupObjectsByType', () => {
+    it('nests resources into groups by resource type', () => {
+      const action = {
+        type: 'whatever',
+        resources: inputResourcesObject,
+      };
 
-    const actual = groupByType(action);
+      const actual = groupObjectsByType(action);
 
-    const expected = {
-      type: 'whatever',
-      resources: {}
-    };
+      const expected = {
+        type: 'whatever',
+        resources: {
+          comment: outputCommentsObject,
+          post: outputPostsObject
+        },
+      };
 
-    expect(actual).toEqual(expected);
+      expect(actual).toEqual(expected);
+    });
+
+    test('with empty state', () => {
+      const action = {
+        type: 'whatever',
+        resources: {}
+      };
+
+      const actual = groupObjectsByType(action);
+
+      const expected = {
+        type: 'whatever',
+        resources: {}
+      };
+
+      expect(actual).toEqual(expected);
+    });
   });
 });

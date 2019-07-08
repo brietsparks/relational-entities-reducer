@@ -1,4 +1,4 @@
-import filterByExistence from './filter-by-existence';
+import { filterMap, filterObject } from './filter-by-existence';
 import { Model } from '../model';
 import { modelSchema } from '../mocks';
 
@@ -16,51 +16,87 @@ describe('interceptors/filter-by-Existence', () => {
     }
   };
 
-  const resources = new Map(Object.entries({
-      'comment.c1': { resourceType: 'comment', resourceId: 'c1' },
-      'comment.c2': { resourceType: 'comment', resourceId: 'c2' },
-      'comment.c3': { resourceType: 'comment', resourceId: 'c3' },
-      'comment.c4': { resourceType: 'comment', resourceId: 'c4' },
-      'post.p1': { resourceType: 'post', resourceId: 'p1' },
-      'post.p2': { resourceType: 'post', resourceId: 'p2' },
-      'post.p3': { resourceType: 'post', resourceId: 'p3' },
-      'post.p4': { resourceType: 'post', resourceId: 'p4' },
-    }
-  ));
+  const inputResourcesObject = {
+    'comment.c1': { resourceType: 'comment', resourceId: 'c1' },
+    'comment.c2': { resourceType: 'comment', resourceId: 'c2' },
+    'comment.c3': { resourceType: 'comment', resourceId: 'c3' },
+    'comment.c4': { resourceType: 'comment', resourceId: 'c4' },
+    'post.p1': { resourceType: 'post', resourceId: 'p1' },
+    'post.p2': { resourceType: 'post', resourceId: 'p2' },
+    'post.p3': { resourceType: 'post', resourceId: 'p3' },
+    'post.p4': { resourceType: 'post', resourceId: 'p4' },
+  };
 
-  it('can exclude items that already exist in state', () => {
-    const action = { type: 'whatever', resources };
+  const newResourcesObject = {
+    'comment.c1': { resourceType: 'comment', resourceId: 'c1' },
+    'comment.c4': { resourceType: 'comment', resourceId: 'c4' },
+    'post.p3': { resourceType: 'post', resourceId: 'p3' },
+    'post.p4': { resourceType: 'post', resourceId: 'p4' },
+  };
 
-    const actual = filterByExistence(model, state, action, false);
+  const existingResourcesObject = {
+    'comment.c2': { resourceType: 'comment', resourceId: 'c2' },
+    'comment.c3': { resourceType: 'comment', resourceId: 'c3' },
+    'post.p1': { resourceType: 'post', resourceId: 'p1' },
+    'post.p2': { resourceType: 'post', resourceId: 'p2' },
+  };
 
-    const expected = {
-      type: 'whatever',
-      resources: new Map(Object.entries({
-        'comment.c1': { resourceType: 'comment', resourceId: 'c1' },
-        'comment.c4': { resourceType: 'comment', resourceId: 'c4' },
-        'post.p3': { resourceType: 'post', resourceId: 'p3' },
-        'post.p4': { resourceType: 'post', resourceId: 'p4' },
-      }))
-    };
+  describe('filterMap', () => {
+    const resources = new Map(Object.entries(inputResourcesObject));
 
-    expect(actual).toEqual(expected);
+    it('can exclude items that already exist in state', () => {
+      const action = { type: 'whatever', resources };
+
+      const actual = filterMap(model, state, action, false);
+
+      const expected = {
+        type: 'whatever',
+        resources: new Map(Object.entries(newResourcesObject))
+      };
+
+      expect(actual).toEqual(expected);
+    });
+
+    it('can exclude items that do not exist in state', () => {
+      const action = { type: 'whatever', resources };
+
+      const actual = filterMap(model, state, action, true);
+
+      const expected = {
+        type: 'whatever',
+        resources: new Map(Object.entries(existingResourcesObject))
+      };
+
+      expect(actual).toEqual(expected);
+    });
   });
 
-  it('can exclude items that do not exist in state', () => {
-    const action = { type: 'whatever', resources };
+  describe('filterObject', () => {
+    it('can exclude items that already exist in state', () => {
+      const action = { type: 'whatever', resources: inputResourcesObject };
 
-    const actual = filterByExistence(model, state, action, true);
+      const actual = filterObject(model, state, action, false);
 
-    const expected = {
-      type: 'whatever',
-      resources: new Map(Object.entries({
-        'comment.c2': { resourceType: 'comment', resourceId: 'c2' },
-        'comment.c3': { resourceType: 'comment', resourceId: 'c3' },
-        'post.p1': { resourceType: 'post', resourceId: 'p1' },
-        'post.p2': { resourceType: 'post', resourceId: 'p2' },
-      }))
-    };
+      const expected = {
+        type: 'whatever',
+        resources: newResourcesObject
+      };
 
-    expect(actual).toEqual(expected);
+      expect(actual).toEqual(expected);
+    });
+
+    it('can exclude items that do not exist in state', () => {
+      const action = { type: 'whatever', resources: inputResourcesObject };
+
+      const actual = filterObject(model, state, action, true);
+
+      const expected = {
+        type: 'whatever',
+        resources: existingResourcesObject
+      };
+
+      expect(actual).toEqual(expected);
+    });
   });
+
 });
