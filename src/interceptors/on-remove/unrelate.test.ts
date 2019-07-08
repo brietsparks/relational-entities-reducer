@@ -1,10 +1,98 @@
 import { Model } from '../../model';
 import { modelSchema } from '../../mocks';
-import { getRelatedResourcesToRemove } from './unrelate';
+import unrelate, { getRelatedResourcesToRemove, InputAction } from './unrelate';
 import { RelationRemovalSchema } from '../../interfaces';
 
 describe('interceptors/on-remove/unrelated', () => {
   const model = new Model(modelSchema);
+
+  describe('unrelate', () => {
+    it('adds resources to the removal payload according to a schema', () => {
+      const state = {
+        user: {
+          resources: {
+            'u1': { authoredPostIds: ['p1'], commentIds: ['c2'] },
+            'u2': {}
+          },
+          ids: ['u1', 'u2']
+        },
+        post: {
+          resources: {
+            'p1': { authorId: 'u1', commentIds: ['c1'] },
+          },
+          ids: ['p1']
+        },
+        comment: {
+          resources: {
+            'c1': { postId: 'p1' },
+            'c2': { userId: 'u1' }
+          },
+          ids: ['c1', 'c2']
+        }
+      };
+
+      const userRemovalSchema: RelationRemovalSchema = {
+        commentIds: {},
+        authoredPostIds: {
+          commentIds: {}
+        },
+        thisInvalidFkGetsSkipped: {}
+      };
+
+      const resources = {
+        'user.u1': {
+          resourceType: 'user',
+          resourceId: 'u1',
+          options: { removeRelated: userRemovalSchema }
+        },
+        'user.u2': {
+          resourceType: 'user',
+          resourceId: 'u2',
+          options: {}
+        }
+      };
+
+      const action: InputAction = {
+        type: 'whatever',
+        resources
+      };
+
+      const actual = unrelate(model, state, action);
+
+      const expected = {
+        type: 'whatever',
+        resources: {
+          'user.u1': {
+            resourceType: 'user',
+            resourceId: 'u1',
+            options: { removeRelated: userRemovalSchema }
+          },
+          'user.u2': {
+            resourceType: 'user',
+            resourceId: 'u2',
+            options: {}
+          },
+          'post.p1': {
+            resourceType: 'post',
+            resourceId: 'p1',
+            options: {}
+          },
+          'comment.c1': {
+            resourceType: 'comment',
+            resourceId: 'c1',
+            options: {},
+          },
+          'comment.c2': {
+            resourceType: 'comment',
+            resourceId: 'c2',
+            options: {},
+          }
+        }
+      };
+
+      expect(actual).toEqual(expected);
+    });
+  });
 
   describe('getRelatedResourcesToRemove', () => {
     it('returns related resources to remove', () => {

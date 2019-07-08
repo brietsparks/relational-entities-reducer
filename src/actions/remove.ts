@@ -1,6 +1,6 @@
 import { Namespace } from '../options';
 import { Model } from '../model';
-import { validateOptions, validateResourceId, validateResourceType } from './validation';
+import { validateResourceOptions, validateResourceId, validateResourceType } from './validation';
 import { Id, Type, CompositeId, RelationRemovalSchema } from '../interfaces';
 import { makeCompositeId } from '../util';
 
@@ -45,7 +45,7 @@ export const makeRemove = (namespace: Namespace, model: Model) => {
       // validate
       validateResourceType(resourceType, model);
       validateResourceId(resourceId);
-      validateOptions(options);
+      validateResourceOptions(options);
 
       // default values
       resource.options = options || {};

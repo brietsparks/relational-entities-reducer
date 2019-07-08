@@ -27,7 +27,7 @@ export const validateResourceData = (data?: Data, isRequired = false) => {
   }
 };
 
-export const validateOptions = (options?: object, isRequired = false) => {
+export const validateResourceOptions = (options?: object, isRequired = false) => {
   if ((options || isRequired) && !isObject(options)) {
     throw new Error(`resource options must be an object literal`);
   }

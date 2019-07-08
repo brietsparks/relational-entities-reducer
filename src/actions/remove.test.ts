@@ -18,7 +18,7 @@ describe('actions/remove', () => {
         const { TYPE, creator } = makeRemove(namespace, model);
 
         const actual = creator(
-          ['comment', 'c1', {  }],
+          ['comment', 'c1'],
           {
             resourceType: 'post',
             resourceId: 'p1',
