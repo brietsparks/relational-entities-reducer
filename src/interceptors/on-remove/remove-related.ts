@@ -26,7 +26,7 @@ interface Resource extends ResourcePointerObject {
   options: Options
 }
 type Resources = ResourceCollectionObjectByCid<Resource>
-export default function unrelate(model: Model, state: State, action: Action): Action {
+export default function removeRelated(model: Model, state: State, action: Action): Action {
   let relatedResources: Resources = {};
 
   const resources = action.resources;

@@ -1,12 +1,12 @@
 import { Model } from '../../model';
 import { modelSchema } from '../../mocks';
-import unrelate, { getRelatedResourcesToRemove, InputAction } from './unrelate';
+import removeRelated, { getRelatedResourcesToRemove } from './remove-related';
 import { RelationRemovalSchema } from '../../interfaces';
 
-describe('interceptors/on-remove/unrelated', () => {
+describe('interceptors/on-remove/removeRelatedd', () => {
   const model = new Model(modelSchema);
 
-  describe('unrelate', () => {
+  describe('removeRelated', () => {
     it('adds resources to the removal payload according to a schema', () => {
       const state = {
         user: {
@@ -55,7 +55,7 @@ describe('interceptors/on-remove/unrelated', () => {
         }
       };
 
-      const actual = unrelate(model, state, action);
+      const actual = removeRelated(model, state, action);
 
       const expected = {
         type: 'whatever',

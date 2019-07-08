@@ -19,7 +19,7 @@ import { Action, Actions } from './actions';
 import { filterMap as filterMapResourcesByExistence, filterObject as filterObjectResourcesByExistence } from './interceptors/filter-by-existence';
 import convertToPrimitives, * as fromConvertToPrimitives from './interceptors/on-add/convert-to-primitives';
 import relate, * as fromRelate from './interceptors/on-add/relate';
-import unrelate, * as fromUnrelate from './interceptors/on-remove/unrelate';
+import removeRelated, * as fromRemoveRelated from './interceptors/on-remove/remove-related';
 import { groupMapsByType, groupObjectsByType } from './interceptors/group-by-type';
 
 export default (model: Model, state: State, action: Action, allActions: Actions): Action => {
@@ -62,7 +62,7 @@ export const onRemove = (model: Model, state: State, inputAction: InputRemoveAct
   let intercepted;
 
   intercepted = filterObjectResourcesByExistence(model, state, inputAction, true);
-  intercepted = unrelate(model, state, intercepted as fromUnrelate.InputAction);
+  intercepted = removeRelated(model, state, intercepted as fromRemoveRelated.InputAction);
   intercepted = groupObjectsByType(intercepted);
 
   return intercepted;
