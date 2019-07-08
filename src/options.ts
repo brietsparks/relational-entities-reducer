@@ -1,5 +1,3 @@
-import * as resource from './model/resource';
-
 export interface Namespace {
   (s: string): string
 }
