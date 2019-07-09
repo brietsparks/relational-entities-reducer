@@ -4,7 +4,8 @@ describe('reducer/resources', () => {
   describe('createResourcesReducer', () => {
     const actions = {
       ADD: 'ADD',
-      REMOVE: 'REMOVE'
+      REMOVE: 'REMOVE',
+      EDIT: 'EDIT'
     };
 
     it('returns an empty object by default', () => {
@@ -118,6 +119,52 @@ describe('reducer/resources', () => {
       const expected = {
         'c2': { childIds: [] },
         'c4': {}
+      };
+
+      expect(actual).toEqual(expected);
+    });
+
+    it('edits resources of its type', () => {
+      const reducer = createResourcesReducer('comment', actions);
+
+      const state = {
+        'c1': { text: 'foo', meta: 'this is' },
+        'c2': {}
+      };
+
+      const action = {
+        type: 'EDIT',
+        resources: {
+          comment: {
+            'c1': {
+              resourceType: 'comment',
+              resourceId: 'c1',
+              data: { text: 'foog' },
+              options: {}
+            },
+            'c2': {
+              resourceType: 'comment',
+              resourceId: 'c2',
+              data: { text: 'barg' },
+              options: {}
+            }
+          },
+          post: {
+            'c1': {
+              resourceType: 'post',
+              resourceId: 'c1',
+              data: { text: 'baz' },
+              options: {}
+            }
+          }
+        }
+      };
+
+      const actual = reducer(state, action);
+
+      const expected = {
+        'c1': { text: 'foog', meta: 'this is' },
+        'c2': { text: 'barg' }
       };
 
       expect(actual).toEqual(expected);

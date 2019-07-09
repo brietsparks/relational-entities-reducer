@@ -107,7 +107,12 @@ describe('actions/add', () => {
           const { creator } = makeAdd(namespace, model);
           nonObjectOptional.forEach(invalidOptions => {
             // @ts-ignore
-            const actual = () => creator({ resourceType: 'comment', resourceId: 'c1', data: {}, options: invalidOptions });
+            const actual = () => creator({
+              resourceType: 'comment',
+              resourceId: 'c1',
+              data: {},
+              options: invalidOptions
+            });
             const error = new Error('resource options must be an object literal');
             expect(actual).toThrow(error);
           });

@@ -1,4 +1,4 @@
-import { onAdd, onRemove } from './interceptor';
+import { onAdd, onRemove, onEdit } from './interceptor';
 
 import { modelSchema } from './mocks';
 import { Model } from './model';
@@ -204,6 +204,64 @@ describe('interceptor', () => {
             resourceType: 'comment',
             resourceId: 'c2',
             options: {},
+          }
+        }
+      }
+    };
+
+    expect(actual).toEqual(expected);
+  });
+
+  test('onEdit', () => {
+    const action = {
+      type: 'whatever',
+      resources: {
+        'comment.c1': {
+          resourceType: 'comment',
+          resourceId: 'c1',
+          data: { text: 'foo' },
+          options: {}
+        },
+        'comment.c2': {
+          resourceType: 'comment',
+          resourceId: 'c2',
+          data: { text: 'bar' },
+          options: {}
+        },
+        'post.p1': {
+          resourceType: 'post',
+          resourceId: 'p1',
+          data: { text: 'baz' },
+          options: {}
+        }
+      }
+    };
+
+    const actual = onEdit(action);
+
+    const expected = {
+      type: 'whatever',
+      resources: {
+        comment: {
+          'c1': {
+            resourceType: 'comment',
+            resourceId: 'c1',
+            data: { text: 'foo' },
+            options: {}
+          },
+          'c2': {
+            resourceType: 'comment',
+            resourceId: 'c2',
+            data: { text: 'bar' },
+            options: {}
+          }
+        },
+        post: {
+          'p1': {
+            resourceType: 'post',
+            resourceId: 'p1',
+            data: { text: 'baz' },
+            options: {}
           }
         }
       }

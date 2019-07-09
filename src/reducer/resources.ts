@@ -13,7 +13,8 @@ import { isObject } from '../util';
 
 interface Actions {
   ADD: string,
-  REMOVE: string
+  REMOVE: string,
+  EDIT: string
 }
 
 interface Action {
@@ -22,17 +23,17 @@ interface Action {
 
 export type Reducer = (state: ResourcesState|undefined, action: Action) => ResourcesState;
 
-interface AddAction extends Action {
-  resources: ResourceCollectionsByType<ResourceCollectionObjectById<AddableResource>>
+interface ConstructiveAction extends Action {
+  resources: ResourceCollectionsByType<ResourceCollectionObjectById<ConstructiveResource>>
 }
 
-interface AddableResource extends ResourcePointerObject {
+interface ConstructiveResource extends ResourcePointerObject {
   data: Data
 }
 
 interface RemoveAction extends Action {
   remove: ResourceCollectionsByType<ResourceCollectionObjectById<ResourcePointerObject>>,
-  edit: ResourceCollectionsByType<ResourceCollectionObjectById<AddableResource>>
+  edit: ResourceCollectionsByType<ResourceCollectionObjectById<ConstructiveResource>>
 }
 
 export const createResourcesReducer = (type: Type, actions: Actions): Reducer => {
@@ -41,7 +42,7 @@ export const createResourcesReducer = (type: Type, actions: Actions): Reducer =>
   return (state: ResourcesState = emptyState, action) => {
     switch (action.type) {
       case actions.ADD: {
-        const addAction = action as AddAction;
+        const addAction = action as ConstructiveAction;
 
         const resources = addAction.resources[type];
 
@@ -75,6 +76,23 @@ export const createResourcesReducer = (type: Type, actions: Actions): Reducer =>
         }
 
         return newState;
+      case actions.EDIT: {
+        const editAction = action as ConstructiveAction;
+
+        const resources = editAction.resources[type];
+
+        if (!isObject(resources)) {
+          return state;
+        }
+
+        const newState = { ...state };
+
+        Object.entries(resources).forEach(([resourceId, resource]) => {
+          newState[resourceId] = { ...newState[resourceId], ...resource.data };
+        });
+
+        return newState;
+      }
       default:
         return state;
     }

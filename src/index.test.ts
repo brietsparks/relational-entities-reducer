@@ -125,4 +125,55 @@ describe('index', () => {
 
     expect(actual).toEqual(expected);
   });
+
+  test('edit resources', () => {
+    const state = {
+      comment: {
+        resources: {
+          'c1': { text: 'foo', meta: 'this is' },
+          'c2': {},
+          'c3': {}
+        },
+        ids: ['c1', 'c2', 'c3']
+      },
+      post: {
+        resources: {
+          'p1': {},
+        },
+        ids: ['p1']
+      }
+    };
+
+    const action = actions.edit(
+      ['comment', 'c1', { text: 'foob' }],
+      { resourceType: 'comment', resourceId: 'c2', data: { text: 'barg' } },
+      ['post', 'p1', { text: 'baz' }]
+    );
+
+    const actual = reducer(state, action);
+
+    const actualChange = {
+      comment: actual.comment,
+      post: actual.post
+    };
+
+    const expectedChange = {
+      comment: {
+        resources: {
+          'c1': { text: 'foob', meta: 'this is' },
+          'c2': { text: 'barg' },
+          'c3': {}
+        },
+        ids: ['c1', 'c2', 'c3']
+      },
+      post: {
+        resources: {
+          'p1': { text: 'baz' },
+        },
+        ids: ['p1']
+      }
+    };
+
+    expect(actualChange).toEqual(expectedChange);
+  });
 });

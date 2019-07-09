@@ -6,13 +6,15 @@ import {
   ResourcePointerObject,
   ActionResource,
   ResourceCollectionsByType,
-  ResourceCollectionObjectById, ResourceCollectionObjectByCid, IdsByType
+  ResourceCollectionObjectById,
+  IdsByType
 } from './interfaces';
 
 // actions
 import { Action, Actions } from './actions';
 import { Action as InputAddAction } from './actions/add';
 import { Action as InputRemoveAction } from './actions/remove';
+import { Action as InputEditAction } from './actions/edit';
 
 // interceptors
 import { filterMap as filterMapResourcesByExistence, filterObject as filterObjectResourcesByExistence } from './interceptors/filter-by-existence';
@@ -29,6 +31,10 @@ export default (model: Model, state: State, action: Action, allActions: Actions)
 
   if (action.type === allActions.REMOVE) {
     action = onRemove(model, state, action as InputRemoveAction);
+  }
+
+  if (action.type === allActions.EDIT) {
+    action = onEdit(action as InputEditAction);
   }
 
   return action;
@@ -69,4 +75,16 @@ export const onRemove = (model: Model, state: State, inputAction: InputRemoveAct
     remove: groupedRemovals,
     edit: groupedEditables
   };
+};
+
+interface OutputEditAction extends Action {
+  resources: ResourceCollectionsByType<ResourceCollectionObjectById<ResourcePointerObject>>
+}
+export const onEdit = (inputAction: InputEditAction): OutputEditAction => {
+  let groupedResources = groupObjectsByType(inputAction.resources);
+
+  return {
+    type: inputAction.type,
+    resources: groupedResources
+  }
 };
