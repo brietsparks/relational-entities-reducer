@@ -8,6 +8,8 @@ export const nonObjects = [...nonObjectOptional, false , null, undefined];
 export const nonStrings = [null, 1, true, false, undefined, [], {}];
 export const nonArrays = [null, 1, true, false, 'string', undefined, {}, () => {}, function() {}];
 export const nonStringsOrNumbers = [null, true, false, undefined, [], {} ,() => {}, function() {}];
+export const nonNumbers = [null, true, false, undefined, [], {}, 'string', () => {}, function() {}];
+export const nonIntegers = [...nonNumbers, 1.1];
 
 
 export const modelSchema: ModelSchema = {

@@ -6,7 +6,8 @@ import { Model } from '../model';
 export interface Actions {
   ADD: string,
   REMOVE: string,
-  EDIT: string
+  EDIT: string,
+  REINDEX: string
 }
 
 export interface Action {

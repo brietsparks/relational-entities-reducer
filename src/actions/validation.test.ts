@@ -1,6 +1,12 @@
-import { validateResourceType, validateResourceId, validateResourceData, validateResourceOptions } from './validation';
+import {
+  validateResourceType,
+  validateResourceId,
+  validateResourceData,
+  validateResourceOptions,
+  validateIndex
+} from './validation';
 import { Model } from '../model';
-import { modelSchema, nonStringsOrNumbers, nonObjectOptional, nonObjects } from '../mocks';
+import { modelSchema, nonStringsOrNumbers, nonObjectOptional, nonObjects, nonIntegers } from '../mocks';
 
 describe('actions/validation', () => {
   test('validateResourceType', () => {
@@ -60,5 +66,22 @@ describe('actions/validation', () => {
       const error = new Error('resource options must be an object literal');
       expect(actual).toThrow(error);
     })
+  });
+
+  describe('validateIndexLBound', () => {
+    test('index must be an integer', () => {
+      nonIntegers.forEach(invalidIndex => {
+        // @ts-ignore
+        const actual = () => validateIndex(invalidIndex);
+        const error = new Error('index must be an integer');
+        expect(actual).toThrow(error);
+      });
+    });
+
+    test('index must be greater than 0', () => {
+      const actual = () => validateIndex(-1);
+      const error = new Error('index must be greater than 0');
+      expect(actual).toThrow(error);
+    });
   });
 });

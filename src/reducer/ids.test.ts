@@ -4,7 +4,8 @@ describe('reducer/ids', () => {
   describe('createIdsReducer', () => {
     const actions = {
       ADD: 'ADD',
-      REMOVE: 'REMOVE'
+      REMOVE: 'REMOVE',
+      REINDEX: 'REINDEX'
     };
 
     it('returns an empty array by default', () => {
@@ -59,6 +60,39 @@ describe('reducer/ids', () => {
       const expected = ['c2', 'c4'];
 
       expect(actual).toEqual(expected);
+    });
+
+    describe('reindexes resourceIds', () => {
+      const reducer = createIdsReducer('comment', actions);
+      const state = ['c1', 'c2', 'c3','c4', 'c5'];
+
+      test('of its type', () => {
+        const action = {
+          type: 'REINDEX',
+          resourceType: 'comment',
+          sourceIndex: 1,
+          destinationIndex: 3
+        };
+
+        const actual = reducer(state, action);
+
+        const expected = ['c1', 'c3','c4', 'c2', 'c5'];
+
+        expect(actual).toEqual(expected);
+      });
+
+      test('not of other types', () => {
+        const action = {
+          type: 'REINDEX',
+          resourceType: 'post',
+          sourceIndex: 1,
+          destinationIndex: 3
+        };
+
+        const actual = reducer(state, action);
+
+        expect(actual).toEqual(state);
+      });
     });
   });
 });

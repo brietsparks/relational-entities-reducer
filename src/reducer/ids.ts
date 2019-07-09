@@ -5,12 +5,12 @@ import {
   IdsByType,
   ResourceCollectionsByType,
   ResourceCollectionObjectById,
-  ActionResource, RelationRemovalSchema
+  ActionResource, RelationRemovalSchema, Id
 } from '../interfaces';
 
-import { isObject } from '../util';
+import { isObject, arraymove } from '../util';
 
-interface Actions { ADD: string, REMOVE: string }
+interface Actions { ADD: string, REMOVE: string, REINDEX: string }
 interface Action { type: string }
 export type Reducer = (state: IdsState|undefined, action: Action) => IdsState;
 
@@ -24,6 +24,12 @@ interface RemoveActionOptions {
 }
 interface RemoveAction extends Action {
   remove: ResourceCollectionsByType<ResourceCollectionObjectById<ActionResource<RemoveActionOptions>>>
+}
+interface ReindexAction extends Action {
+  resourceType: Type,
+  resourceId: Id,
+  sourceIndex: number,
+  destinationIndex: number,
 }
 
 export const createIdsReducer = (type: Type, actions: Actions): Reducer => {
@@ -52,6 +58,19 @@ export const createIdsReducer = (type: Type, actions: Actions): Reducer => {
         }
 
         return state.filter(id => !resourcesOfType[id]);
+      }
+      case actions.REINDEX: {
+        const reindexAction = action as ReindexAction;
+
+        if (reindexAction.resourceType !== type) {
+          return state;
+        }
+
+        const newState = [...state];
+
+        arraymove(newState, reindexAction.sourceIndex, reindexAction.destinationIndex);
+
+        return newState;
       }
       default:
         return state;
