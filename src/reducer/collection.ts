@@ -7,7 +7,8 @@ export interface Actions {
   ADD: string,
   REMOVE: string,
   EDIT: string,
-  REINDEX: string
+  REINDEX: string,
+  REINDEX_RELATED: string,
 }
 
 export interface Action {

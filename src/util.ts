@@ -9,6 +9,8 @@ export const isObject = (v: any) => {
   );
 };
 
+export const isString = (v: any) => typeof v === 'string';
+
 export const isStringOrNumber = (v: any) => typeof v === 'string' || typeof v === 'number';
 
 export const makeCompositeId = (type: Type, id: Id) => `${type}.${id}`;

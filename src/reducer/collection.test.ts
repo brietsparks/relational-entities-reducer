@@ -5,7 +5,7 @@ describe('reducer/collection', () => {
     it('returns empty state by default', () => {
       const reducer = createCollectionReducer(
         'comment',
-        { ADD: 'ADD', REMOVE: 'REMOVE', EDIT: 'EDIT', REINDEX: 'REINDEX' }
+        { ADD: 'ADD', REMOVE: 'REMOVE', EDIT: 'EDIT', REINDEX: 'REINDEX', REINDEX_RELATED: 'REINDEX_RELATED' }
       );
 
       const actual = reducer(undefined, { type: '' });

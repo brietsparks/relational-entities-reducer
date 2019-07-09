@@ -211,4 +211,45 @@ describe('index', () => {
 
     expect(actualChange).toEqual(expectedChange);
   });
+
+  test('reindex related resource', () => {
+    const state = {
+      post: {
+        resources: {
+          'p1': { commentIds: ['c1', 'c2', 'c3', 'c4', 'c5'] },
+          'p2': {}
+        },
+        ids: ['p1', 'p2']
+      },
+      comment: {
+        resources: { 'c1': {}, 'c2': {}, 'c3': {}, 'c4': {}, 'c5': {} },
+        ids: ['c1','c4', 'c2', 'c3', 'c5']
+      }
+    };
+
+    const action = actions.reindexRelated('post', 'p1', 'commentIds', 1, 3);
+
+    const actual = reducer(state, action);
+
+    const actualChange = {
+      post: actual.post,
+      comment: actual.comment
+    };
+
+    const expectedChange = {
+      post: {
+        resources: {
+          'p1': { commentIds: ['c1', 'c3', 'c4', 'c2', 'c5'] },
+          'p2': {}
+        },
+        ids: ['p1', 'p2']
+      },
+      comment: {
+        resources: { 'c1': {}, 'c2': {}, 'c3': {}, 'c4': {}, 'c5': {} },
+        ids: ['c1','c4', 'c2', 'c3', 'c5']
+      }
+    };
+
+    expect(actualChange).toEqual(expectedChange);
+  });
 });

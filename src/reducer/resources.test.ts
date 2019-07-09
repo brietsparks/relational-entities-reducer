@@ -5,7 +5,8 @@ describe('reducer/resources', () => {
     const actions = {
       ADD: 'ADD',
       REMOVE: 'REMOVE',
-      EDIT: 'EDIT'
+      EDIT: 'EDIT',
+      REINDEX_RELATED: 'REINDEX_RELATED'
     };
 
     it('returns an empty object by default', () => {
@@ -165,6 +166,33 @@ describe('reducer/resources', () => {
       const expected = {
         'c1': { text: 'foog', meta: 'this is' },
         'c2': { text: 'barg' }
+      };
+
+      expect(actual).toEqual(expected);
+    });
+
+    it('reindexes related ids of resources of its type', () => {
+      const reducer = createResourcesReducer('post', actions);
+
+      const state = {
+        'p1': { commentIds: ['c1', 'c2', 'c3', 'c4', 'c5'] },
+        'p2': {}
+      };
+
+      const action = {
+        type: 'REINDEX_RELATED',
+        resourceType: 'post',
+        resourceId: 'p1',
+        fk: 'commentIds',
+        sourceIndex: 1,
+        destinationIndex: 3
+      };
+
+      const actual = reducer(state, action);
+
+      const expected = {
+        'p1': { commentIds: ['c1', 'c3', 'c4', 'c2', 'c5'] },
+        'p2': {}
       };
 
       expect(actual).toEqual(expected);

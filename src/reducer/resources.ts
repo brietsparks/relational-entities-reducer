@@ -7,14 +7,15 @@ import {
   Type,
   ResourceCollectionsByType,
   ResourceCollectionObjectById,
-  ResourcePointerObject,
+  ResourcePointerObject, Fkey,
 } from '../interfaces';
-import { isObject } from '../util';
+import { arraymove, isObject } from '../util';
 
 interface Actions {
   ADD: string,
   REMOVE: string,
-  EDIT: string
+  EDIT: string,
+  REINDEX_RELATED: string
 }
 
 interface Action {
@@ -34,6 +35,14 @@ interface ConstructiveResource extends ResourcePointerObject {
 interface RemoveAction extends Action {
   remove: ResourceCollectionsByType<ResourceCollectionObjectById<ResourcePointerObject>>,
   edit: ResourceCollectionsByType<ResourceCollectionObjectById<ConstructiveResource>>
+}
+
+interface ReindexRelatedAction extends Action {
+  resourceType: Type,
+  resourceId: Id,
+  fk: Fkey,
+  sourceIndex: number,
+  destinationIndex: number,
 }
 
 export const createResourcesReducer = (type: Type, actions: Actions): Reducer => {
@@ -58,7 +67,7 @@ export const createResourcesReducer = (type: Type, actions: Actions): Reducer =>
 
         return {...state, ...addableResources};
       }
-      case actions.REMOVE:
+      case actions.REMOVE: {
         const newState = { ...state };
 
         const removeAction = action as RemoveAction;
@@ -76,6 +85,7 @@ export const createResourcesReducer = (type: Type, actions: Actions): Reducer =>
         }
 
         return newState;
+      }
       case actions.EDIT: {
         const editAction = action as ConstructiveAction;
 
@@ -92,6 +102,35 @@ export const createResourcesReducer = (type: Type, actions: Actions): Reducer =>
         });
 
         return newState;
+      }
+      case actions.REINDEX_RELATED: {
+        const reindexRelatedAction = action as ReindexRelatedAction;
+
+        if (type !== reindexRelatedAction.resourceType) {
+          return state;
+        }
+
+        const { resourceId, fk, sourceIndex, destinationIndex } = reindexRelatedAction;
+
+        const resource = state[resourceId];
+
+        if (!isObject(resource)) {
+          return state;
+        }
+
+        const relatedIds = resource[fk];
+
+        if (!Array.isArray(relatedIds)) {
+          return state;
+        }
+
+        const newRelatedIds = [...relatedIds];
+        arraymove(newRelatedIds, sourceIndex, destinationIndex);
+
+        return {
+          ...state,
+          [resourceId]: { ...state[resourceId], [fk]: newRelatedIds }
+        }
       }
       default:
         return state;

@@ -3,10 +3,11 @@ import {
   validateResourceId,
   validateResourceData,
   validateResourceOptions,
-  validateIndex
+  validateFk,
+  validateIndex,
 } from './validation';
 import { Model } from '../model';
-import { modelSchema, nonStringsOrNumbers, nonObjectOptional, nonObjects, nonIntegers } from '../mocks';
+import { modelSchema, nonStringsOrNumbers, nonObjectOptional, nonObjects, nonIntegers, nonStrings } from '../mocks';
 
 describe('actions/validation', () => {
   test('validateResourceType', () => {
@@ -68,7 +69,26 @@ describe('actions/validation', () => {
     })
   });
 
-  describe('validateIndexLBound', () => {
+  describe('validateFk', () => {
+    const model = new Model(modelSchema);
+
+    test('fk must be a string', () => {
+      nonStrings.forEach(invalidFk => {
+        // @ts-ignore
+        const actual = () => validateFk(model,'post', invalidFk);
+        const error = new Error('foreign key must be a string');
+        expect(actual).toThrow(error);
+      })
+    });
+
+    test('fk must exist in model', () => {
+      const actual = () => validateFk(model,'post', 'chickenId');
+      const error = new Error('resource of type "post" does not contain a foreign key "chickenId"');
+      expect(actual).toThrow(error);
+    });
+  });
+
+  describe('validateIndex', () => {
     test('index must be an integer', () => {
       nonIntegers.forEach(invalidIndex => {
         // @ts-ignore

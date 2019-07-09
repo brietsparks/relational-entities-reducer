@@ -1,6 +1,6 @@
 import { Model } from '../model';
-import { Data, Id, Type } from '../interfaces';
-import { isStringOrNumber, isObject } from '../util';
+import { Data, Fkey, Id, Type } from '../interfaces';
+import { isStringOrNumber, isObject, isString } from '../util';
 
 interface BatchItem {
   resourceType: Type,
@@ -30,6 +30,18 @@ export const validateResourceData = (data?: Data, isRequired = false) => {
 export const validateResourceOptions = (options?: object, isRequired = false) => {
   if ((options || isRequired) && !isObject(options)) {
     throw new Error(`resource options must be an object literal`);
+  }
+};
+
+export const validateFk = (model: Model, resourceType: Type, fk: Fkey) => {
+  if (!isString(fk)) {
+    throw new Error('foreign key must be a string');
+  }
+
+  const hasFk = model.getEntity(resourceType).hasFk(fk);
+
+  if (!hasFk) {
+    throw new Error(`resource of type "${resourceType}" does not contain a foreign key "${fk}"`);
   }
 };
 
