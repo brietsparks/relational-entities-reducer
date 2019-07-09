@@ -98,22 +98,25 @@ describe('interceptor', () => {
       user: {
         resources: {
           'u1': { authoredPostIds: ['p1'], commentIds: ['c2'] },
-          'u2': {}
+          'u2': {},
+          'u3': { authoredPostIds: ['p2'] }
         },
-        ids: ['u1', 'u2']
+        ids: ['u1', 'u2', 'u3']
       },
       post: {
         resources: {
           'p1': { authorId: 'u1', commentIds: ['c1'] },
+          'p2': { authorId: 'u3', commentIds: ['c3'] }
         },
-        ids: ['p1']
+        ids: ['p1', 'p2']
       },
       comment: {
         resources: {
           'c1': { postId: 'p1' },
-          'c2': { userId: 'u1' }
+          'c2': { userId: 'u1' },
+          'c3': { postId: 'p2' }
         },
-        ids: ['c1', 'c2']
+        ids: ['c1', 'c2', 'c3']
       }
     };
 
@@ -137,6 +140,11 @@ describe('interceptor', () => {
           resourceType: 'user',
           resourceId: 'u2',
           options: {}
+        },
+        'post.p2': {
+          resourceType: 'post',
+          resourceId: 'p2',
+          options: {}
         }
       }
     };
@@ -145,6 +153,22 @@ describe('interceptor', () => {
 
     const expected = {
       type: 'whatever',
+      edit: {
+        user: {
+          'u3': {
+            resourceType: 'user',
+            resourceId: 'u3',
+            data: { authoredPostIds: [] }
+          },
+        },
+        comment: {
+          'c3': {
+            resourceType: 'comment',
+            resourceId: 'c3',
+            data: { postId: null }
+          }
+        }
+      },
       remove: {
         user: {
           'u1': {
@@ -162,6 +186,11 @@ describe('interceptor', () => {
           'p1': {
             resourceType: 'post',
             resourceId: 'p1',
+            options: {}
+          },
+          'p2': {
+            resourceType: 'post',
+            resourceId: 'p2',
             options: {}
           },
         },

@@ -109,7 +109,7 @@ describe('index', () => {
       },
       post: {
         resources: {
-          'p2': { editorIds: ['u2'] }
+          'p2': { editorIds: [] }
         },
         ids: ['p2']
       },

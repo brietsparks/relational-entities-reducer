@@ -19,6 +19,7 @@ import { filterMap as filterMapResourcesByExistence, filterObject as filterObjec
 import convertToPrimitives, * as fromConvertToPrimitives from './interceptors/on-add/convert-to-primitives';
 import relate, * as fromRelate from './interceptors/on-add/relate';
 import removeRelated, * as fromRemoveRelated from './interceptors/on-remove/remove-related';
+import unrelate from './interceptors/on-remove/unrelate';
 import { groupMapsByType, groupObjectsByType } from './interceptors/group-by-type';
 
 export default (model: Model, state: State, action: Action, allActions: Actions): Action => {
@@ -51,15 +52,21 @@ export const onAdd = (model: Model, state: State, inputAction: InputAddAction): 
 };
 
 interface OutputRemoveAction extends Action {
-  remove: ResourceCollectionsByType<ResourceCollectionObjectById<ResourcePointerObject>>
+  remove: ResourceCollectionsByType<ResourceCollectionObjectById<ResourcePointerObject>>,
+  edit: ResourceCollectionsByType<ResourceCollectionObjectById<ResourcePointerObject>>
 }
 export const onRemove = (model: Model, state: State, inputAction: InputRemoveAction): OutputRemoveAction => {
   const filtered = filterObjectResourcesByExistence(model, state, inputAction.remove, true);
-  const withRemovals = removeRelated(model, state, filtered as fromRemoveRelated.Resources);
-  const grouped = groupObjectsByType(withRemovals);
+
+  const removals = removeRelated(model, state, filtered as fromRemoveRelated.Resources);
+  const editables = unrelate(model, state, removals);
+
+  const groupedRemovals = groupObjectsByType(removals);
+  const groupedEditables = groupObjectsByType(editables);
 
   return {
     type: inputAction.type,
-    remove: grouped
+    remove: groupedRemovals,
+    edit: groupedEditables
   };
 };

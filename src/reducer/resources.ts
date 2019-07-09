@@ -31,7 +31,8 @@ interface AddableResource extends ResourcePointerObject {
 }
 
 interface RemoveAction extends Action {
-  remove: ResourceCollectionsByType<ResourceCollectionObjectById<ResourcePointerObject>>
+  remove: ResourceCollectionsByType<ResourceCollectionObjectById<ResourcePointerObject>>,
+  edit: ResourceCollectionsByType<ResourceCollectionObjectById<AddableResource>>
 }
 
 export const createResourcesReducer = (type: Type, actions: Actions): Reducer => {
@@ -57,17 +58,21 @@ export const createResourcesReducer = (type: Type, actions: Actions): Reducer =>
         return {...state, ...addableResources};
       }
       case actions.REMOVE:
-        const removeAction = action as RemoveAction;
-
-        const resources = removeAction.remove[type];
-
-        if (!isObject(resources)) {
-          return state;
-        }
-
         const newState = { ...state };
 
-        Object.keys(resources).forEach(deletableId => delete newState[deletableId]);
+        const removeAction = action as RemoveAction;
+        const removables = removeAction.remove[type];
+        const editables = removeAction.edit[type];
+
+        if (isObject(removables)) {
+          Object.keys(removables).forEach(deletableId => delete newState[deletableId]);
+        }
+
+        if (isObject(editables)) {
+          Object.entries(editables).forEach(([resourceId, resource]) => {
+            newState[resourceId] = resource.data;
+          });
+        }
 
         return newState;
       default:

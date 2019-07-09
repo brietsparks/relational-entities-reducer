@@ -73,8 +73,8 @@ describe('reducer/resources', () => {
 
       const state = {
         'c1': {},
-        'c2': {},
-        'c3': {},
+        'c2': { childIds: ['c3'] },
+        'c3': { parentId: 'c2' },
         'c4': {}
       };
 
@@ -82,12 +82,33 @@ describe('reducer/resources', () => {
         type: 'REMOVE',
         remove: {
           comment: {
-            'c1': { resourceType: 'comment', resourceId: 'c1' },
-            'c3': { resourceType: 'comment', resourceId: 'c3' }
+            'c1': {
+              resourceType: 'comment',
+              resourceId: 'c1'
+            },
+            'c3': {
+              resourceType: 'comment',
+              resourceId: 'c3'
+            }
           },
           post: {
-            'c2': { resourceType: 'post', resourceId: 'c2' },
-            'c4': { resourceType: 'post', resourceId: 'c4' }
+            'c2': {
+              resourceType: 'post',
+              resourceId: 'c2'
+            },
+            'c4': {
+              resourceType: 'post',
+              resourceId: 'c4'
+            }
+          }
+        },
+        edit: {
+          comment: {
+            'c2': {
+              resourceType: 'comment',
+              resourceId: 'c2',
+              data: { childIds: [] }
+            }
           }
         }
       };
@@ -95,7 +116,7 @@ describe('reducer/resources', () => {
       const actual = reducer(state, action);
 
       const expected = {
-        'c2': {},
+        'c2': { childIds: [] },
         'c4': {}
       };
 
