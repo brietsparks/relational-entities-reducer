@@ -1,14 +1,20 @@
+NOT PRODUCTION READY, WORK-IN-PROGRESS
 
 # Relational Entities Reducer
 
 Reducers, actions, and selectors for read and write operations on normalized relational state.
 
-- plain old actions + reducers, pure and non-mutating
+- plain old actions + reducers; pure and non-mutating
 - create, edit, or delete multiple related resources in a single action 
 - manage recursive/self-referencing relations
 - framework agnostic and zero-dependency
 
+## Demo
+### [Live Demo](https://brietsparks.github.io/relational-entities-reducer-examples)
+### [Demo Source Code](https://github.com/brietsparks/relational-entities-reducer-examples)
+
 ## Basic Usage
+Install: `yarn add relational-entities-reducer`
 
 #### 1. Define how your data are related to each other:
 ```js
@@ -58,7 +64,7 @@ React Hooks:
 import { useReducer } from 'react';
 
 // ...
-const [state, dispatch] = useReducer(relationalEntitiesReducer);   
+const [state, dispatch] = useReducer(relationalEntityReducer);   
 ```
 
 ### 4. Pass actions to the reducer to write to state.
@@ -96,7 +102,7 @@ add(
   // author u1 exists, so the reducer will add p1 to its post ids 
   { resourceType: 'post', resourceId: 'p1', data: { authorId: 'u1' } },
   
-  // comment c1 and c2 do not exist, so the reducer will create them and assign u2 to their authorId
+  // comment c1 and c2 do not exist, so the reducer will create them and assign p2 to their postId
   ['post', 'p2', { authorId: 'u2', commentIds: ['c1', 'c2'] }] 
 )
 ```
