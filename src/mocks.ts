@@ -1,14 +1,14 @@
-//
-
 import { ModelSchema } from './model';
 
-export const nonObjectOptional = [1, true, 'string', [], () => {}, function () {}];
+export const fn = () => {};
+
+export const nonObjectOptional = [1, true, 'string', [], fn];
 export const nonObjects = [...nonObjectOptional, false , null, undefined];
 
 export const nonStrings = [null, 1, true, false, undefined, [], {}];
-export const nonArrays = [null, 1, true, false, 'string', undefined, {}, () => {}, function() {}];
-export const nonStringsOrNumbers = [null, true, false, undefined, [], {} ,() => {}, function() {}];
-export const nonNumbers = [null, true, false, undefined, [], {}, 'string', () => {}, function() {}];
+export const nonArrays = [null, 1, true, false, 'string', undefined, {}, fn];
+export const nonStringsOrNumbers = [null, true, false, undefined, [], {} ,fn];
+export const nonNumbers = [null, true, false, undefined, [], {}, 'string', fn];
 export const nonIntegers = [...nonNumbers, 1.1];
 
 
