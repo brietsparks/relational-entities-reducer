@@ -1,7 +1,11 @@
 {
   "name": "relational-entities-reducer",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.3.0",
+  "description": "Write and read normalized relational state with easy reducers, actions, and selectors",
+  "repository": "https://github.com/brietsparks/relational-entities-reducer",
+  "files": [
+    "/dist/"
+  ],
   "main": "dist/index.js",
   "scripts": {
     "test": "jest --watchAll",
