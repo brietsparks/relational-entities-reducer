@@ -2,16 +2,19 @@ NOT PRODUCTION READY, WORK-IN-PROGRESS
 
 # Relational Entities Reducer [![Coverage Status](https://coveralls.io/repos/github/brietsparks/relational-entities-reducer/badge.svg?branch=master)](https://coveralls.io/github/brietsparks/relational-entities-reducer?branch=master)
 
-Reducers, actions, and selectors for read and write operations on normalized relational state.
+This library helps you make complex changes to relational state declaratively.   
 
-- plain old actions + reducers; pure and non-mutating
-- create, edit, or delete multiple related resources in a single action 
-- manage recursive/self-referencing relations
-- framework agnostic and zero-dependency
+- perform write operations of multiple resources via a single action. 
+- plain old actions + reducers that are pure and framework agnostic. Use with with or without React, Redux etc.
+- supports one and many cardinalities, and recursive/self-referencing relations
 
-## Demo
+## Examples
 ### [Live Demo](https://brietsparks.github.io/relational-entities-reducer-examples)
-### [Demo Source Code](https://github.com/brietsparks/relational-entities-reducer-examples)
+### [Source](https://github.com/brietsparks/relational-entities-reducer-examples)
+
+These examples show how to:
+- create, edit, and delete parent (List) and child (Item) nodes. [Source](https://github.com/brietsparks/relational-entities-reducer-examples/tree/master/src/examples/1-lists) 
+- delete tree nodes plus their descendants in a single action. [Source](https://github.com/brietsparks/relational-entities-reducer-examples/tree/master/src/examples/2-recursive-tree)
 
 ## Basic Usage
 Install: `yarn add relational-entities-reducer`
