@@ -1,6 +1,6 @@
 NOT PRODUCTION READY, WORK-IN-PROGRESS
 
-# Relational Entities Reducer
+# Relational Entities Reducer [![Coverage Status](https://coveralls.io/repos/github/brietsparks/relational-entities-reducer/badge.svg?branch=master)](https://coveralls.io/github/brietsparks/relational-entities-reducer?branch=master)
 
 Reducers, actions, and selectors for read and write operations on normalized relational state.
 
