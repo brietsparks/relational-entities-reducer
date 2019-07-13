@@ -1,5 +1,3 @@
-import { ModelSchema } from './model';
-
 export const fn = () => {};
 
 export const nonObjectOptional = [1, true, 'string', [], fn];
@@ -12,7 +10,7 @@ export const nonNumbers = [null, true, false, undefined, [], {}, 'string', fn];
 export const nonIntegers = [...nonNumbers, 1.1];
 
 
-export const modelSchema: ModelSchema = {
+export const modelSchema = {
   'user': {
     'authoredPostIds': {
       has: 'many',
