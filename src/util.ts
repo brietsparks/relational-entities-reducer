@@ -1,6 +1,6 @@
 import { Type, Id } from './interfaces';
 
-export const isObject = (v: any) => {
+export const isObjectLiteral = (v: any) => {
   return (
     typeof v === 'object' &&
     v !== null &&
