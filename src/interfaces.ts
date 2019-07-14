@@ -1,14 +1,10 @@
-export interface Model {
-}
-
-export interface State {
-}
+export interface State {}
 
 export type Id = number | string;
 export type Type = string;
 export type RelationKey = string;
 export type RelationName = string;
-export type Data = object;
+export type Data = { [s in string]: any };
 export type Cardinality = 'many' | 'one';
 export type Index = number;
 
@@ -16,6 +12,13 @@ export type CidString = string;
 export type CidObject = { type: Type, id: Id };
 export type CidTuple = [Type, Id];
 export type CompositeId = CidString | CidObject | CidTuple;
+
+export interface Link {
+  linkedId: Id,
+  relationName: RelationName,
+  index: Index,
+
+}
 
 export interface LinkRemovalCallback {
   (): LinkRemovalSchema;
@@ -34,7 +37,7 @@ export type IndicesByRelation = { [s in RelationName | RelationKey]: number };
 export interface Operand {
   type: Type,
   id: Id,
-  operator: string
+  operator: Operator
 }
 
 export interface AddOperand extends Operand {
