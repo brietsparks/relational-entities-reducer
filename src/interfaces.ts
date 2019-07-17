@@ -16,8 +16,8 @@ export type CompositeId = CidString | CidObject | CidTuple;
 export interface Link {
   linkedId: Id,
   relationName: RelationName,
-  index: Index,
-
+  relationKey: RelationKey,
+  index?: Index,
 }
 
 export interface LinkRemovalCallback {
@@ -34,25 +34,24 @@ export type Operator = 'add' | 'edit' | 'remove';
 
 export type IndicesByRelation = { [s in RelationName | RelationKey]: number };
 
-export interface Operand {
+export interface Operation {
   type: Type,
   id: Id,
-  operator: Operator
+  operator: Operator,
+  data: Data
 }
 
-export interface AddOperand extends Operand {
-  data: Data;
+export interface AddOperation extends Operation {
   options: AddOptions;
   operator: 'add';
 }
 
-export interface RemoveOperand extends Operand {
+export interface RemoveOperation extends Operation {
   options: RemoveOptions,
   operator: 'remove'
 }
 
-export interface EditOperand {
-  data: Data,
+export interface EditOperation {
   operator: 'edit';
 }
 

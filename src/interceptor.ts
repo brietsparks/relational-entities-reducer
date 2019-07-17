@@ -1,7 +1,7 @@
-import { IndicesByRelation, RelationName, RelationKey } from './interfaces';
+import { IndicesByRelation, RelationName, RelationKey, Type, Cardinality, Operation, OpId } from './interfaces';
 
 import Model from './model';
-import OperationsBuilder, { OP_ADD, OP_EDIT } from './operations';
+import { Repository, injectLinkData } from './operations';
 import { Action as InputAddAction } from './actions/add';
 import { Action as InputRemoveAction } from './actions/remove';
 import { Action as InputLinkAction } from './actions/link';
@@ -9,93 +9,117 @@ import { Action as InputUnlinkAction } from './actions/unlink';
 import { isObjectLiteral } from './util';
 
 export const onAdd = (model: Model, inputAction: InputAddAction) => {
-  const opUtil = new OperationsBuilder(model, inputAction.operands);
+  const repository = new Repository(model, inputAction.operations);
 
-  inputAction.operands.forEach(operand => {
-    const { type, id, data, options } = operand;
+  inputAction.operations.forEach(initialOperation => {
+    const { type, id, data, options } = initialOperation;
 
-    const links = model.extractLinks(type, id, data);
+    if (model.hasResource(type, id)) {
+      return;
+    }
 
-    links.forEach(({ relationName, linkedId, index }) => {
-      const relationType = model.getRelationType(type, relationName);
+    repository.addToPayload([type, id], initialOperation);
 
-      const linkedExistsInOperands = opUtil.hasOperand(relationType, linkedId);
+    const entity = model.getEntity(type);
 
-      if (!linkedExistsInOperands) {
-        const linkedOperator = model.hasResource(relationType, linkedId) ? OP_EDIT : OP_ADD;
+    const links = model.extractAllLinks(type, data);
+    links.forEach(({ relationKey, linkedId, index }) => {
+      const { reciprocalKey, relatedType, cardinality, reciprocalCardinality } = entity.getRelationDefinition(relationKey);
 
-        opUtil.newOperand(relationType, linkedId, linkedOperator);
+      // retrieve the operations
+      let operation = repository.getFromPayload(type, id);
+      let relatedOperation = repository.getFromPayloadOrState(relatedType, linkedId, true);
+      if (!operation || !relatedOperation) {
+        return;
       }
 
-      const indexInLinked = getIndexByRelation(relationName, options.indicesByRelation);
+      // link the operands together
+      const injected: Map<OpId, Operation> = injectLinkData(
+        repository, operation, relatedOperation, relationKey,
+        cardinality, reciprocalKey, index
+      );
 
-      opUtil.link(type, id, relationName, linkedId, [index, indexInLinked]);
+      const indexInLinked = getIndexByRelation(relationKey, options.indicesByRelation);
+
+      const injectedRelated: Map<OpId, Operation> = injectLinkData(
+        repository, relatedOperation, operation, reciprocalKey,
+        reciprocalCardinality, relationKey, indexInLinked
+      );
+
+      // add the results to the repository
+      injected.forEach((op, opId) => repository.addToPayload(opId, op));
+      injectedRelated.forEach((op, opId) => repository.addToPayload(opId, op));
     });
   });
 
   return {
     type: inputAction.type,
-    operands: opUtil.getOperands()
+    operations: repository.getPayload()
   }
 };
 
-export const onRemove = (model: Model, inputAction: InputRemoveAction) => {
-  const opUtil = new OperationsBuilder(model);
+// export const onRemove = (model: Model, inputAction: InputRemoveAction) => {
+//   const builder = new OperationsBuilder(model);
+//
+//   inputAction.operations.forEach(operation => {
+//     const { type, id, options } = operation;
+//
+//     if (!model.hasResource(type, id)) {
+//       return;
+//     }
+//
+//     builder.remove(type, id, options.removeLinked);
+//   });
+//
+//   return {
+//     type: inputAction.type,
+//     operations: builder.getOperations()
+//   }
+// };
+//
+// export const onLink = (model: Model, inputAction: InputLinkAction) => {
+//   const builder = new OperationsBuilder(model);
+//
+//   inputAction.definitions.forEach(definition => {
+//     const { type, id, relation, linkedId, indices } = definition;
+//
+//     const relationType = model.getRelationType(type, relation);
+//
+//     if (!model.hasResource(type, id) || model.hasResource(relationType, linkedId)) {
+//       return;
+//     }
+//
+//     const relationKey = model.getRelationKey(type, relation);
+//
+//     builder.link(type, id, relationKey, linkedId, indices);
+//   });
+//
+//   return {
+//     type: inputAction.type,
+//     operations: builder.getOperations()
+//   };
+// };
+//
+// export const onUnlink = (model: Model, inputAction: InputUnlinkAction) => {
+//   const builder = new OperationsBuilder(model);
+//
+//   inputAction.definitions.forEach(definition => {
+//     const { type, id, relation, linked, byId } = definition ;
+//
+//     if (!model.hasResource(type, id)) {
+//       return;
+//     }
+//
+//     builder.unlink(type, id, relation, linked, byId);
+//   });
+//
+//   return {
+//     type: inputAction.type,
+//     operations: builder.getOperations()
+//   };
+// };
 
-  inputAction.operands.forEach(operand => {
-    const { type, id, options } = operand;
-
-
-
-    opUtil.remove(type, id, options.removeLinked);
-  });
-
-  return {
-    type: inputAction.type,
-    operands: opUtil.getOperands()
-  }
-};
-
-export const onLink = (model: Model, inputAction: InputLinkAction) => {
-  const opUtil = new OperationsBuilder(model);
-
-  inputAction.definitions.forEach(definition => {
-    const { type, id, relation, linkedId, indices } = definition;
-
-
-
-    if (!model.hasResource(type, id) || model.) {
-      return;
-    }
-
-    opUtil.link(type, id, relation, linkedId, indices);
-  });
-
-  return {
-    type: inputAction.type,
-    operands: opUtil.getOperands()
-  };
-};
-
-export const onUnlink = (model: Model, inputAction: InputUnlinkAction) => {
-  const opUtil = new OperationsBuilder(model);
-
-  inputAction.definitions.forEach(definition => {
-    const { type, id, relation, linked, byId } = definition ;
-
-    opUtil.unlink(type, id, relation, linked, byId);
-  });
-
-  return {
-    type: inputAction.type,
-    operands: opUtil.getOperands()
-  };
-};
-
-const getIndexByRelation = (
-  relation: RelationName|RelationKey,
-  indicesByRelation?: IndicesByRelation
-): number|undefined => {
+const getIndexByRelation = (relation: RelationKey, indicesByRelation?: IndicesByRelation): number|undefined => {
   if (indicesByRelation && isObjectLiteral(indicesByRelation)) {
     return indicesByRelation[relation]
   }

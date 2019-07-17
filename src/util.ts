@@ -22,3 +22,23 @@ export function arraymove(arr: any[], fromIndex: number, toIndex: number) {
   arr.splice(fromIndex, 1);
   arr.splice(toIndex, 0, element);
 }
+
+// enables es5 support without ts downlevelIteration
+export function mergeSets<T> (...iterables: Set<T>[]): Set<T> {
+  const set = new Set<T>();
+  iterables.forEach(iterable => {
+    iterable.forEach(item => set.add(item))
+  });
+  return set
+}
+
+// enables es5 support without ts downlevelIteration
+export const mergeMaps = <K,V>(...iterables: Map<K,V>[]) => {
+  const map = new Map<K,V>();
+
+  iterables.forEach(iterable => {
+    iterable.forEach((value, key) => map.set(key, value));
+  });
+
+  return map;
+};

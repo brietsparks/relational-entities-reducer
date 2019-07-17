@@ -17,8 +17,12 @@ export default class Model {
     return new Entity();
   }
 
-  getRelationType(type: Type, relation: RelationName|RelationKey): Type {
+  getRelationType(type: Type, relationKey: RelationKey): Type {
     return 'mock type'
+  }
+
+  getRelationKey(type: Type, relation: RelationName|RelationKey): RelationKey {
+    return 'mock key'
   }
 
   getResource(type: Type, id: Id): Data {
@@ -29,9 +33,19 @@ export default class Model {
     return !!this.getResource(type, id);
   }
 
-  extractLinks(type: Type, id: Id, data: Data): Link[] {
-    // the schema will tell us the names of the relation keys
-    return [{ relationName: 'mockRel', linkedId: 'mockId', index: 3 }];
+  extractAllLinks(type: Type, data: Data): Link[] {
+    // get the names of the relation keys from the schema
+    return [{ relationName: 'mockRel', relationKey: 'mockKey', linkedId: 'mockId', index: 3 }];
+  }
+
+  extractLink(type: Type, relatedType: Type, data: Data): Link|undefined {
+    // get the name of the relation key from the schema
+
+    return { relationName: 'oneRel', relationKey: 'mockKey', linkedId: 'mockId' };
+  }
+
+  extractLinkedId(type: Type, relatedType: Type, data: Data): Id|undefined {
+    return 'mock id'
   }
 
   // getResource(type: Type, id: Id, data?: Data): Resource {

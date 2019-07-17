@@ -7,20 +7,40 @@ export class Entities {
   }
 }
 
+interface RelationDefinition {
+  subjectType: Type,
+  relationKey: RelationKey
+  relatedType: Type,
+  cardinality: Cardinality,
+  reciprocalKey: RelationKey,
+  reciprocalCardinality: Cardinality
+}
+
 export class Entity {
   constructor() {
 
   }
 
-  getOwnReciprocalCardinality(relation: RelationName|RelationKey): Cardinality {
-    return ONE;
+  getRelationDefinition(relationKey: RelationKey): RelationDefinition {
   }
 
-  getRelatedReciprocalKey(relation: RelationName|RelationKey): RelationKey {
+  getRelatedType(relationKey: RelationKey): Type {
     return 'a';
   }
 
-  getRelatedReciprocalCardinality(relation: RelationName|RelationKey): Cardinality {
+  getCardinality(relationKey: RelationKey): Cardinality {
+    return ONE;
+  }
+
+  getOwnReciprocalCardinality(relation: RelationKey): Cardinality {
+    return ONE;
+  }
+
+  getRelatedReciprocalKey(relationKey: RelationKey): RelationKey {
+    return 'a';
+  }
+
+  getRelatedReciprocalCardinality(relation: RelationKey): Cardinality {
     return ONE;
   }
 }
