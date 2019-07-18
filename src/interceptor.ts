@@ -1,24 +1,32 @@
-import { IndicesByRelation, RelationName, RelationKey, Type, Cardinality, Operation, OpId } from './interfaces';
+import {
+  IndicesByRelation,
+  RelationName,
+  RelationKey,
+  Type,
+  Cardinality,
+  Operation,
+  OpId,
+  AddOperation, RemoveOperation, LinkDefinition, CidString
+} from './interfaces';
 
 import Model from './model';
-import { Repository, injectLinkData } from './operations';
+import { Repository, Visitor } from './operations';
 import { Action as InputAddAction } from './actions/add';
 import { Action as InputRemoveAction } from './actions/remove';
 import { Action as InputLinkAction } from './actions/link';
 import { Action as InputUnlinkAction } from './actions/unlink';
 import { isObjectLiteral } from './util';
 
-export const onAdd = (model: Model, inputAction: InputAddAction) => {
-  const repository = new Repository(model, inputAction.operations);
+export const transformAddOperations = (model: Model, operations: Map<OpId, AddOperation>) => {
+  const repository = new Repository(model, operations);
+  const visitor = new Visitor(repository);
 
-  inputAction.operations.forEach(initialOperation => {
+  operations.forEach(initialOperation => {
     const { type, id, data, options } = initialOperation;
 
     if (model.hasResource(type, id)) {
       return;
     }
-
-    repository.addToPayload([type, id], initialOperation);
 
     const entity = model.getEntity(type);
 
@@ -34,72 +42,62 @@ export const onAdd = (model: Model, inputAction: InputAddAction) => {
       }
 
       // link the operands together
-      const injected: Map<OpId, Operation> = injectLinkData(
-        repository, operation, relatedOperation, relationKey,
-        cardinality, reciprocalKey, index
-      );
-
       const indexInLinked = getIndexByRelation(relationKey, options.indicesByRelation);
-
-      const injectedRelated: Map<OpId, Operation> = injectLinkData(
-        repository, relatedOperation, operation, reciprocalKey,
-        reciprocalCardinality, relationKey, indexInLinked
-      );
-
-      // add the results to the repository
-      injected.forEach((op, opId) => repository.addToPayload(opId, op));
-      injectedRelated.forEach((op, opId) => repository.addToPayload(opId, op));
+      visitor.link(operation, relatedOperation, relationKey, cardinality, reciprocalKey, index);
+      visitor.link(relatedOperation, operation, reciprocalKey, reciprocalCardinality, relationKey, indexInLinked);
     });
   });
 
-  return {
-    type: inputAction.type,
-    operations: repository.getPayload()
-  }
+  return repository.getPayload();
 };
 
-// export const onRemove = (model: Model, inputAction: InputRemoveAction) => {
-//   const builder = new OperationsBuilder(model);
-//
-//   inputAction.operations.forEach(operation => {
-//     const { type, id, options } = operation;
-//
-//     if (!model.hasResource(type, id)) {
-//       return;
-//     }
-//
-//     builder.remove(type, id, options.removeLinked);
-//   });
-//
-//   return {
-//     type: inputAction.type,
-//     operations: builder.getOperations()
-//   }
-// };
-//
-// export const onLink = (model: Model, inputAction: InputLinkAction) => {
-//   const builder = new OperationsBuilder(model);
-//
-//   inputAction.definitions.forEach(definition => {
-//     const { type, id, relation, linkedId, indices } = definition;
-//
-//     const relationType = model.getRelationType(type, relation);
-//
-//     if (!model.hasResource(type, id) || model.hasResource(relationType, linkedId)) {
-//       return;
-//     }
-//
-//     const relationKey = model.getRelationKey(type, relation);
-//
-//     builder.link(type, id, relationKey, linkedId, indices);
-//   });
-//
-//   return {
-//     type: inputAction.type,
-//     operations: builder.getOperations()
-//   };
-// };
-//
+export const transformRemoveOperations = (model: Model, operations: Map<OpId, RemoveOperation>) => {
+  const repository = new Repository(model, operations);
+  const visitor = new Visitor(repository);
+
+  operations.forEach(operation => {
+    const { type, id } = operation;
+
+    if (!model.hasResource(type, id)) {
+      return;
+    }
+
+    visitor.remove(operation)
+  });
+
+  return repository.getPayload();
+};
+
+export const transformLinkDefinitions = (model: Model, definitions: Map<CidString, LinkDefinition>) => {
+  const repository = new Repository(model);
+  const visitor = new Visitor(repository);
+
+  definitions.forEach(definition => {
+    const { type, id, relation, linkedId, indices } = definition;
+
+    const relationKey = model.getRelationKey(type, relation);
+
+    const {
+      reciprocalKey,
+      reciprocalCardinality,
+      cardinality,
+      relatedType,
+    } = model.getEntity(type).getRelationDefinition(relationKey);
+
+    const operation = repository.getFromPayloadOrState(type, id);
+    const relatedOperation = repository.getFromPayloadOrState(relatedType, linkedId);
+
+    if (!operation || !relatedOperation) {
+      return;
+    }
+
+    visitor.link(operation, relatedOperation, relationKey, cardinality, reciprocalKey, indices[0]);
+    visitor.link(relatedOperation, operation, reciprocalKey, reciprocalCardinality, relationKey, indices[1]);
+  });
+
+  return repository.getPayload();
+};
+
 // export const onUnlink = (model: Model, inputAction: InputUnlinkAction) => {
 //   const builder = new OperationsBuilder(model);
 //

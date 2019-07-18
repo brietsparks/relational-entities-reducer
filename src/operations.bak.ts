@@ -7,6 +7,40 @@ export const OP_EDIT = 'edit';
 export const OP_ADD = 'add';
 export const OP_REMOVE = 'remove';
 
+export class Visitor {
+  repository: Repository;
+
+  constructor(repository: Repository) {
+    this.repository = repository;
+  }
+
+  link(
+    recipient: Operation, giver: Operation, relationKey: RelationKey,
+    cardinality: Cardinality, reciprocalKey: RelationKey, index?: Index
+  ) {
+    if (cardinality === ONE) {
+      // the holder is a resource that already has the giver's id
+      const holderId = giver.data[relationKey];
+      const holder = this.repository.getFromPayloadOrState(recipient.type, holderId);
+
+      // if there is a holder, then remove the giver's id from it
+      if (holder) {
+        const holderData = immutability.withOneRelationId(holder.data, reciprocalKey, null);
+        this.repository.setInPayload([recipient.type, holderId], { ...holder, data: holderData });
+      }
+
+      // add the giver's id to the recipient
+      const recipientData = immutability.withOneRelationId(recipient.data, relationKey, giver.id);
+      this.repository.setInPayload([recipient.type, recipient.id], { ...recipient, data: recipientData });
+    }
+
+    if (cardinality === MANY) {
+      const data = immutability.withManyRelationId(recipient.data, relationKey, giver.id, index);
+      this.repository.setInPayload([recipient.type, recipient.id], { ...recipient, data });
+    }
+  }
+}
+
 export const injectLinkData = (
   repository: Repository, recipient: Operation, giver: Operation,
   relationKey: RelationKey, cardinality: Cardinality, reciprocalKey: RelationKey, index?: Index
@@ -94,7 +128,7 @@ export class Repository {
     return !!this.getFromPayload(type, id);
   }
 
-  addToPayload(key: OpId|CidTuple, operation: Operation) {
+  setInPayload(key: OpId|CidTuple, operation: Operation) {
     const opId = Array.isArray(key) ? Repository.makeOpId(key[0], key[1]) : key;
     this.touched.set(opId, operation);
   }
