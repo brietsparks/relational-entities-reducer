@@ -37,10 +37,6 @@ export default class Visitor {
     }
   }
 
-  remove(operation: RemoveOperation, model: Model) {
-
-  }
-
   unlink(
     operation: Operation,
     relationKey: RelationKey,
