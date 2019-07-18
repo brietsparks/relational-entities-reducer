@@ -21,6 +21,10 @@ export class Entity {
 
   }
 
+  hasRelationKey(relationKey: RelationKey): boolean {
+    return true;
+  }
+
   getRelationDefinition(relationKey: RelationKey): RelationDefinition {
   }
 

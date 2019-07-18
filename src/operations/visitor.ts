@@ -2,6 +2,7 @@ import { Cardinality, Data, Id, Index, Operation, OpId, RelationKey, RemoveOpera
 import { MANY, ONE } from '../constants';
 import Repository from './repository';
 import * as immutability from './immutability';
+import Model from '../model';
 
 export default class Visitor {
   repository: Repository;
@@ -36,7 +37,7 @@ export default class Visitor {
     }
   }
 
-  remove(operations: RemoveOperation) {
+  remove(operation: RemoveOperation, model: Model) {
 
   }
 
@@ -46,9 +47,9 @@ export default class Visitor {
     cardinality: Cardinality,
     linked: Id|Index,
     byId?: boolean
-  ) {
+  ): Id|undefined {
     const linkData = operation.data[relationKey];
-    
+
     if (!linkData) {
       return;
     }
@@ -61,7 +62,8 @@ export default class Visitor {
       const data = immutability.setOneRelationId(operation.data, relationKey, null);
 
       this.repository.setInPayload([operation.type, operation.id], { ...operation, data });
-      return;
+
+      return linkData;
     }
 
     if (cardinality === MANY) {
@@ -71,10 +73,13 @@ export default class Visitor {
         return;
       }
 
+      const linkedId = byId ? linked : linkData[index];
+
       const data = immutability.removeManyRelationId(operation.data, relationKey, index);
 
       this.repository.setInPayload([operation.type, operation.id], { ...operation, data });
-      return;
+
+      return linkedId;
     }
   }
 }

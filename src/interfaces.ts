@@ -25,7 +25,7 @@ export interface LinkRemovalCallback {
 }
 
 export type LinkRemovalSchema = {
-  [s in RelationKey]: LinkRemovalSchema | LinkRemovalCallback
+  [s in RelationKey|RelationName]: LinkRemovalSchema | LinkRemovalCallback
 }
 
 export type OpId = string;

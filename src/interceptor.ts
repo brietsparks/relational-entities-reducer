@@ -6,24 +6,20 @@ import {
   Cardinality,
   Operation,
   OpId,
-  AddOperation, RemoveOperation, LinkDefinition, CidString
+  AddOperation, RemoveOperation, LinkDefinition, CidString, UnlinkDefinition
 } from './interfaces';
 
 import Model from './model';
 import { Repository, Visitor } from './operations';
-import { Action as InputAddAction } from './actions/add';
-import { Action as InputRemoveAction } from './actions/remove';
-import { Action as InputLinkAction } from './actions/link';
-import { Action as InputUnlinkAction } from './actions/unlink';
 import { isObjectLiteral } from './util';
+import { OP_EDIT } from './operations/repository';
 
 export const transformAddOperations = (model: Model, operations: Map<OpId, AddOperation>) => {
   const repository = new Repository(model, operations);
   const visitor = new Visitor(repository);
 
-  operations.forEach(initialOperation => {
-    const { type, id, data, options } = initialOperation;
-
+  // todo: ingoreIdIndex
+  operations.forEach(({ type, id, data, options }) => {
     if (model.hasResource(type, id)) {
       return;
     }
@@ -56,13 +52,11 @@ export const transformRemoveOperations = (model: Model, operations: Map<OpId, Re
   const visitor = new Visitor(repository);
 
   operations.forEach(operation => {
-    const { type, id } = operation;
-
-    if (!model.hasResource(type, id)) {
+    if (!model.hasResource(operation.type, operation.id)) {
       return;
     }
 
-    visitor.remove(operation)
+    visitor.remove(operation, model)
   });
 
   return repository.getPayload();
@@ -72,9 +66,7 @@ export const transformLinkDefinitions = (model: Model, definitions: Map<CidStrin
   const repository = new Repository(model);
   const visitor = new Visitor(repository);
 
-  definitions.forEach(definition => {
-    const { type, id, relation, linkedId, indices } = definition;
-
+  definitions.forEach(({ type, id, relation, linkedId, indices }) => {
     const relationKey = model.getRelationKey(type, relation);
 
     const {
@@ -98,24 +90,40 @@ export const transformLinkDefinitions = (model: Model, definitions: Map<CidStrin
   return repository.getPayload();
 };
 
-// export const onUnlink = (model: Model, inputAction: InputUnlinkAction) => {
-//   const builder = new OperationsBuilder(model);
-//
-//   inputAction.definitions.forEach(definition => {
-//     const { type, id, relation, linked, byId } = definition ;
-//
-//     if (!model.hasResource(type, id)) {
-//       return;
-//     }
-//
-//     builder.unlink(type, id, relation, linked, byId);
-//   });
-//
-//   return {
-//     type: inputAction.type,
-//     operations: builder.getOperations()
-//   };
-// };
+export const transformUnlinkDefinitions = (model: Model, definitions: Map<CidString, UnlinkDefinition>) => {
+  const repository = new Repository(model);
+  const visitor = new Visitor(repository);
+
+  definitions.forEach(({ id, type, relation, linked, byId }) => {
+    const relationKey = model.getRelationKey(type, relation);
+
+    const {
+      reciprocalKey,
+      reciprocalCardinality,
+      cardinality,
+      relatedType,
+    } = model.getEntity(type).getRelationDefinition(relationKey);
+
+    const operation = repository.getFromPayloadOrState(type, id);
+    if (!operation) {
+      return;
+    }
+
+    const unlinkedId = visitor.unlink(operation, relationKey, cardinality, linked, byId);
+    if (!unlinkedId) {
+      return;
+    }
+
+    const relatedOperation = repository.getFromPayloadOrState(relatedType, unlinkedId);
+    if (!relatedOperation) {
+      return;
+    }
+
+    visitor.unlink(relatedOperation, reciprocalKey, reciprocalCardinality, id, true);
+  });
+
+  return repository.getPayload();
+};
 
 const getIndexByRelation = (relation: RelationKey, indicesByRelation?: IndicesByRelation): number|undefined => {
   if (indicesByRelation && isObjectLiteral(indicesByRelation)) {
