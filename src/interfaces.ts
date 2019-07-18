@@ -15,6 +15,7 @@ export type CompositeId = CidString | CidObject | CidTuple;
 
 export interface Link {
   linkedId: Id,
+  relatedType: Type,
   relationName: RelationName,
   relationKey: RelationKey,
   index?: Index,

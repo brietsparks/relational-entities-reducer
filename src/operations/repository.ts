@@ -21,6 +21,11 @@ export default class Repository {
     return mergeMaps(this.initial, this.touched);
   }
 
+  setInPayload(key: OpId|CidTuple, operation: Operation) {
+    const opId = Array.isArray(key) ? Repository.makeOpId(key[0], key[1]) : key;
+    this.touched.set(opId, operation);
+  }
+
   getFromPayload(type: Type, id: Id) {
     const opid = Repository.makeOpId(type, id);
 
@@ -37,9 +42,10 @@ export default class Repository {
     return !!this.getFromPayload(type, id);
   }
 
-  setInPayload(key: OpId|CidTuple, operation: Operation) {
-    const opId = Array.isArray(key) ? Repository.makeOpId(key[0], key[1]) : key;
-    this.touched.set(opId, operation);
+  getFromState(type: Type, id: Id): Operation|undefined {
+    const resource = this.model.getResource(type, id);
+
+
   }
 
   getFromPayloadOrState(type: Type, id: Id, newIfNotFound?: boolean): Operation|undefined {

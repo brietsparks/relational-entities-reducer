@@ -14,11 +14,11 @@ import { Repository, Visitor } from './operations';
 import { isObjectLiteral } from './util';
 import { OP_EDIT } from './operations/repository';
 
+// todo: ignoreIdIndex
 export const transformAddOperations = (model: Model, operations: Map<OpId, AddOperation>) => {
   const repository = new Repository(model, operations);
   const visitor = new Visitor(repository);
 
-  // todo: ingoreIdIndex
   operations.forEach(({ type, id, data, options }) => {
     if (model.hasResource(type, id)) {
       return;
@@ -51,12 +51,26 @@ export const transformRemoveOperations = (model: Model, operations: Map<OpId, Re
   const repository = new Repository(model, operations);
   const visitor = new Visitor(repository);
 
-  operations.forEach(operation => {
-    if (!model.hasResource(operation.type, operation.id)) {
+  operations.forEach(({ type, id, options: { removeLinked } }) => {
+    const data = model.getResource(type, id);
+
+    if (!data) {
       return;
     }
 
-    visitor.remove(operation, model)
+    const links = model.extractAllLinks(type, data);
+
+    links.forEach(({ relatedType, linkedId, relationKey }) => {
+      const { reciprocalKey, reciprocalCardinality } = model.getEntity(type).getRelationDefinition(relationKey);
+
+      const relatedOperation = repository.getFromPayloadOrState(relatedType, linkedId);
+
+      if (!relatedOperation) {
+        return;
+      }
+
+      visitor.unlink(relatedOperation, reciprocalKey, reciprocalCardinality, id, true);
+    });
   });
 
   return repository.getPayload();

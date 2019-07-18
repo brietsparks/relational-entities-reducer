@@ -35,25 +35,6 @@ export default class Model {
 
   extractAllLinks(type: Type, data: Data): Link[] {
     // get the names of the relation keys from the schema
-    return [{ relationName: 'mockRel', relationKey: 'mockKey', linkedId: 'mockId', index: 3 }];
+    return [{ relatedType: 'mockRelType', linkedId: 'mockId', relationName: 'mockRel', relationKey: 'mockKey', index: 3 }];
   }
-
-  extractLink(type: Type, relatedType: Type, data: Data): Link|undefined {
-    // get the name of the relation key from the schema
-
-    return { relationName: 'oneRel', relationKey: 'mockKey', linkedId: 'mockId' };
-  }
-
-  extractLinkedId(type: Type, relatedType: Type, data: Data): Id|undefined {
-    return 'mock id'
-  }
-
-  // getResource(type: Type, id: Id, data?: Data): Resource {
-  //   data = data || this.getResourceData(type, id);
-  //   return new Resource(this, type, id, data);
-  // }
-  //
-  // getResourceData(type: Type, id: Id): Data {
-  //   return this.selectors.getResource(this.state, { type, id });
-  // }
 }
