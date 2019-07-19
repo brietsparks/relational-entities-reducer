@@ -1,6 +1,6 @@
-import { Type, Id } from './interfaces';
+import { Type, Id, OpId } from './interfaces';
 
-export const isObjectLiteral = (v: any) => {
+export const isObjectLiteral = (v: any): v is object => {
   return (
     typeof v === 'object' &&
     v !== null &&
@@ -13,10 +13,32 @@ export const isString = (v: any) => typeof v === 'string';
 
 export const isStringOrNumber = (v: any) => typeof v === 'string' || typeof v === 'number';
 
-export const makeCompositeId = (type: Type, id: Id) => `${type}.${id}`;
+export const makeOpId = (type: Type, id: Id): OpId => {
+  return `${type}.${id}`;
+};
 
 export function arraymove(arr: any[], fromIndex: number, toIndex: number) {
   const element = arr[fromIndex];
   arr.splice(fromIndex, 1);
   arr.splice(toIndex, 0, element);
 }
+
+// enables es5 support without ts downlevelIteration
+export function mergeSets<T> (...iterables: Set<T>[]): Set<T> {
+  const set = new Set<T>();
+  iterables.forEach(iterable => {
+    iterable.forEach(item => set.add(item))
+  });
+  return set
+}
+
+// enables es5 support without ts downlevelIteration
+export const mergeMaps = <K,V>(...iterables: Map<K,V>[]) => {
+  const map = new Map<K,V>();
+
+  iterables.forEach(iterable => {
+    iterable.forEach((value, key) => map.set(key, value));
+  });
+
+  return map;
+};

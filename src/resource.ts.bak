@@ -1,0 +1,22 @@
+import { Id, Type, Data, CidObject, RelationName } from './interfaces';
+import Model from './model';
+
+export interface ResourceInterface {
+  getLinks(): { linkedId: Id, relationName: RelationName, index: number }[];
+}
+
+export default class Resource implements ResourceInterface {
+  data: Data;
+
+  constructor(model: Model, type: Type, id: Id, data?: Data) {
+    // if no data, then try to find resource from state
+    this.data = data || model.getResource(type, id);
+  }
+
+  getLinks(): { linkedId: Id, relationName: RelationName, index: number }[] {}
+
+  getLinkId(type: Type): Id {
+    // throw if type cardinality is not one
+    return 'mock Id';
+  }
+}

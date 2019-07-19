@@ -1,14 +1,10 @@
-export interface Model {
-}
-
-export interface State {
-}
+export interface State {}
 
 export type Id = number | string;
 export type Type = string;
 export type RelationKey = string;
 export type RelationName = string;
-export type Data = object;
+export type Data = { [s in string]: any };
 export type Cardinality = 'many' | 'one';
 export type Index = number;
 
@@ -17,12 +13,20 @@ export type CidObject = { type: Type, id: Id };
 export type CidTuple = [Type, Id];
 export type CompositeId = CidString | CidObject | CidTuple;
 
+export interface Link {
+  linkedId: Id,
+  relatedType: Type,
+  relationName: RelationName,
+  relationKey: RelationKey,
+  index?: Index,
+}
+
 export interface LinkRemovalCallback {
   (): LinkRemovalSchema;
 }
 
 export type LinkRemovalSchema = {
-  [s in RelationKey]: LinkRemovalSchema | LinkRemovalCallback
+  [s in RelationKey|RelationName]: LinkRemovalSchema | LinkRemovalCallback
 }
 
 export type OpId = string;
@@ -31,25 +35,24 @@ export type Operator = 'add' | 'edit' | 'remove';
 
 export type IndicesByRelation = { [s in RelationName | RelationKey]: number };
 
-export interface Operand {
+export interface Operation {
   type: Type,
   id: Id,
-  operator: string
+  operator: Operator,
+  data: Data
 }
 
-export interface AddOperand extends Operand {
-  data: Data;
+export interface AddOperation extends Operation {
   options: AddOptions;
   operator: 'add';
 }
 
-export interface RemoveOperand extends Operand {
+export interface RemoveOperation extends Operation {
   options: RemoveOptions,
   operator: 'remove'
 }
 
-export interface EditOperand {
-  data: Data,
+export interface EditOperation {
   operator: 'edit';
 }
 
@@ -68,7 +71,7 @@ export interface LinkDefinition {
   id: Id;
   relation: RelationName | RelationKey;
   linkedId: Id;
-  indices?: [Index?, Index?];
+  indices: [Index?, Index?];
 }
 
 export interface UnlinkDefinition {

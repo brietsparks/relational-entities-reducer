@@ -1,8 +1,8 @@
-import { RemoveOptions, Id, OpId, RemoveOperand, Type } from '../interfaces';
+import { RemoveOptions, Id, OpId, RemoveOperation, Type } from '../interfaces';
 
 export interface Action {
   type: string,
-  operands: Map<OpId, RemoveOperand>
+  operations: Map<OpId, RemoveOperation>
 }
 
 export interface Creator {

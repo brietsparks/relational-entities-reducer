@@ -1,8 +1,8 @@
-import { AddOperand, OpId, Data, AddOptions, Type, Id } from '../interfaces';
+import { AddOperation, OpId, Data, AddOptions, Type, Id } from '../interfaces';
 
 export interface Action {
   type: string;
-  operands: Map<OpId, AddOperand>
+  operations: Map<OpId, AddOperation>
 }
 
 export interface Creator {
