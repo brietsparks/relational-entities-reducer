@@ -14,7 +14,9 @@ import { isObjectLiteral } from '../util';
 import { OP_REMOVE } from '../operation/repository';
 
 export default function transformRemoveOperations(
-  model: Model, operations: Map<OpId, RemoveOperation>, repository?: Repository
+  model: Model,
+  operations: Map<OpId, RemoveOperation>,
+  repository?: Repository
 ) {
   repository = repository || new Repository(model, operations);
   const visitor = new Visitor(repository);
@@ -32,13 +34,14 @@ export default function transformRemoveOperations(
       model.extractAllLinks(type, data).forEach(({ linkedId, relatedType, relationKey, relationName }) => {
         repository = repository as Repository;
 
+        // if removal already in payload then skip
         const fromPayload = repository.getFromPayload(relatedType, linkedId);
         if (fromPayload && fromPayload.operator === OP_REMOVE) {
           return;
         }
 
+        // make the linked operations
         let relatedOperation = repository.getFromPayloadOrState(relatedType, linkedId);
-
         if (relatedOperation) {
           const removalSchema = options.removeLinked as LinkRemovalSchema;
 
@@ -51,17 +54,18 @@ export default function transformRemoveOperations(
         }
       });
 
+      // add each linked operation to the payload
       linkedRemoveOperations.forEach((linkedRemoveOperation, opId) => {
         repository = repository as Repository;
         repository.setInPayload(opId, linkedRemoveOperation);
       });
 
+      // recurse
       transformRemoveOperations(model, linkedRemoveOperations, repository);
     }
 
-    const links = model.extractAllLinks(type, data);
-
-    links.forEach(({ relatedType, linkedId, relationKey }) => {
+    // detach from linked resources
+    model.extractAllLinks(type, data).forEach(({ relatedType, linkedId, relationKey }) => {
       const { reciprocalKey, reciprocalCardinality } = model.getEntity(type).getRelationDefinition(relationKey);
 
       repository = repository as Repository;
