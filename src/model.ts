@@ -3,26 +3,26 @@ import { Data, Id, Selectors, State, Type, Link, RelationName, RelationKey } fro
 // import Resource from './resource';
 
 export default class Model {
-  schema: Entities;
+  entities: Entities;
   state: State;
   selectors: Selectors;
 
   constructor(entities: Entities, state: State, selectors: Selectors) {
-    this.schema = entities;
+    this.entities = entities;
     this.state = state;
     this.selectors = selectors;
   }
 
   getEntity(type: Type): Entity {
-    return new Entity();
+    return this.entities.getEntity(type);
   }
 
-  getRelationType(type: Type, relationKey: RelationKey): Type {
-    return 'mock type'
-  }
+  // getRelationType(type: Type, relationKey: RelationKey): Type {
+  //   return this.entities.getEntity(type).getRelationType(relationKey);
+  // }
 
   getRelationKey(type: Type, relation: RelationName|RelationKey): RelationKey {
-    return 'mock key'
+    return this.getEntity(type).getRelationKey(relation);
   }
 
   getResource(type: Type, id: Id): Data {

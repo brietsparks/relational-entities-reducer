@@ -1,3 +1,5 @@
+import { Schema } from './schema/schema';
+
 export const fn = () => {};
 
 export const nonObjectOptional = [1, true, 'string', [], fn];
@@ -10,17 +12,19 @@ export const nonNumbers = [null, true, false, undefined, [], {}, 'string', fn];
 export const nonIntegers = [...nonNumbers, 1.1];
 
 
-export const modelSchema = {
+export const schema: Schema = {
   'user': {
     'authoredPostIds': {
       has: 'many',
       type: 'post',
-      reciprocalKey: 'authorId'
+      reciprocalKey: 'authorId',
+      alias: 'authoredPosts'
     },
     'editablePostIds': {
       has: 'many',
       type: 'post',
-      reciprocalKey: 'editorIds'
+      reciprocalKey: 'editorIds',
+      alias: 'editablePosts'
     },
     'commentIds': {
       has: 'many',
@@ -35,12 +39,14 @@ export const modelSchema = {
     'authorId': {
       has: 'one',
       type: 'user',
-      reciprocalKey: 'authoredPostIds'
+      reciprocalKey: 'authoredPostIds',
+      alias: 'author'
     },
     'editorIds': {
       has: 'many',
       type: 'user',
-      reciprocalKey: 'editablePostIds'
+      reciprocalKey: 'editablePostIds',
+      alias: 'editor'
     },
     'commentIds': {
       has: 'many',
@@ -59,12 +65,14 @@ export const modelSchema = {
     'parentId': {
       has: 'one',
       type: 'comment',
-      reciprocalKey: 'childIds'
+      reciprocalKey: 'childIds',
+      alias: 'parentComment'
     },
     'childIds': {
       has: 'many',
       type: 'comment',
-      reciprocalKey: 'parentId'
+      reciprocalKey: 'parentId',
+      alias: 'childComments'
     }
   },
   'permission': {
