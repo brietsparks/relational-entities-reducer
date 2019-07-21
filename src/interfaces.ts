@@ -1,4 +1,11 @@
-export interface State {}
+export type State = { [type: string]: EntityState }
+export interface EntityState {
+  resources: ResourcesState,
+  ids: IdsState
+}
+export type ResourcesState = { [id in Id]: Data };
+export type IdsState = Id[];
+
 
 export type Id = number | string;
 export type Type = string;

@@ -1,4 +1,7 @@
-import { Schema } from './schema/schema';
+import { Schema } from './schema';
+import { makeSelectors } from './selectors';
+import { Entities } from './schema';
+
 
 export const fn = () => {};
 
@@ -10,7 +13,6 @@ export const nonArrays = [null, 1, true, false, 'string', undefined, {}, fn];
 export const nonStringsOrNumbers = [null, true, false, undefined, [], {} ,fn];
 export const nonNumbers = [null, true, false, undefined, [], {}, 'string', fn];
 export const nonIntegers = [...nonNumbers, 1.1];
-
 
 export const schema: Schema = {
   'user': {
@@ -29,6 +31,10 @@ export const schema: Schema = {
     'commentIds': {
       has: 'many',
       type: 'comment'
+    },
+    'profileId:': {
+      has: 'one',
+      type: 'profile'
     },
     'permissionIds': {
       has: 'many',
@@ -75,6 +81,12 @@ export const schema: Schema = {
       alias: 'childComments'
     }
   },
+  'profile': {
+    'userId': {
+      has: 'one',
+      type: 'user'
+    }
+  },
   'permission': {
     'userIds': {
       has: 'many',
@@ -82,3 +94,8 @@ export const schema: Schema = {
     }
   }
 };
+
+export const entities = new Entities(schema);
+
+export const selectors = makeSelectors();
+

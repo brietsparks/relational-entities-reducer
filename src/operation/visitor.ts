@@ -1,8 +1,7 @@
-import { Cardinality, Data, Id, Index, Operation, OpId, RelationKey, RemoveOperation } from '../interfaces';
+import { Cardinality, Id, Index, Operation, RelationKey } from '../interfaces';
 import { MANY, ONE } from '../constants';
 import Repository from './repository';
 import * as immutability from './immutability';
-import Model from '../model';
 
 export default class Visitor {
   repository: Repository;
@@ -12,32 +11,83 @@ export default class Visitor {
   }
 
   link(
-    recipient: Operation, giver: Operation, relationKey: RelationKey,
-    cardinality: Cardinality, reciprocalKey: RelationKey, index?: Index
+    operation: Operation, relationKey: RelationKey,
+    cardinality: Cardinality, index: Index|undefined,
+
+    relatedOperation: Operation, reciprocalKey: RelationKey,
+    reciprocalCardinality: Cardinality, relatedIndex: Index|undefined
   ) {
+    // detach any existing one-relation links
     if (cardinality === ONE) {
-      // the holder is a resource that already has the giver's id
-      const holderId = giver.data[relationKey];
-      const holder = this.repository.getFromPayloadOrState(recipient.type, holderId);
-
-      // if there is a holder, then remove the giver's id from it
-      if (holder) {
-        const holderData = immutability.setOneRelationId(holder.data, reciprocalKey, null);
-        this.repository.setInPayload([recipient.type, holderId], { ...holder, data: holderData });
+      const relinquentId = operation.data[relationKey];
+      const relinquentOperation = this.repository.getFromPayloadOrState(relatedOperation.type, relinquentId);
+      if (relinquentOperation) {
+        this.unlink(
+          operation, relationKey, cardinality,
+          relinquentOperation, reciprocalKey, reciprocalCardinality
+        );
       }
+    }
 
-      // add the giver's id to the recipient
-      const recipientData = immutability.setOneRelationId(recipient.data, relationKey, giver.id);
-      this.repository.setInPayload([recipient.type, recipient.id], { ...recipient, data: recipientData });
+    if (reciprocalCardinality === ONE) {
+      const relinquentId = relatedOperation.data[reciprocalKey];
+      const relinquentOperation = this.repository.getFromPayloadOrState(operation.type, relinquentId);
+      if (relinquentOperation) {
+        this.unlink(
+          relatedOperation, reciprocalKey, reciprocalCardinality,
+          relinquentOperation, relationKey, cardinality
+        );
+      }
+    }
+
+    // attach
+    if (cardinality === ONE) {
+      const data = immutability.setOneRelationId(operation.data, relationKey, relatedOperation.id);
+      this.repository.setInPayload([operation.type, operation.id], { ...operation, data });
     }
 
     if (cardinality === MANY) {
-      const data = immutability.setManyRelationId(recipient.data, relationKey, giver.id, index);
-      this.repository.setInPayload([recipient.type, recipient.id], { ...recipient, data });
+      const data = immutability.setManyRelationId(operation.data, relationKey, relatedOperation.id, index);
+      this.repository.setInPayload([operation.type, operation.id], { ...operation, data });
+    }
+
+    if (reciprocalCardinality === ONE) {
+      const data = immutability.setOneRelationId(relatedOperation.data, reciprocalKey, operation.id);
+      this.repository.setInPayload([relatedOperation.type, relatedOperation.id], { ...relatedOperation, data });
+    }
+
+    if (reciprocalCardinality === MANY) {
+      const data = immutability.setManyRelationId(relatedOperation.data, reciprocalKey, operation.id, relatedIndex);
+      this.repository.setInPayload([relatedOperation.type, relatedOperation.id], { ...relatedOperation, data });
     }
   }
 
   unlink(
+    operation: Operation, relationKey: RelationKey, cardinality: Cardinality,
+    relatedOperation: Operation, reciprocalKey: RelationKey, reciprocalCardinality: Cardinality,
+  ) {
+    if (cardinality === ONE && operation.data[relationKey] === relatedOperation.id) {
+      const data = immutability.setOneRelationId(operation.data, relationKey, null);
+      this.repository.setInPayload([operation.type, operation.id], { ...operation, data });
+    }
+
+    if (cardinality === MANY && Array.isArray(operation.data[relationKey])) {
+      const data = immutability.removeManyRelationId(operation.data, relationKey, relatedOperation.id, true);
+      this.repository.setInPayload([operation.type, operation.id], { ...operation, data });
+    }
+
+    if (reciprocalCardinality === ONE && relatedOperation.data[reciprocalKey] === operation.id) {
+      const data = immutability.setOneRelationId(relatedOperation.data, reciprocalKey, null);
+      this.repository.setInPayload([relatedOperation.type, relatedOperation.id], { ...relatedOperation, data });
+    }
+
+    if (reciprocalCardinality === MANY && Array.isArray(relatedOperation.data[reciprocalKey])) {
+      const data = immutability.removeManyRelationId(relatedOperation.data, reciprocalKey, operation.id, true);
+      this.repository.setInPayload([relatedOperation.type, relatedOperation.id], { ...relatedOperation, data });
+    }
+  }
+
+  removeLinkedId(
     operation: Operation,
     relationKey: RelationKey,
     cardinality: Cardinality,

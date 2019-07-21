@@ -7,10 +7,10 @@ export type Schema = {
 }
 
 export type EntitySchema = {
-  [k in RelationKey]: Relation
+  [k in RelationKey]: RelationSchema
 }
 
-export type Relation = {
+export type RelationSchema = {
   has: 'many' | 'one',
   type: Type,
   reciprocalKey?: RelationKey,

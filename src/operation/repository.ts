@@ -38,16 +38,7 @@ export default class Repository {
     return this.initial.get(opid);
   }
 
-  payloadContains(type: Type, id: Id) {
-    return !!this.getFromPayload(type, id);
-  }
-
-  getFromState(type: Type, id: Id): Operation|undefined {
-    const resource = this.model.getResource(type, id);
-
-
-  }
-
+  // todo, refactor: options: { newIfNotFound, operator }
   getFromPayloadOrState(type: Type, id: Id, newIfNotFound?: boolean): Operation|undefined {
     const operation = this.getFromPayload(type, id);
 
@@ -67,6 +58,7 @@ export default class Repository {
     return Repository.makeOperation(type, id, operator, data);
   }
 
+  // todo: factor this out to makeCompositeId
   static makeOpId(type: Type, id: Id): OpId {
     return `${type}.${id}`;
   }
@@ -74,6 +66,14 @@ export default class Repository {
   static makeOperation(type: Type, id: Id, operator: Operator, data: Data): Operation {
     return { type, id, operator, data };
   }
+
+  // payloadContains(type: Type, id: Id) {
+  //   return !!this.getFromPayload(type, id);
+  // }
+
+  // getFromState(type: Type, id: Id): Operation|undefined {
+  //   const resource = this.model.getResource(type, id);
+  // }
 }
 
 

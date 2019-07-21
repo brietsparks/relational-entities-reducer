@@ -1,25 +1,20 @@
 import { Entities, Entity } from './schema';
-import { Data, Id, Selectors, State, Type, Link, RelationName, RelationKey } from './interfaces';
-// import Resource from './resource';
+import { Data, Id, Selectors, State, Type, Link, RelationName, RelationKey, Index } from './interfaces';
 
 export default class Model {
   entities: Entities;
-  state: State;
   selectors: Selectors;
+  state: State;
 
-  constructor(entities: Entities, state: State, selectors: Selectors) {
+  constructor(entities: Entities, selectors: Selectors, state: State) {
     this.entities = entities;
-    this.state = state;
     this.selectors = selectors;
+    this.state = state;
   }
 
   getEntity(type: Type): Entity {
     return this.entities.getEntity(type);
   }
-
-  // getRelationType(type: Type, relationKey: RelationKey): Type {
-  //   return this.entities.getEntity(type).getRelationType(relationKey);
-  // }
 
   getRelationKey(type: Type, relation: RelationName|RelationKey): RelationKey {
     return this.getEntity(type).getRelationKey(relation);
@@ -34,7 +29,43 @@ export default class Model {
   }
 
   extractAllLinks(type: Type, data: Data): Link[] {
-    // get the names of the relation keys from the schema
-    return [{ relatedType: 'mockRelType', linkedId: 'mockId', relationName: 'mockRel', relationKey: 'mockKey', index: 3 }];
+    const entity = this.getEntity(type);
+
+    const manyRelationLinks = entity
+      .getManyRelationDefinitions()
+      .reduce((links, relationDefinition) => {
+        const { relationKey, relatedType, relationName } = relationDefinition;
+
+        const linkedIds = data[relationKey];
+
+        if (Array.isArray(linkedIds)) {
+          const link = linkedIds.map((linkedId: Id, index: Index) => ({
+            relatedType, linkedId, relationKey, relationName, index
+          }));
+
+          links.push(...link);
+        }
+
+        return links;
+      }, [] as Link[]);
+
+    const oneRelationLinks = entity
+      .getOneRelationDefinitions()
+      .reduce((links, relationDefinition) => {
+        const { relationKey, relatedType, relationName } = relationDefinition;
+
+        const linkedId = data[relationKey];
+        if (linkedId) {
+          links.push({ relatedType, linkedId, relationName, relationKey })
+        }
+
+        return links;
+      }, [] as Link[]);
+
+    return [...manyRelationLinks, ...oneRelationLinks];
   }
+
+  // getRelationType(type: Type, relationKey: RelationKey): Type {
+  //   return this.entities.getEntity(type).getRelationType(relationKey);
+  // }
 }
