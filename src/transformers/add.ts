@@ -1,11 +1,11 @@
 import Model from '../model';
 import { AddOperation, IndicesByRelation, OpId, RelationKey } from '../interfaces';
-import { Repository, Visitor } from '../operation';
+import { Repository, LinkManager } from '../operation';
 import { isObjectLiteral } from '../util';
 
 export default function transformAddOperations(model: Model, operations: Map<OpId, AddOperation>) {
   const repository = new Repository(model, operations);
-  const visitor = new Visitor(repository);
+  const linkManager = new LinkManager(repository);
 
   operations.forEach(({ type, id, data, options }) => {
     if (model.hasResource(type, id)) {
@@ -25,8 +25,10 @@ export default function transformAddOperations(model: Model, operations: Map<OpI
       // link them together
       if (operation && relatedOperation) {
         const indexInLinked = getIndexByRelation(relationKey, options.indicesByRelation);
-        visitor.link(operation, relatedOperation, relationKey, cardinality, reciprocalKey, index);
-        visitor.link(relatedOperation, operation, reciprocalKey, reciprocalCardinality, relationKey, indexInLinked);
+        linkManager.link(
+          operation, relationKey, cardinality, index,
+          relatedOperation, reciprocalKey, reciprocalCardinality, indexInLinked
+        );
       }
     });
   });

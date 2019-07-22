@@ -1,12 +1,12 @@
 import Model from '../model';
 import { CidString, UnlinkDefinition } from '../interfaces';
-import { Repository, Visitor } from '../operation';
+import { Repository, LinkManager } from '../operation';
 
 export default function transformUnlinkDefinitions(model: Model, definitions: Map<CidString, UnlinkDefinition>) {
   const repository = new Repository(model);
-  const visitor = new Visitor(repository);
+  const linkManager = new LinkManager(repository);
 
-  definitions.forEach(({ id, type, relation, linked, byId }) => {
+  definitions.forEach(({ id, type, relation, linkedId }) => {
     const relationKey = model.getRelationKey(type, relation);
 
     const {
@@ -17,21 +17,13 @@ export default function transformUnlinkDefinitions(model: Model, definitions: Ma
     } = model.getEntity(type).getRelationDefinition(relationKey);
 
     const operation = repository.getFromPayloadOrState(type, id);
-    if (!operation) {
-      return;
+    const relatedOperation = repository.getFromPayloadOrState(relatedType, linkedId);
+    if (operation && relatedOperation) {
+      linkManager.unlink(
+        operation, relationKey, cardinality,
+        relatedOperation, reciprocalKey, reciprocalCardinality
+      );
     }
-
-    const unlinkedId = visitor.unlink(operation, relationKey, cardinality, linked, byId);
-    if (!unlinkedId) {
-      return;
-    }
-
-    const relatedOperation = repository.getFromPayloadOrState(relatedType, unlinkedId);
-    if (!relatedOperation) {
-      return;
-    }
-
-    visitor.unlink(relatedOperation, reciprocalKey, reciprocalCardinality, id, true);
   });
 
   return repository.getPayload();

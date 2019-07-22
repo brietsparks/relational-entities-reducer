@@ -9,7 +9,7 @@ import {
   RemoveOperation,
   Type
 } from '../interfaces';
-import { Repository, Visitor } from '../operation';
+import { Repository, LinkManager } from '../operation';
 import { isObjectLiteral } from '../util';
 import { OP_REMOVE } from '../operation/repository';
 
@@ -19,7 +19,7 @@ export default function transformRemoveOperations(
   repository?: Repository
 ) {
   repository = repository || new Repository(model, operations);
-  const visitor = new Visitor(repository);
+  const linkManager = new LinkManager(repository);
 
   operations.forEach(({ type, id, options }) => {
     const data = model.getResource(type, id);
@@ -66,13 +66,18 @@ export default function transformRemoveOperations(
 
     // detach from linked resources
     model.extractAllLinks(type, data).forEach(({ relatedType, linkedId, relationKey }) => {
-      const { reciprocalKey, reciprocalCardinality } = model.getEntity(type).getRelationDefinition(relationKey);
+      repository = repository as Repository;
+      const operation = repository.getFromPayloadOrState(type, id);
+      const { cardinality, reciprocalKey, reciprocalCardinality } = model.getEntity(type).getRelationDefinition(relationKey);
 
       repository = repository as Repository;
       const relatedOperation = repository.getFromPayloadOrState(relatedType, linkedId);
 
-      if (relatedOperation && relatedOperation.operator !== OP_REMOVE) {
-        visitor.unlink(relatedOperation, reciprocalKey, reciprocalCardinality, id, true);
+      if (operation && relatedOperation && relatedOperation.operator !== OP_REMOVE) {
+        linkManager.unlink(
+          operation, relationKey, cardinality,
+          relatedOperation, reciprocalKey, reciprocalCardinality
+        );
       }
     });
   });

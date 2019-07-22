@@ -1,12 +1,11 @@
-import Visitor from './visitor';
+import LinkManager from './link-manager';
 import Repository, { OP_EDIT } from './repository';
 import Model from '../model';
 import { entities, selectors } from '../mocks';
 import { OpId, Operation } from '../interfaces';
 
-describe('operation/visitor', () => {
-  describe('Visitor', () => {
-
+describe('operation/link-manager', () => {
+  describe('LinkManager', () => {
     describe('unlink', () => {
       const model = new Model(entities, selectors, entities.getEmptyState());
 
@@ -39,16 +38,16 @@ describe('operation/visitor', () => {
 
         test('case 1', () => {
           const repository = new Repository(model, operations);
-          const visitor = new Visitor(repository);
-          visitor.unlink(user, 'profileId', 'one', profile, 'userId', 'one');
+          const linkManager = new LinkManager(repository);
+          linkManager.unlink(user, 'profileId', 'one', profile, 'userId', 'one');
           const actual = repository.getPayload();
           expect(actual).toEqual(expected);
         });
 
         test('case 2', () => {
           const repository = new Repository(model, operations);
-          const visitor = new Visitor(repository);
-          visitor.unlink(profile, 'userId', 'one', user, 'profileId', 'one');
+          const linkManager = new LinkManager(repository);
+          linkManager.unlink(profile, 'userId', 'one', user, 'profileId', 'one');
           const actual = repository.getPayload();
           expect(actual).toEqual(expected);
         });
@@ -84,16 +83,16 @@ describe('operation/visitor', () => {
 
         test('case 1', () => {
           const repository = new Repository(model, operations);
-          const visitor = new Visitor(repository);
-          visitor.unlink(comment, 'postId', 'one', post, 'commentIds', 'many');
+          const linkManager = new LinkManager(repository);
+          linkManager.unlink(comment, 'postId', 'one', post, 'commentIds', 'many');
           const actual = repository.getPayload();
           expect(actual).toEqual(expected);
         });
 
         test('case 2', () => {
           const repository = new Repository(model, operations);
-          const visitor = new Visitor(repository);
-          visitor.unlink(post, 'commentIds', 'many', comment, 'postId', 'one');
+          const linkManager = new LinkManager(repository);
+          linkManager.unlink(post, 'commentIds', 'many', comment, 'postId', 'one');
           const actual = repository.getPayload();
           expect(actual).toEqual(expected);
         });
@@ -128,16 +127,16 @@ describe('operation/visitor', () => {
 
         test('case 1', () => {
           const repository = new Repository(model, operations);
-          const visitor = new Visitor(repository);
-          visitor.unlink(user, 'permissionIds', 'many', permission, 'userIds', 'many');
+          const linkManager = new LinkManager(repository);
+          linkManager.unlink(user, 'permissionIds', 'many', permission, 'userIds', 'many');
           const actual = repository.getPayload();
           expect(actual).toEqual(expected);
         });
 
         test('case 2', () => {
           const repository = new Repository(model, operations);
-          const visitor = new Visitor(repository);
-          visitor.unlink(permission, 'userIds', 'many', user, 'permissionIds', 'many');
+          const linkManager = new LinkManager(repository);
+          linkManager.unlink(permission, 'userIds', 'many', user, 'permissionIds', 'many');
           const actual = repository.getPayload();
           expect(actual).toEqual(expected);
         });
@@ -196,14 +195,14 @@ describe('operation/visitor', () => {
           }
         }));
 
-        let repository: Repository, visitor: Visitor;
+        let repository: Repository, linkManager: LinkManager;
         beforeEach(() => {
           repository = new Repository(model, operations);
-          visitor = new Visitor(repository);
+          linkManager = new LinkManager(repository);
         });
 
         test('case 1', () => {
-          visitor.link(
+          linkManager.link(
             user2, 'profileId', 'one', undefined,
             profile1, 'userId', 'one', undefined
           );
@@ -213,7 +212,7 @@ describe('operation/visitor', () => {
         });
 
         test('case 2', () => {
-          visitor.link(
+          linkManager.link(
             profile1, 'userId', 'one', undefined,
             user2, 'profileId', 'one', undefined
           );
@@ -270,14 +269,14 @@ describe('operation/visitor', () => {
           }
         }));
 
-        let repository: Repository, visitor: Visitor;
+        let repository: Repository, linkManager: LinkManager;
         beforeEach(() => {
           repository = new Repository(model, operations);
-          visitor = new Visitor(repository);
+          linkManager = new LinkManager(repository);
         });
 
         test('case 1', () => {
-          visitor.link(
+          linkManager.link(
             comment1, 'postId', 'one', undefined,
             post2, 'commentIds', 'many', 1
           );
@@ -287,7 +286,7 @@ describe('operation/visitor', () => {
         });
 
         test('case 2', () => {
-          visitor.link(
+          linkManager.link(
             post2, 'commentIds', 'many', 1,
             comment1, 'postId', 'one', undefined
           );
@@ -297,7 +296,7 @@ describe('operation/visitor', () => {
         });
 
         test('case 3', () => {
-          visitor.link(
+          linkManager.link(
             comment1, 'postId', 'one', 100,
             post2, 'commentIds', 'many', 1
           );
@@ -307,7 +306,7 @@ describe('operation/visitor', () => {
         });
 
         test('case 4', () => {
-          visitor.link(
+          linkManager.link(
             post2, 'commentIds', 'many', 1,
             comment1, 'postId', 'one', 100
           );
@@ -346,8 +345,8 @@ describe('operation/visitor', () => {
 
         test('case 1', () => {
           const repository = new Repository(model, operations);
-          const visitor = new Visitor(repository);
-          visitor.link(
+          const linkManager = new LinkManager(repository);
+          linkManager.link(
             user, 'permissionIds', 'many', 1,
             permission, 'userIds', 'many', 1,
           );
@@ -357,8 +356,8 @@ describe('operation/visitor', () => {
 
         test('case 2', () => {
           const repository = new Repository(model, operations);
-          const visitor = new Visitor(repository);
-          visitor.link(
+          const linkManager = new LinkManager(repository);
+          linkManager.link(
             permission, 'userIds', 'many', 1,
             user, 'permissionIds', 'many', 1,
           );

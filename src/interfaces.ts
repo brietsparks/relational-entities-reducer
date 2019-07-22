@@ -85,8 +85,7 @@ export interface UnlinkDefinition {
   type: Type,
   id: Id,
   relation: RelationName | RelationKey,
-  linked: Index | Id,
-  byId?: boolean
+  linkedId: Id,
 }
 
 export interface Selectors {

@@ -1,9 +1,9 @@
-import { Cardinality, Id, Index, Operation, RelationKey } from '../interfaces';
+import { Cardinality, Index, Operation, RelationKey } from '../interfaces';
 import { MANY, ONE } from '../constants';
 import Repository from './repository';
 import * as immutability from './immutability';
 
-export default class Visitor {
+export default class LinkManager {
   repository: Repository;
 
   constructor(repository: Repository) {
@@ -84,48 +84,6 @@ export default class Visitor {
     if (reciprocalCardinality === MANY && Array.isArray(relatedOperation.data[reciprocalKey])) {
       const data = immutability.removeManyRelationId(relatedOperation.data, reciprocalKey, operation.id, true);
       this.repository.setInPayload([relatedOperation.type, relatedOperation.id], { ...relatedOperation, data });
-    }
-  }
-
-  removeLinkedId(
-    operation: Operation,
-    relationKey: RelationKey,
-    cardinality: Cardinality,
-    linked: Id|Index,
-    byId?: boolean
-  ): Id|undefined {
-    const linkData = operation.data[relationKey];
-
-    if (!linkData) {
-      return;
-    }
-
-    if (cardinality === ONE) {
-      if (byId && linkData !== linked) {
-        return;
-      }
-
-      const data = immutability.setOneRelationId(operation.data, relationKey, null);
-
-      this.repository.setInPayload([operation.type, operation.id], { ...operation, data });
-
-      return linkData;
-    }
-
-    if (cardinality === MANY) {
-      const index = byId ? linkData.indexOf(linked) : linked;
-
-      if (index === -1) {
-        return;
-      }
-
-      const linkedId = byId ? linked : linkData[index];
-
-      const data = immutability.removeManyRelationId(operation.data, relationKey, index);
-
-      this.repository.setInPayload([operation.type, operation.id], { ...operation, data });
-
-      return linkedId;
     }
   }
 }
