@@ -72,14 +72,9 @@ export class Entity {
     const relationSchema = this.schema[relationKey];
 
     if (!relationSchema) {
-
     }
 
     return relationSchema;
-  }
-
-  hasRelation(relation: RelationKey|RelationName): boolean {
-    return true
   }
 
   hasRelationKey(relationKey: RelationKey): boolean {
@@ -123,6 +118,24 @@ export class Entity {
   getRelationName(relationKey: RelationKey): RelationName {
     const { type, alias } = this.getRelationSchema(relationKey);
     return alias ? alias : type;
+  }
+
+  hasRelation(relation: RelationName|RelationKey): boolean {
+    if (this.schema[relation]) {
+      return true;
+    }
+
+    for (let [, relationSchema] of this.schemaEntries()) {
+      if (relationSchema.type === relation && !relationSchema.alias) {
+        return true;
+      }
+
+      if (relationSchema.alias === relation) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   getReciprocalKey(relationKey: RelationKey): RelationKey {

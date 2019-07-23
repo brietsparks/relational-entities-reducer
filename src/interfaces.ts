@@ -40,7 +40,8 @@ export type OpId = string;
 
 export type Operator = 'add' | 'edit' | 'remove';
 
-export type IndicesByRelation = { [s in RelationName | RelationKey]: number };
+export type IndicesByRelation = { [s in RelationName | RelationKey]: Index };
+export type IndicesByRelationKey = {[s in RelationKey]: Index };
 
 export interface Operation {
   type: Type,

@@ -11,7 +11,7 @@ import {
 } from '../interfaces';
 import { Repository, LinkManager } from '../operation';
 import { isObjectLiteral } from '../util';
-import { OP_REMOVE } from '../operation/repository';
+import { OP_REMOVE } from '../constants';
 
 export default function transformRemoveOperations(
   model: Model,

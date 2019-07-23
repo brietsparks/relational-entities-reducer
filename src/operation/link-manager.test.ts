@@ -1,8 +1,9 @@
 import LinkManager from './link-manager';
-import Repository, { OP_EDIT } from './repository';
+import Repository from './repository';
 import Model from '../model';
 import { entities, selectors } from '../mocks';
 import { OpId, Operation } from '../interfaces';
+import { OP_EDIT } from '../constants';
 
 describe('operation/link-manager', () => {
   describe('LinkManager', () => {

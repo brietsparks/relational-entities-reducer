@@ -64,8 +64,4 @@ export default class Model {
 
     return [...manyRelationLinks, ...oneRelationLinks];
   }
-
-  // getRelationType(type: Type, relationKey: RelationKey): Type {
-  //   return this.entities.getEntity(type).getRelationType(relationKey);
-  // }
 }

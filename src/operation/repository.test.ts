@@ -1,7 +1,8 @@
-import Repository, { OP_ADD, OP_EDIT } from './repository';
+import Repository from './repository';
 import Model from '../model';
 import { selectors, entities } from '../mocks';
 import { OpId, Operation } from '../interfaces';
+import { OP_ADD, OP_EDIT } from '../constants';
 
 
 describe('operation/repository', () => {

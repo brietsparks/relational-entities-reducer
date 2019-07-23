@@ -1,10 +1,7 @@
 import Model from '../model';
 import { CidTuple, Data, Id, Operation, Operator, OpId, Type } from '../interfaces';
 import { mergeMaps } from '../util';
-
-export const OP_EDIT = 'edit';
-export const OP_ADD = 'add';
-export const OP_REMOVE = 'remove';
+import { OP_EDIT, OP_ADD } from '../constants';
 
 export default class Repository {
   model: Model;
@@ -22,8 +19,19 @@ export default class Repository {
   }
 
   setInPayload(key: OpId|CidTuple, operation: Operation) {
-    const opId = Array.isArray(key) ? Repository.makeOpId(key[0], key[1]) : key;
+    const opId = Repository.resolveOpId(key);
     this.touched.set(opId, operation);
+  }
+
+  removeFromPayload(key: OpId|CidTuple) {
+    const opId = Repository.resolveOpId(key);
+
+    this.initial.delete(opId);
+    this.touched.delete(opId);
+  }
+
+  static resolveOpId(key: OpId|CidTuple) {
+    return Array.isArray(key) ? Repository.makeOpId(key[0], key[1]) : key;
   }
 
   getFromPayload(type: Type, id: Id) {

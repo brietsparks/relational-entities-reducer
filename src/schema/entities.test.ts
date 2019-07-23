@@ -90,6 +90,24 @@ describe('schema/entities', () => {
       });
     });
 
+    test('hasRelation', () => {
+      let actual;
+      actual = postEntity.hasRelation('authorId');
+      expect(actual).toEqual(true);
+
+      actual = postEntity.hasRelation('author');
+      expect(actual).toEqual(true);
+
+      actual = postEntity.hasRelation('user');
+      expect(actual).toEqual(false);
+
+      actual = postEntity.hasRelation('commentIds');
+      expect(actual).toEqual(true);
+
+      actual = postEntity.hasRelation('comment');
+      expect(actual).toEqual(true);
+    });
+
     describe('getReciprocalKey', () => {
       test('explicit', () => {
         const actual = postEntity.getReciprocalKey('authorId');
