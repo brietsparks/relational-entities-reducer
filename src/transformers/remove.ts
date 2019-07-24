@@ -22,13 +22,15 @@ export default function transformRemoveOperations(
   const linkManager = new LinkManager(repository);
 
   operations.forEach(({ type, id, options }) => {
+    repository = repository as Repository;
     const data = model.getResource(type, id);
 
     if (!data) {
+      repository.removeFromPayload([type, id]);
       return;
     }
 
-    if (isObjectLiteral(options.removeLinked)) {
+    if (isObjectLiteral(options.removalSchema)) {
       const linkedRemoveOperations = new Map<OpId, RemoveOperation>();
 
       model.extractAllLinks(type, data).forEach(({ linkedId, relatedType, relationKey, relationName }) => {
@@ -43,13 +45,13 @@ export default function transformRemoveOperations(
         // make the linked operations
         let relatedOperation = repository.getFromPayloadOrState(relatedType, linkedId);
         if (relatedOperation) {
-          const removalSchema = options.removeLinked as LinkRemovalSchema;
+          const removalSchema = options.removalSchema as LinkRemovalSchema;
 
           const nestedRemovalSchema = extractNestedRemovalSchema(removalSchema, relationKey, relationName);
 
           linkedRemoveOperations.set(
             Repository.makeOpId(relatedType, linkedId),
-            { ...relatedOperation, operator: OP_REMOVE, options: { removeLinked: nestedRemovalSchema } }
+            { ...relatedOperation, operator: OP_REMOVE, options: { removalSchema: nestedRemovalSchema } }
           );
         }
       });
@@ -90,9 +92,7 @@ export const extractNestedRemovalSchema = (
   relationKey: RelationKey,
   relationName: RelationName
 ): LinkRemovalSchema|undefined => {
-  let nestedValue;
-
-  nestedValue = removalSchema[relationKey] || removalSchema[relationName];
+  const nestedValue = removalSchema[relationKey] || removalSchema[relationName];
 
   if (!nestedValue) {
     return;

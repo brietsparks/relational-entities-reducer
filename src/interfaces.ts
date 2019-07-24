@@ -71,7 +71,7 @@ export interface AddOptions {
 }
 
 export interface RemoveOptions {
-  removeLinked?: LinkRemovalSchema
+  removalSchema?: LinkRemovalSchema
 }
 
 export interface LinkDefinition {
