@@ -1,14 +1,5 @@
 import Model from '../model';
-import {
-  Id,
-  LinkRemovalSchema,
-  Operation,
-  OpId,
-  RelationKey,
-  RelationName,
-  RemoveOperation,
-  Type
-} from '../interfaces';
+import { LinkRemovalSchema, OpId, RelationKey, RelationName, RemoveOperation, Type } from '../interfaces';
 import { Repository, LinkManager } from '../operation';
 import { isObjectLiteral } from '../util';
 import { OP_REMOVE } from '../constants';
@@ -33,8 +24,14 @@ export default function transformRemoveOperations(
     if (isObjectLiteral(options.removalSchema)) {
       const linkedRemoveOperations = new Map<OpId, RemoveOperation>();
 
+      const removalSchema = byRelationKey(type, model, options.removalSchema);
+
       model.extractAllLinks(type, data).forEach(({ linkedId, relatedType, relationKey, relationName }) => {
         repository = repository as Repository;
+
+        if (!removalSchema.hasOwnProperty(relationKey)) {
+          return;
+        }
 
         // if removal already in payload then skip
         const fromPayload = repository.getFromPayload(relatedType, linkedId);
@@ -42,12 +39,10 @@ export default function transformRemoveOperations(
           return;
         }
 
-        // make the linked operations
+        // make the linked removal operations
         let relatedOperation = repository.getFromPayloadOrState(relatedType, linkedId);
         if (relatedOperation) {
-          const removalSchema = options.removalSchema as LinkRemovalSchema;
-
-          const nestedRemovalSchema = extractNestedRemovalSchema(removalSchema, relationKey, relationName);
+          const nestedRemovalSchema = extractNestedRemovalSchema(removalSchema, relationKey);
 
           linkedRemoveOperations.set(
             Repository.makeOpId(relatedType, linkedId),
@@ -87,12 +82,22 @@ export default function transformRemoveOperations(
   return repository.getPayload();
 };
 
+export const byRelationKey = (type: Type, model: Model, removalSchema: LinkRemovalSchema = {}): LinkRemovalSchema => {
+  return Object.entries(removalSchema).reduce((schemaByRelationKey, [relation, schema]) => {
+    if (model.getEntity(type).hasRelation(relation)) {
+      const relationKey = model.getRelationKey(type, relation);
+      schemaByRelationKey[relationKey] = schema;
+    }
+
+    return schemaByRelationKey;
+  }, {} as LinkRemovalSchema);
+};
+
 export const extractNestedRemovalSchema = (
   removalSchema: LinkRemovalSchema,
   relationKey: RelationKey,
-  relationName: RelationName
 ): LinkRemovalSchema|undefined => {
-  const nestedValue = removalSchema[relationKey] || removalSchema[relationName];
+  const nestedValue = removalSchema[relationKey];
 
   if (!nestedValue) {
     return;

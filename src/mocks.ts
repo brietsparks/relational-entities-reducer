@@ -32,7 +32,7 @@ export const schema: Schema = {
       has: 'many',
       type: 'comment'
     },
-    'profileId:': {
+    'profileId': {
       has: 'one',
       type: 'profile'
     },
