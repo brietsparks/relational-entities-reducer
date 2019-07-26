@@ -17,6 +17,10 @@ export const makeOpId = (type: Type, id: Id): OpId => {
   return `${type}.${id}`;
 };
 
+export const isNonNegativeInteger = (v: any): v is number => {
+  return Number.isInteger(v) && v > -1;
+};
+
 export function arraymove(arr: any[], fromIndex: number, toIndex: number) {
   const element = arr[fromIndex];
   arr.splice(fromIndex, 1);

@@ -36,12 +36,18 @@ export type LinkRemovalSchema = {
   [s in RelationKey|RelationName]: LinkRemovalSchema | LinkRemovalCallback
 }
 
+export interface Action {
+  type: string
+}
+
 export type OpId = string;
 
 export type Operator = 'add' | 'edit' | 'remove';
 
 export type IndicesByRelation = { [s in RelationName | RelationKey]: Index };
 export type IndicesByRelationKey = {[s in RelationKey]: Index };
+
+export type OperationsByType = { [type in Type]: Map<Id, Operation> };
 
 export interface Operation {
   type: Type,

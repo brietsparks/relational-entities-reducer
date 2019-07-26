@@ -13,6 +13,7 @@ export const nonArrays = [null, 1, true, false, 'string', undefined, {}, fn];
 export const nonStringsOrNumbers = [null, true, false, undefined, [], {} ,fn];
 export const nonNumbers = [null, true, false, undefined, [], {}, 'string', fn];
 export const nonIntegers = [...nonNumbers, 1.1];
+export const nonMaps = [...nonObjects, {}];
 
 export const schema: Schema = {
   'user': {
