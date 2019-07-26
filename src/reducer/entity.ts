@@ -1,5 +1,5 @@
-import { Type as ResourceType, EntityState } from '../interfaces';
-import { Reducer, Action } from './interfaces';
+import { Type as ResourceType, EntityState, Action } from '../interfaces';
+import { Reducer, ActionTypes } from './interfaces';
 
 import { makeResourcesReducer } from './resources';
 import { makeIdsReducer } from './ids';
@@ -9,9 +9,9 @@ export const emptyState = {
   ids: []
 };
 
-export const makeEntityReducer = (resourceType: ResourceType): Reducer<EntityState> => {
+export const makeEntityReducer = (resourceType: ResourceType, actionTypes: ActionTypes): Reducer<EntityState> => {
   const resourcesReducer = makeResourcesReducer(resourceType);
-  const idsReducer = makeIdsReducer(resourceType);
+  const idsReducer = makeIdsReducer(resourceType, actionTypes);
 
   return (state: EntityState = emptyState, action: Action): EntityState => ({
     resources: resourcesReducer(state.resources, action),

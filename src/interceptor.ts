@@ -1,20 +1,20 @@
 import Model from './model';
 import { Entities } from './schema';
-import { Selectors, State, Action as RawAction } from './interfaces';
-import { Action as TransformedAction, ActionTypes } from './reducer/interfaces';
-import { AddAction, RemoveAction, LinkAction, UnlinkAction } from './actions';
+import { Selectors, State, Action } from './interfaces';
+import { ActionTypes } from './reducer/interfaces';
+import { AddAction, RemoveAction, LinkAction, UnlinkAction, ReindexRelatedAction } from './actions';
 import {
   transformAddOperations, transformRemoveOperations,
   transformLinkDefinitions, transformUnlinkDefinitions,
-  groupOperationsByType
+  transformReindexRelated, groupOperationsByType
 } from './transformers';
 
 export interface Interceptor {
-  (state: State, action: RawAction): RawAction|TransformedAction;
+  (state: State, action: Action): Action;
 }
 
 export const makeInterceptor = (entities: Entities, selectors: Selectors, actionTypes: ActionTypes): Interceptor => {
-  return (state: State, action: RawAction) => {
+  return (state: State, action: Action) => {
     const model = new Model(entities, selectors, state);
 
     let operations;
@@ -44,6 +44,13 @@ export const makeInterceptor = (entities: Entities, selectors: Selectors, action
       operations = transformUnlinkDefinitions(model, unlinkAction.definitions);
       operations = groupOperationsByType(operations);
       return { ...unlinkAction, operations };
+    }
+
+    if (action.type === actionTypes.REINDEX_RELATED) {
+      const reindexRelatedAction = action as ReindexRelatedAction;
+      operations = transformReindexRelated(model, reindexRelatedAction);
+      operations = groupOperationsByType(operations);
+      return { ...reindexRelatedAction, operations };
     }
 
     return action;

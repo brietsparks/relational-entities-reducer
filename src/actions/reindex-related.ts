@@ -1,4 +1,4 @@
-import { Id, Index, RelationName, Type } from '../interfaces';
+import { Id, Index, RelationKey, RelationName, Type } from '../interfaces';
 
 export interface Action {
   type: string,
@@ -11,8 +11,10 @@ export interface Action {
 
 export interface Creator {
   (
-    type: Type, resourceType: Type, resourceId: Id,
-    relation: RelationName | RelationName,
-    source: Index, destination: Index
+    type: Type,
+    id: Id,
+    relation: RelationKey | RelationName,
+    source: Index,
+    destination: Index
   ): Action
 }

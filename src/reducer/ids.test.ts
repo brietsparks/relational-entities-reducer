@@ -1,16 +1,57 @@
 import { makeIdsReducer } from './ids';
 import { nonObjects, nonMaps } from '../mocks';
-import { Operation, OperationsByType, Id } from '../interfaces';
+import { Operation, Id } from '../interfaces';
 import { OP_ADD, OP_REMOVE } from '../constants';
+import { ReindexAction } from '../actions';
 
 describe('reducer/ids', () => {
   describe('makeIdsReducer', () => {
     describe('the reducer', () => {
-      const reducer = makeIdsReducer('comment');
+      const actionTypes = {
+        ADD: 'ADD',
+        REMOVE: 'REMOVE',
+        LINK: 'LINK',
+        UNLINK: 'UNLINK',
+        REINDEX: 'REINDEX',
+        REINDEX_RELATED: 'REINDEX_RELATED'
+      };
+      const reducer = makeIdsReducer('comment', actionTypes);
 
       it('returns an array by default', () => {
         const actual = reducer(undefined, { type: '', operations: {} });
         expect(actual).toEqual([]);
+      });
+
+      describe('reindex', () => {
+        const state = ['c1', 'c2', 'c3', 'c4', 'c5'];
+
+        it('reindexes ids', () => {
+          const action = {
+            type: 'REINDEX',
+            resourceType: 'comment',
+            source: 3,
+            destination: 1
+          };
+
+          const actual = reducer(state, action);
+
+          const expected = ['c1', 'c4', 'c2', 'c3', 'c5'];
+
+          expect(actual).toEqual(expected);
+        });
+
+        it('ignores reindexing of other resource types', () => {
+          const action = {
+            type: 'REINDEX',
+            resourceType: 'post',
+            source: 3,
+            destination: 1
+          };
+
+          const actual = reducer(state, action);
+
+          expect(actual).toEqual(state);
+        });
       });
 
       describe('add operations', () => {

@@ -19,3 +19,13 @@ export {
   Action as UnlinkAction,
   Creator as UnlinkActionCreator
 } from './unlink';
+
+export {
+  Action as ReindexRelatedAction,
+  Creator as ReindexRelatedActionCreator
+} from './reindex-related'
+
+export {
+  Action as ReindexAction,
+  Creator as ReindexActionCreator
+} from './reindex';

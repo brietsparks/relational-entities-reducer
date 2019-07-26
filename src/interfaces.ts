@@ -66,7 +66,8 @@ export interface RemoveOperation extends Operation {
   operator: 'remove'
 }
 
-export interface EditOperation {
+export interface EditOperation extends Operation {
+  options: EditOptions;
   operator: 'edit';
 }
 
@@ -78,6 +79,10 @@ export interface AddOptions {
 
 export interface RemoveOptions {
   removalSchema?: LinkRemovalSchema
+}
+
+export interface EditOptions {
+  index?: Index
 }
 
 export interface LinkDefinition {

@@ -1,6 +1,6 @@
 import { Entities } from '../schema';
 import { State, Action as RawAction } from '../interfaces';
-import { ActionTypes, Reducer, Action as TransformedAction, EntityReducerMap } from './interfaces';
+import { ActionTypes, Reducer, EntityReducerMap } from './interfaces';
 import { Interceptor } from '../interceptor';
 import { makeEntityReducer } from './entity';
 
@@ -12,7 +12,7 @@ export const createRootReducer = (
   const emptyState = entities.getEmptyState();
 
   const reducerMap = entities.getTypes().reduce((reducerMap, entityType) => {
-    reducerMap[entityType] = makeEntityReducer(entityType);
+    reducerMap[entityType] = makeEntityReducer(entityType, actionTypes);
     return reducerMap;
   }, {} as EntityReducerMap);
 
@@ -21,7 +21,7 @@ export const createRootReducer = (
       return state;
     }
 
-    const transformedAction = interceptor(state, action) as TransformedAction;
+    const transformedAction = interceptor(state, action);
 
     return Object.keys(reducerMap).reduce((reducedState, stateKey) => {
       const reducer = reducerMap[stateKey];

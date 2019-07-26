@@ -13,7 +13,7 @@ export const isString = (v: any) => typeof v === 'string';
 
 export const isStringOrNumber = (v: any) => typeof v === 'string' || typeof v === 'number';
 
-export const makeOpId = (type: Type, id: Id): OpId => {
+export const makeCidString = (type: Type, id: Id): OpId => {
   return `${type}.${id}`;
 };
 
@@ -21,7 +21,7 @@ export const isNonNegativeInteger = (v: any): v is number => {
   return Number.isInteger(v) && v > -1;
 };
 
-export function arraymove(arr: any[], fromIndex: number, toIndex: number) {
+export function arrayMove(arr: any[], fromIndex: number, toIndex: number) {
   const element = arr[fromIndex];
   arr.splice(fromIndex, 1);
   arr.splice(toIndex, 0, element);

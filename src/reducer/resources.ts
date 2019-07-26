@@ -1,10 +1,10 @@
 import { Type as ResourceType, ResourcesState } from '../interfaces';
-import { Reducer, ActionTypes, Action } from './interfaces';
+import { Reducer, OperationsAction } from './interfaces';
 import { isObjectLiteral } from '../util';
 import { OP_ADD, OP_EDIT, OP_REMOVE } from '../constants';
 
 export const makeResourcesReducer = (resourceType: ResourceType): Reducer<ResourcesState> => {
-  return (state: ResourcesState = {}, action: Action): ResourcesState => {
+  return (state: ResourcesState = {}, action: OperationsAction): ResourcesState => {
     if (!isObjectLiteral(action.operations)) {
       return state;
     }
