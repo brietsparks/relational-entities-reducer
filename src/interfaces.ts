@@ -90,7 +90,7 @@ export interface LinkDefinition {
   id: Id;
   relation: RelationName | RelationKey;
   linkedId: Id;
-  indices: [Index?, Index?];
+  indices?: [Index?, Index?];
 }
 
 export interface UnlinkDefinition {

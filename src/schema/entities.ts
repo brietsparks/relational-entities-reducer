@@ -27,6 +27,10 @@ export class Entities {
     });
   }
 
+  hasEntity(type: Type): boolean {
+    return !!this.entities[type];
+  }
+
   getEntity(type: Type): Entity {
     const entity = this.entities[type];
 
@@ -197,7 +201,7 @@ export class Entity {
   private errorRelationKeyDoesNotExist() {
   }
 
-  private errorRelationDoesNotExist(relation: RelationName|RelationKey) {
+  public errorRelationDoesNotExist(relation: RelationName|RelationKey) {
     throw new Error(`entity "${this.type}" does not contain a relation with the name or key "${relation}"`)
   }
 

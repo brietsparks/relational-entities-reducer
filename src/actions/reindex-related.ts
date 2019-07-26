@@ -1,4 +1,7 @@
 import { Id, Index, RelationKey, RelationName, Type } from '../interfaces';
+import { Entities } from '../schema';
+import { Namespace } from '../options';
+import { validateIndex, validateRelation, validateResourceId, validateResourceType } from './validation';
 
 export interface Action {
   type: string,
@@ -18,3 +21,35 @@ export interface Creator {
     destination: Index
   ): Action
 }
+
+export const makeReindexRelated = (entities: Entities, namespace: Namespace) => {
+  const actionType = namespace('REINDEX_RELATED');
+
+  const creator = (
+    resourceType: Type,
+    resourceId: Id,
+    relation: RelationKey|RelationName,
+    source: Index,
+    destination: Index
+  ) => {
+    validateResourceType(resourceType, entities);
+    validateResourceId(resourceId);
+    validateRelation(entities, resourceType, relation);
+    validateIndex(source);
+    validateIndex(destination);
+
+    return {
+      type: actionType,
+      resourceType,
+      resourceId,
+      relation,
+      source,
+      destination
+    };
+  };
+
+  return {
+    type: actionType,
+    creator
+  }
+};

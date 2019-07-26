@@ -99,4 +99,3 @@ export const schema: Schema = {
 export const entities = new Entities(schema);
 
 export const selectors = makeSelectors();
-
