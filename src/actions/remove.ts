@@ -11,7 +11,7 @@ export interface Action {
 }
 
 export interface Creator {
-  (...resources: []): Action
+  (...resources: Input[]): Action
 }
 
 interface InputObject {
@@ -25,7 +25,7 @@ type Input = InputTuple | InputObject;
 export const makeRemove = (entities: Entities, namespace: Namespace) => {
   const actionType = namespace('REMOVE');
 
-  const creator = (...resources: Input[]) => {
+  const creator: Creator = (...resources: Input[]) => {
     const operations = new Map<OpId, RemoveOperation>();
 
     resources.forEach(resource => {

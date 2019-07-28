@@ -7,11 +7,12 @@ import {
   Type,
   CidTuple,
   CidObject,
-  ResourcesState
+  ResourcesState, Id
 } from './interfaces';
 import { isObjectLiteral } from './util';
+import { Entities } from './schema';
 
-export const makeSelectors = (): Selectors => {
+export const makeSelectors = (entities: Entities): Selectors => {
   const getEntityState = (state: State, type: Type): EntityState => {
     const entityState = state[type];
 
@@ -33,6 +34,17 @@ export const makeSelectors = (): Selectors => {
     return resources;
   };
 
+  const getEntityIds = (state: State, { type }: { type: Type }): Id[] => {
+    const entityState = getEntityState(state, type);
+    const { ids } = entityState;
+
+    if (!ids) {
+      // todo: throw
+    }
+
+    return ids;
+  };
+
   const getResource = (state: State, cid: CompositeId): Data => {
     const { type, id } = convertCidToObject(cid);
     const resources = getEntityResources(state, type);
@@ -40,7 +52,8 @@ export const makeSelectors = (): Selectors => {
   };
 
   return {
-    getResource
+    getEntityIds,
+    getResource,
   };
 };
 

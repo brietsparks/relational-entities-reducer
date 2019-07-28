@@ -49,10 +49,6 @@ export const validateIndex = (index: number) => {
   if (typeof index !== 'number' || !Number.isInteger(index)) {
     throw new Error('index must be an integer');
   }
-
-  if (index < 0) {
-    throw new Error('index must be greater than 0');
-  }
 };
 
 export const validateBatchItem = (entities: Entities, item: BatchItem) => {

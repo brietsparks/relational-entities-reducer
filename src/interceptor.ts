@@ -1,8 +1,8 @@
 import Model from './model';
 import { Entities } from './schema';
 import { Selectors, State, Action } from './interfaces';
-import { ActionTypes } from './reducer/interfaces';
-import { AddAction, RemoveAction, LinkAction, UnlinkAction, ReindexRelatedAction } from './actions';
+import { ActionTypes } from './actions';
+import { AddAction, EditAction, RemoveAction, LinkAction, UnlinkAction, ReindexRelatedAction } from './actions';
 import {
   transformAddOperations, transformRemoveOperations,
   transformLinkDefinitions, transformUnlinkDefinitions,
@@ -23,6 +23,12 @@ export const makeInterceptor = (entities: Entities, selectors: Selectors, action
       operations = transformAddOperations(model, addAction.operations);
       operations = groupOperationsByType(operations);
       return { ...addAction, operations };
+    }
+
+    if (action.type === actionTypes.EDIT) {
+      const editAction = action as EditAction;
+      operations = groupOperationsByType(editAction.operations);
+      return { ...editAction, operations };
     }
 
     if (action.type === actionTypes.REMOVE) {

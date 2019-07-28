@@ -13,7 +13,7 @@ export interface Creator {
   (...definitions: InputDefinition[]): Action;
 }
 
-type DefinitionTuple = [Type, Id, RelationName|RelationKey, Id, [Index?, Index?]?];
+type DefinitionTuple = [Type, Id, RelationName|RelationKey, Id, [Index?, Index?]];
 type InputDefinition = Definition | DefinitionTuple;
 
 export const makeLink = (entities: Entities, namespace: Namespace) => {

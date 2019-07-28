@@ -1,9 +1,11 @@
 import {
   Type, EntityState,
   OperationsByType as OperationsByResourceType,
-  Action
 } from '../interfaces';
 
+export {
+  ActionTypes
+} from '../actions'
 
 export interface OperationsAction {
   type: string,
@@ -13,15 +15,6 @@ export interface OperationsAction {
 export interface Reducer<State> {
   // todo: find a better type for action
   (state: State|undefined, action: any): State
-}
-
-export interface ActionTypes {
-  ADD: string,
-  REMOVE: string,
-  LINK: string,
-  UNLINK: string,
-  REINDEX: string,
-  REINDEX_RELATED: string
 }
 
 export type EntityReducerMap = { [entityType in Type]: Reducer<EntityState> };

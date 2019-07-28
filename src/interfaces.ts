@@ -90,7 +90,7 @@ export interface LinkDefinition {
   id: Id;
   relation: RelationName | RelationKey;
   linkedId: Id;
-  indices?: [Index?, Index?];
+  indices: [Index?, Index?];
 }
 
 export interface UnlinkDefinition {
@@ -102,4 +102,5 @@ export interface UnlinkDefinition {
 
 export interface Selectors {
   getResource: (state: State, cid: CompositeId) => Data;
+  getEntityIds: (state: State, { type }: { type: Type }) => Id[]
 }

@@ -89,10 +89,10 @@ describe('actions/validation', () => {
       });
     });
 
-    test('index must be greater than 0', () => {
-      const actual = () => validateIndex(-1);
-      const error = new Error('index must be greater than 0');
-      expect(actual).toThrow(error);
-    });
+    // test('index must be greater than 0', () => {
+    //   const actual = () => validateIndex(-1);
+    //   const error = new Error('index must be greater than 0');
+    //   expect(actual).toThrow(error);
+    // });
   });
 });

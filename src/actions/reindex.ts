@@ -22,6 +22,10 @@ export const makeReindex = (entities: Entities, namespace: Namespace) => {
     validateIndex(source);
     validateIndex(destination);
 
+    if (destination < 0) {
+      destination = 0;
+    }
+
     return ({
       type: actionType,
       resourceType,

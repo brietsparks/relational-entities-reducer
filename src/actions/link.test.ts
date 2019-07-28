@@ -13,8 +13,8 @@ describe('actions/link', () => {
       expect(type).toEqual('prefix/LINK');
 
       const actual = creator(
-        ['comment', 'c1', 'post', 'p1'],
-        { type: 'comment', id: 'c2', relation: 'postId', linkedId: 'p2' },
+        ['comment', 'c1', 'post', 'p1', []],
+        { type: 'comment', id: 'c2', relation: 'postId', linkedId: 'p2', indices: [] },
         { type: 'comment', id: 'c3', relation: 'postId', linkedId: 'p2', indices: [2, 3] },
       );
 
@@ -26,14 +26,14 @@ describe('actions/link', () => {
             id: 'c1',
             relation: 'post',
             linkedId: 'p1',
-            indices: undefined
+            indices: []
           },
           'comment.c2': {
             type: 'comment',
             id: 'c2',
             relation: 'postId',
             linkedId: 'p2',
-            indices: undefined
+            indices: []
           },
           'comment.c3': {
             type: 'comment',

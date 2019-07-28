@@ -4,7 +4,7 @@ import { ActionTypes, Reducer, EntityReducerMap } from './interfaces';
 import { Interceptor } from '../interceptor';
 import { makeEntityReducer } from './entity';
 
-export const createRootReducer = (
+export const makeRootReducer = (
   entities: Entities,
   actionTypes: ActionTypes,
   interceptor: Interceptor

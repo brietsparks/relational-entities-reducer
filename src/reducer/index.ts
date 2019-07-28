@@ -1,0 +1,1 @@
+export { makeRootReducer } from './root';

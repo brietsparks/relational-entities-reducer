@@ -29,6 +29,10 @@ export const makeResourcesReducer = (resourceType: ResourceType): Reducer<Resour
           return;
         }
 
+        if (operation.operator === OP_EDIT && !newState[id]) {
+          return
+        }
+
         newState = {
           ...newState,
           [id]: { ...newState[id], ...operation.data }

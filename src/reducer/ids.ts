@@ -42,7 +42,7 @@ export const makeIdsReducer = (resourceType: ResourceType, actionTypes: ActionTy
       if (operation.operator === OP_ADD) {
         const addOperation = operation as AddOperation;
 
-        if (isNonNegativeInteger(addOperation.options.index)) {
+        if (addOperation.options && isNonNegativeInteger(addOperation.options.index)) {
           newState.splice(addOperation.options.index, 0, addOperation.id);
         } else {
           newState.push(addOperation.id);

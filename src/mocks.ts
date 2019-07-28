@@ -98,4 +98,4 @@ export const schema: Schema = {
 
 export const entities = new Entities(schema);
 
-export const selectors = makeSelectors();
+export const selectors = makeSelectors(entities);

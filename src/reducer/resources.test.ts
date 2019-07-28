@@ -62,28 +62,52 @@ describe('reducer/resources', () => {
         });
       });
 
-      test('edit operations', () => {
-        const state = { 'c1': { text: 'foo' } };
+      describe('edit operations', () => {
+        test('edit existing operation', () => {
+          const state = { 'c1': { text: 'foo' } };
 
-        const action = {
-          type: '',
-          operations: {
-            comment: new Map<Id, Operation>(Object.entries({
-              'c1': {
-                type: 'comment',
-                id: 'c1',
-                data: { text: 'bar' },
-                operator: OP_EDIT
-              }
-            }))
-          }
-        };
+          const action = {
+            type: '',
+            operations: {
+              comment: new Map<Id, Operation>(Object.entries({
+                'c1': {
+                  type: 'comment',
+                  id: 'c1',
+                  data: { text: 'bar' },
+                  operator: OP_EDIT
+                }
+              }))
+            }
+          };
 
-        const actual = reducer(state, action);
+          const actual = reducer(state, action);
 
-        const expected = { 'c1': { text: 'bar' } };
+          const expected = { 'c1': { text: 'bar' } };
 
-        expect(actual).toEqual(expected);
+          expect(actual).toEqual(expected);
+        });
+
+        test('skip nonexistent operation', () => {
+          const state = { 'c1': { text: 'foo' } };
+
+          const action = {
+            type: '',
+            operations: {
+              comment: new Map<Id, Operation>(Object.entries({
+                'c10000': {
+                  type: 'comment',
+                  id: 'c10000',
+                  data: { text: 'bar' },
+                  operator: OP_EDIT
+                }
+              }))
+            }
+          };
+
+          const actual = reducer(state, action);
+
+          expect(actual).toEqual(state);
+        });
       });
 
       test('remove operations', () => {
