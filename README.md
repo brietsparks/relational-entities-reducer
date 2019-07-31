@@ -1,20 +1,16 @@
-NOT PRODUCTION READY, WORK-IN-PROGRESS
-
 # Relational Entities Reducer [![Coverage Status](https://coveralls.io/repos/github/brietsparks/relational-entities-reducer/badge.svg?branch=master)](https://coveralls.io/github/brietsparks/relational-entities-reducer?branch=master)
 
-This library helps you make complex changes to relational state declaratively.   
-
-- perform write operations of multiple resources via a single action. 
-- plain old actions + reducers that are pure and framework agnostic. Use with with or without React, Redux etc.
+Manage relational state via a simple, declarative API.
+- pure functions (actions + reducers) and framework agnostic
 - supports one and many cardinalities, and recursive/self-referencing relations
 
 ## Examples
 ### [Live Demo](https://brietsparks.github.io/relational-entities-reducer-examples)
 ### [Source](https://github.com/brietsparks/relational-entities-reducer-examples)
 
-These examples show how to:
-- create, edit, and delete parent (List) and child (Item) nodes. [Source](https://github.com/brietsparks/relational-entities-reducer-examples/tree/master/src/examples/1-lists) 
-- delete tree nodes plus their descendants in a single action. [Source](https://github.com/brietsparks/relational-entities-reducer-examples/tree/master/src/examples/2-recursive-tree)
+## Release status: :construction: not yet production ready
+- API is subject to changes
+- Needs higher test coverage 
 
 ## Basic Usage
 Install: `yarn add relational-entities-reducer`
@@ -36,16 +32,20 @@ const schema = {
 };
 ```
 
-### 2. Pass the schema in and get back reducers, actions, selectors.
+### 2. Pass the schema to the library function.
 
 ```js
-import makeRelational from 'relational-entities-reducer';
+import makeEntities from 'relational-entities-reducer';
+
+const entities = makeEntities(schema);
 
 const { 
-  reducer: relationalEntityReducer, 
-  actions: relationalActions, 
-  selectors: relationalSelectors
-} = makeRelational(schema);
+  actionCreators,
+  actionTypes,
+  reducer,
+  selectors,
+  emptyState,
+} = entities;
 ```
 
 ### 3. Wire up the reducer to your code. 
@@ -54,77 +54,85 @@ can be used with or without React, Redux, etc.
 
 Redux:
 ```js
-import { combineReducers } from 'redux';
+import { createStore } from 'redux';
 
-const reducer = combineReducers({
-  // ...
-  relationalEntities: relationalEntityReducer
-})
+const store = createStore(entities.reducer, emptyState);
 ```
 
 React Hooks:
 ```js
 import { useReducer } from 'react';
 
-// ...
-const [state, dispatch] = useReducer(relationalEntityReducer);   
+const [state, dispatch] = useReducer(entities.reducer, emptyState);   
 ```
 
 ### 4. Pass actions to the reducer to write to state.
 
-You can add, remove, edit, and reindex resources with the following action-creators:
+You can add, remove, edit, link, unlink, and reindex resources with the following action-creators:
 ```js
-const { add, remove, edit, reindex, reindexRelated } = relationalActions;
+const { 
+  add, 
+  remove, 
+  edit, 
+  link,
+  unlink,
+  reindex, 
+  reindexRelated
+} = entities.actionCreators;
 ```
 
 #### `add`
 Adds new resources to state. It takes one or more arguments, each 
-being a resource in the shape of a tuple or object.
+a tuple or object describing a new resource.
 
 ```js
 add(
-  { resourceType: 'user', resourceId: 'u3' },
+  { type: 'user', id: 'u3' },
   ['user', 'u4']
 )
 
 ```
 
-Optionally, a data object can be passed with each resource:
+Optionally, a data object can be passed with each arg:
 ```js
 add(
-  { resourceType: 'user', resourceId: 'u1', data: { userName: "axolotl" } },
+  { type: 'user', id: 'u1', data: { userName: "axolotl" } },
   ['user', 'u2', { userName: 'AzureDiamond', password: 'hunter2' }],
 )
 ```
 
-Related id's can be passed in with the data object, and the state will attach id's to the
+Related id's can be passed in with the data object, and the reducer will attach id's to the
 corresponding resources to form the relationships. If the those related id's
 do not have an existing resource in state, then new ones will be created. 
 ```js
 add(
-  // author u1 exists, so the reducer will add p1 to its post ids 
-  { resourceType: 'post', resourceId: 'p1', data: { authorId: 'u1' } },
+  // object arg
+  { type: 'post', id: 'p1', data: { authorId: 'u1' } },
   
-  // comment c1 and c2 do not exist, so the reducer will create them and assign p2 to their postId
+  // tuple arg
   ['post', 'p2', { authorId: 'u2', commentIds: ['c1', 'c2'] }] 
 )
 ```
 #### `remove`
-Removes existing resources from state. It takes one or more arguments, each 
-being a resource in the shape of a tuple or object. 
+Removes existing resources from state. It takes one or more arguments, each a 
+tuple or object describing a resource removal. 
 ```js
 remove(
-  { resourceType: 'user', resourceId: 'u3' },
+  // object arg
+  { type: 'user', id: 'u3' },
+  
+  // tuple arg
   ['user', 'u4']
 )
 ```
 
 When a resource is removed, the reducer will detach any resources linked
-to the removed resources. 
+to the removed resources. In the above example, any resources linked to
+users `u3`, `u4` would be unlinked from them.
 
 You can also remove a chain of resources in one go. For example, you might want to remove
-a user, all its posts, and all comments of those posts. To do this, pass in
-a schema to the options parameter:   
+a user, all its posts, and all comments of those posts. To do this, pass in an `options` 
+object with a `removalSchema` that describes the chain of resource removals:   
 ```js
 const userRemovalSchema = {
   postIds: {
@@ -133,18 +141,21 @@ const userRemovalSchema = {
 }
 
 remove(
-  { resourceType: 'user', resourceId: 'u3', options: { removeRelated: userRemovalSchema } },
+  { type: 'user', id: 'u3', options: { removeRelated: userRemovalSchema } },
   ['user', '4', { removeRelated: userRemovalSchema }]
 )
 ```
 
 #### `edit`
-Edits an existing resource. It takes one or more arguments, each 
-being a resource in the shape of a tuple or object. 
+Edits existing resources. It takes one or more arguments, each an object or tuple
+describing a resource modification. 
 
 ```js
 edit(
-  { resourceType: 'user', resourceId: 'u1', data: { userName: "axolotl1" } },
+  // object arg
+  { type: 'user', id: 'u1', data: { userName: "axolotl1" } },
+  
+  // tuple arg
   ['user', 'u2', { userName: 'AzureDiamond10000', password: 'hunter2000' }],
 )
 ```
@@ -152,34 +163,102 @@ edit(
 The operation is a constructive operation. Only the data values passed in will be written 
 to the resource; omitting fields from the data payload will not remove those fields from state.
 
+**Warning:** do not modify relational data in the edit action. If you do, you will probably 
+end up with invalid state. Instead use the `link` and `unlink` action creators. 
+Modifying relational data via `edit` might be supported in the future.  
+
 #### `reindex`
 Changes the index of a single resource with respect to its top-level order.
 
 ```js
-reindex('post', 2, 5); // move post at index 2 to index 5
+// move post at index 2 to index 5
+reindex('post', 2, 5);
 ``` 
 
 #### reindexRelated 
-Changes the index of a single resource with respect to its order within a related resource.
+Within a single resource, change the index of a single linked resource.
 ```js
-reindexRelated('post', 'p1', 'commentIds', 3, 6); // in post p1, move comment at index 3 to index 6
+// in post p1, move comment at index 3 to index 6
+reindexRelated('post', 'p1', 'commentIds', 3, 6);
 ```
 
-#### `relate`
-Forms a relation between two resources by attaching their ids to one another.
+#### `link`
+Links resources by attaching their ids to one another. It takes one or more arguments,
+each an object or tuple describing which resources to link together.
 
-__This feature is in progress__
+```js
+link(
+  // object arg, link post p1 to comment c1
+  { type: 'post', id: 'p1', relation: 'commentIds', linkedId: 'c1', indices: [] }
+  
+  // tuple arg, link comment c2 to post p1
+  ['comment', 'c2', 'postId', 'p1', []]
+);
+```
 
-#### `unrelate`
-Eliminate a relation between two resources by removing the related ids which point to on another.
+The array param is where you can specify the index at which 
+each id should be within its linked resource.
 
-__This feature is in progress__
+```js
+link(
+  // in post p1's commentIds, c1 will get added at index 2 
+  ['post', 'p1', 'commentIds', 'c1', [2]] 
+);
+```
+
+For a many-to-many relationship, you can pass in two indices.
+```js
+link(
+  // a post has-many tags, a tag has-many posts 
+  // post p2 will have t2 at index 2, and tag t2 will have post p2 at index 5 
+  ['post', 'p2', 'tagIds', 't2', [2, 5]] 
+);
+```
+
+The indices arg will be optional in the future.
+
+#### `unlink`
+Unlinks resources by removing their ids from one another. It takes one or more arguments,
+each an object or tuple describing which resources to unlink.
+
+```js
+unlink(
+  // unlink post p1 from comment c1
+  { type: 'post', id: 'p1', relation: 'commentIds', linkedId: 'c1' },
+  
+  // unlink comment c2 from post p2
+  ['comment', 'c2', 'postId', 'p2']  
+)
+```
 
 ### 5. Use selectors to read from state
-Along with `reducer` and `actions`, this library's function will return `selectors`, 
-an object containing selectors that can read from the relation state.
+This library's function returns a `selectors` object containing simple selector functions 
+that can read from the relation state.
 
-(TODO)
+```js
+const { selectors } = makeEntities(schema);
+```
+
+#### `getEntityResources`
+Accepts state and the resource type and returns an object mapping the ids to their resources.
+```js
+const resources = selectors.getEntityResources(state, { type: 'post' });
+console.log(resources); // { p1: {...}, p2: {...}, ... }
+```
+
+#### `getEntityIds`
+Accepts state and the resource type and returns an array of the top-level ids.
+```js
+const ids = selectors.getEntityIds(state, { type: 'post' });
+console.log(ids); // ['p1', 'p2', ...]
+```
+
+#### `getResource`
+Accepts state, the resource type, and the resource id, and returns the resource if it exists.
+```js
+const resource = selectors.getResource(state, { type: 'post', id: 'p1' });
+console.log(resource); // { title: '...', commentIds: [...] }
+```
 
 ## Advanced Usage
 
