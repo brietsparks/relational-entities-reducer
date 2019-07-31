@@ -1,8 +1,43 @@
 import { convertCidToObject, makeSelectors } from './selectors';
+import { entities } from './mocks';
 
 describe('selectors', () => {
   describe('makeSelectors', () => {
-    const selectors = makeSelectors();
+    const selectors = makeSelectors(entities);
+
+    describe('getEntityIds', () => {
+      it('returns ids of an entity', () => {
+        const state = {
+          post: {
+            resources: { 'p1': {}, 'p2': {} },
+            ids: ['p1', 'p2']
+          }
+        };
+
+        const actual = selectors.getEntityIds(state, { type: 'post' });
+
+        const expected = ['p1', 'p2'];
+
+        expect(actual).toEqual(expected);
+      });
+    });
+
+    describe('getEntityResources', () => {
+      it('it returns the resources collection', () => {
+        const state = {
+          post: {
+            resources: { 'p1': {}, 'p2': {} },
+            ids: ['p1', 'p2']
+          }
+        };
+
+        const actual = selectors.getEntityResources(state, { type: 'post' });
+
+        const expected = { 'p1': {}, 'p2': {} };
+
+        expect(actual).toEqual(expected);
+      });
+    });
 
     describe('getResource', () => {
       it('returns an existing resource', () => {
@@ -27,7 +62,6 @@ describe('selectors', () => {
       });
     });
 
-
   });
 
   describe('convertCidToObject', () => {
@@ -46,6 +80,13 @@ describe('selectors', () => {
     it('returns an object if given an object', () => {
       const actual = convertCidToObject(expected);
       expect(actual).toEqual(expected);
+    });
+
+    it('throws if not given a composite id', () => {
+      // @ts-ignore
+      const actual = () => convertCidToObject(null);
+      const error = new Error('invalid composite id');
+      expect(actual).toThrow(error);
     });
   });
 });

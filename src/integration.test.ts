@@ -7,6 +7,16 @@ describe('integration', () => {
     makeRelationalEntities(schema);
   });
 
+  test('custom namespace option', () => {
+    const opts = {
+      namespace: (type: string) => `custom.${type}`
+    };
+
+    const { actionTypes } = makeRelationalEntities(schema, opts);
+
+    expect(actionTypes.EDIT).toEqual('custom.EDIT');
+  });
+
   const { reducer, emptyState, actionCreators, selectors} = makeRelationalEntities(schema);
 
   describe('basic usage', () => {

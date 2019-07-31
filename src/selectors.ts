@@ -1,10 +1,10 @@
 import {
+  Type,
   CompositeId,
   Data,
   EntityState,
   Selectors,
   State,
-  Type,
   CidTuple,
   CidObject,
   ResourcesState, Id
@@ -23,7 +23,7 @@ export const makeSelectors = (entities: Entities): Selectors => {
     return entityState;
   };
 
-  const getEntityResources = (state: State, type: Type): ResourcesState => {
+  const getEntityResources = (state: State, { type }: { type: Type }): ResourcesState => {
     const entityState = getEntityState(state, type);
     const { resources } = entityState;
 
@@ -47,12 +47,13 @@ export const makeSelectors = (entities: Entities): Selectors => {
 
   const getResource = (state: State, cid: CompositeId): Data => {
     const { type, id } = convertCidToObject(cid);
-    const resources = getEntityResources(state, type);
+    const resources = getEntityResources(state, { type });
     return resources[id];
   };
 
   return {
     getEntityIds,
+    getEntityResources,
     getResource,
   };
 };

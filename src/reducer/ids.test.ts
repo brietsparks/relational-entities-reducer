@@ -2,7 +2,6 @@ import { makeIdsReducer } from './ids';
 import { nonObjects, nonMaps } from '../mocks';
 import { Operation, Id } from '../interfaces';
 import { OP_ADD, OP_REMOVE } from '../constants';
-import { ReindexAction } from '../actions';
 
 describe('reducer/ids', () => {
   describe('makeIdsReducer', () => {
@@ -11,6 +10,7 @@ describe('reducer/ids', () => {
         ADD: 'ADD',
         REMOVE: 'REMOVE',
         LINK: 'LINK',
+        EDIT: 'EDIT',
         UNLINK: 'UNLINK',
         REINDEX: 'REINDEX',
         REINDEX_RELATED: 'REINDEX_RELATED'

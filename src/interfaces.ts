@@ -102,5 +102,6 @@ export interface UnlinkDefinition {
 
 export interface Selectors {
   getResource: (state: State, cid: CompositeId) => Data;
+  getEntityResources: (state: State, { type }: { type: Type }) => ResourcesState,
   getEntityIds: (state: State, { type }: { type: Type }) => Id[]
 }
