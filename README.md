@@ -8,10 +8,6 @@ Manage relational state via a simple, declarative API.
 ### [Live Demo](https://brietsparks.github.io/relational-entities-reducer-examples)
 ### [Source](https://github.com/brietsparks/relational-entities-reducer-examples)
 
-## Release status: :construction: not yet production ready
-- API is subject to changes
-- Needs higher test coverage 
-
 ## Basic Usage
 Install: `yarn add relational-entities-reducer`
 
